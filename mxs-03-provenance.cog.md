@@ -9,7 +9,7 @@ description: "Formal specification of MX provenance, trust, and verification met
 mx:
   status: proposed
   license: MIT
-  category: standard
+  x-mx-category: standard
   partOf: mx-the-gathering
   contentType: specification
   buildsOn: [cog-unified-spec, mxs-01-core-metadata]

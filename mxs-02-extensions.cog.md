@@ -9,7 +9,7 @@ description: "Formal specification of the MX namespace policy, carrier format ma
 mx:
   status: proposed
   license: MIT
-  category: standard
+  x-mx-category: standard
   partOf: mx-the-gathering
   contentType: specification
   buildsOn: [cog-unified-spec, mxs-01-core-metadata]
