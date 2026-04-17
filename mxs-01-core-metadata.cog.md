@@ -9,7 +9,6 @@ description: "Formal specification of core MX metadata fields — the foundation
 mx:
   status: proposed
   license: MIT
-  x-mx-category: standard
   partOf: mx-the-gathering
   contentType: specification
   buildsOn: [cog-unified-spec]
