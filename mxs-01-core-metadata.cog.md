@@ -1,8 +1,8 @@
 ---
 title: "MX Core Metadata Standard"
-version: "1.1-proposed"
+version: "1.2-proposed"
 created: 2026-04-02
-modified: 2026-04-16
+modified: 2026-04-26
 author: The Gathering
 description: "Formal specification of core MX metadata fields — the foundational vocabulary every MX-aware document must, should, or may declare. Machine-readable form: mx-canon/ssot/fields-data.yaml (sanitised open-standard core, ~103 fields)."
 
@@ -20,9 +20,9 @@ mx:
 
 # MX Core Metadata Standard
 
-**Version:** 1.1-proposed
+**Version:** 1.2-proposed
 **Status:** Proposed (draft for Stream submission, awaiting community review)
-**Date:** 16 April 2026
+**Date:** 26 April 2026
 **Governing body:** The Gathering
 **License:** MIT
 
@@ -292,6 +292,58 @@ version: "2.0"
 
 - The value MUST be quoted in YAML to prevent numeric coercion (e.g., `"1.0"` not `1.0`).
 - Version numbers live in frontmatter, never in filenames.
+
+---
+
+### 6.7 `schema`
+
+| Property | Value |
+|----------|-------|
+| **Type** | string |
+| **Zone** | 1 (top-level) |
+| **Conformance** | MAY (Level 3) |
+| **Default** | *(none)* |
+
+**Definition:** Schema reference identifier — pointer to the schema document that defines and validates this document's contract. May be a Schema.org type URL, a JSON Schema `$id`, a relative path to a YAML/JSON schema file, or a database schema name. Context-dependent.
+
+**Example:**
+
+```yaml
+schema: ./schemas/invoice-approval.v1.yaml
+```
+
+**Normative notes:**
+
+- When present, validators SHOULD attempt to resolve the reference and apply the referenced schema before checking field-level conformance.
+- The reference MAY be a relative path, an absolute path, a URL, or a registry-resolvable name.
+- Implementations SHOULD treat unresolved references as a warning, not a failure, since the schema may live in an external system.
+
+---
+
+### 6.8 `validatesAgainst`
+
+| Property | Value |
+|----------|-------|
+| **Type** | array of string |
+| **Zone** | 1 (top-level) |
+| **Conformance** | MAY (Level 3) |
+| **Default** | *(none)* |
+
+**Definition:** Named validators (dotted notation) this document claims conformance to. A document MAY declare conformance to multiple validators (typically one meta-validator plus one or more domain validators).
+
+**Example:**
+
+```yaml
+validatesAgainst:
+  - cog.meta.v1
+  - invoice-approval.v1
+```
+
+**Normative notes:**
+
+- Each entry SHOULD be a dotted name resolvable via the cog registry or via a `schema` pointer.
+- Validators MUST treat the array as additive — a document conforming to `cog.meta.v1` AND `invoice-approval.v1` must satisfy both.
+- Implementations SHOULD warn when a referenced validator name cannot be resolved; they MUST NOT silently skip validation.
 
 ---
 
@@ -1116,3 +1168,4 @@ These conformance levels apply only to cog documents (`.cog.md` files).
 | Version | Date | Changes |
 |---------|------|---------|
 | 1.0-draft | 2026-04-02 | Initial draft. Initial draft. |
+| 1.2-proposed | 2026-04-26 | Added Zone 1 fields `schema` (§6.7) and `validatesAgainst` (§6.8) — schema-reference and conformance-claim fields imported from cog-spec v1.0 (mx-upgraded-reginald). Both at conformance level MAY. |

@@ -1,8 +1,8 @@
 ---
 title: "MX Extensions Standard"
-version: "1.0-proposed"
+version: "1.1-proposed"
 created: 2026-04-02
-modified: 2026-04-16
+modified: 2026-04-26
 author: The Gathering
 description: "Formal specification of the MX namespace policy, carrier format mappings, and extension mechanisms for non-standard metadata fields."
 
@@ -20,9 +20,9 @@ mx:
 
 # MX Extensions Standard
 
-**Version:** 1.0-proposed
+**Version:** 1.1-proposed
 **Status:** Proposed (draft for Stream submission, awaiting community review)
-**Date:** 16 April 2026
+**Date:** 26 April 2026
 **Governing body:** The Gathering
 **License:** MIT
 
@@ -899,6 +899,124 @@ mx:
 
 ---
 
+### 10.4 Workflow Contract Extensions
+
+The following fields are public extensions imported from cog-spec v1.0 (mx-upgraded-reginald) and used by workflow contract cogs — documents that declare an executable approval, review, or procedural workflow. Their shapes are domain-specific; the cog's referenced schema (the `schema` field, MXS-01 §6.7) defines the precise object structure.
+
+These fields appear at the **top level** of the cog's frontmatter, not under `mx:`, because they are part of the contract that signing covers (see MXS-05 §2). All are conformance level MAY — they apply only to documents declaring a workflow contract.
+
+#### 10.4.1 `x-mx-thresholds`
+
+| Property | Value |
+|----------|-------|
+| **Type** | object |
+| **Zone** | 1 (top-level) |
+| **Profile** | x-mx-public |
+| **Conformance** | MAY (Level 3) |
+| **Default** | *(none)* |
+
+**Definition:** Domain workflow thresholds attached to a contract cog. Object whose keys are domain-named limits (e.g. `autoApproveBelow`, `requireSecondaryAbove`, `escalateAt`) and whose values are numeric, monetary, or categorical bounds. The cog's referenced schema specifies which keys are required and what types they accept.
+
+**Example:**
+
+```yaml
+x-mx-thresholds:
+  autoApproveBelow: 1000
+  requireSecondaryAbove: 10000
+```
+
+#### 10.4.2 `x-mx-approvers`
+
+| Property | Value |
+|----------|-------|
+| **Type** | object |
+| **Zone** | 1 (top-level) |
+| **Profile** | x-mx-public |
+| **Conformance** | MAY (Level 3) |
+| **Default** | *(none)* |
+
+**Definition:** Mapping of approver-role names to identities. Keys are role names (`primary`, `secondary`, `finance`, `legal`, ...). Values are user identities, group references, or role descriptors resolved by the cog runtime.
+
+**Example:**
+
+```yaml
+x-mx-approvers:
+  primary: line-manager
+  secondary: finance-director
+```
+
+#### 10.4.3 `x-mx-approvalProcedure`
+
+| Property | Value |
+|----------|-------|
+| **Type** | object |
+| **Zone** | 1 (top-level) |
+| **Profile** | x-mx-public |
+| **Conformance** | MAY (Level 3) |
+| **Default** | *(none)* |
+
+**Definition:** Approval procedure declaration. Object with `runner` (the engine that executes the procedure) and `phases` (an ordered array of phase objects, each typically with an `id` and optional inputs).
+
+**Example:**
+
+```yaml
+x-mx-approvalProcedure:
+  runner: cog-runtime
+  phases:
+    - id: triage
+    - id: review
+    - id: sign-off
+```
+
+#### 10.4.4 `x-mx-reviewProcedure`
+
+| Property | Value |
+|----------|-------|
+| **Type** | object |
+| **Zone** | 1 (top-level) |
+| **Profile** | x-mx-public |
+| **Conformance** | MAY (Level 3) |
+| **Default** | *(none)* |
+
+**Definition:** Review procedure declaration. Same shape as `x-mx-approvalProcedure` (`runner` + `phases`) applied to review rather than approval workflows.
+
+**Example:**
+
+```yaml
+x-mx-reviewProcedure:
+  runner: cog-runtime
+  phases:
+    - id: collect-feedback
+    - id: revise
+    - id: publish
+```
+
+#### 10.4.5 `x-mx-targetEnvironment`
+
+| Property | Value |
+|----------|-------|
+| **Type** | string |
+| **Zone** | 1 (top-level) |
+| **Profile** | x-mx-public |
+| **Conformance** | MAY (Level 3) |
+| **Default** | *(none)* |
+
+**Definition:** Named deployment or runtime environment a contract cog targets (e.g. `production`, `staging`, `test`). Resolved by the cog runtime to apply environment-specific settings.
+
+**Example:**
+
+```yaml
+x-mx-targetEnvironment: production
+```
+
+**Normative notes (10.4 group):**
+
+- These fields are typically members of the `contractFields` array (MXS-05) so that changes to thresholds, approvers, procedures, or target environment invalidate the cog's signature.
+- Implementations MUST resolve the cog's `schema` (MXS-01 §6.7) before validating the inner shape of these objects; the schema is authoritative for required keys.
+- The `runner` value in `x-mx-approvalProcedure` and `x-mx-reviewProcedure` MUST be a registry-resolvable runtime identifier.
+
+---
+
 ## 11. x-mx-p- private extension mechanism
 
 ### 11.1 Overview
@@ -1038,3 +1156,4 @@ An extension field MAY be promoted to a standard field through the following pro
 | Version | Date | Changes |
 |---------|------|---------|
 | 1.0-draft | 2026-04-02 | Initial draft. Namespace policy, carrier format mappings, and extension mechanisms based on ADR-02 namespace policy. |
+| 1.1-proposed | 2026-04-26 | Added §10.4 "Workflow Contract Extensions" with five new x-mx-public fields imported from cog-spec v1.0 (mx-upgraded-reginald): `x-mx-thresholds`, `x-mx-approvers`, `x-mx-approvalProcedure`, `x-mx-reviewProcedure`, `x-mx-targetEnvironment`. All Zone 1 (top-level), conformance MAY, intended as members of the contract-fingerprint scope (MXS-05). |
