@@ -212,7 +212,7 @@ description: "Single source of truth for every YAML frontmatter field."
 **Example:**
 
 ```yaml
-author: "Tom Cranstoun and Maxine"
+author: "Tom Cranstoun"
 ```
 
 **Normative notes:**
