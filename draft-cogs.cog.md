@@ -284,6 +284,7 @@ A cog at Level 1 is registry-locatable. At Level 2 it is identifiable to unfamil
 - A `cogHeader.spec` URL pointing at an attacker-controlled host is a phishing vector for runtimes that auto-fetch the spec. Runtimes SHOULD validate the spec URL against a trusted registry or operator-allowlist before fetching.
 - The magic-header comment and `cogHeader` field are NOT authenticated — anyone who can write the cog can lie about which spec it claims to follow. Authentication, if required, is the responsibility of an external signing or witness mechanism, not this note.
 - Cogs declaring `execute` contracts give agents a runnable surface. Operators MUST treat `execute.command` and `execute.actions[]` values as untrusted input and apply the same sandboxing, allowlisting, and audit measures they apply to any user-supplied command.
+- A signed cog only attests provenance and integrity, never the truth of the content. Even when a cog's signature verifies cleanly, downstream consumers MUST NOT treat the values as factually correct — the signature confirms only that the cog genuinely came from the named signer and has not been altered. Editorial truth-curation is a different problem and out of scope for the cog format. User-facing language SHOULD say *attested*, not *verified*, to avoid implying a truth claim no signer makes.
 
 ---
 

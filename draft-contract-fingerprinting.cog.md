@@ -1,6 +1,6 @@
 ---
 title: "MX Contract Fingerprinting and Signing note"
-version: "1.1-draft"
+version: "1.2-draft"
 created: 2026-04-26
 modified: 2026-04-27
 author: Tom Cranstoun
@@ -19,7 +19,7 @@ mx:
 
 # MX Contract Fingerprinting and Signing note
 
-**Version:** 1.1-draft
+**Version:** 1.2-draft
 **Status:** Draft by Tom Cranstoun, offered to The Gathering for review
 **Date:** 27 April 2026
 **Author:** Tom Cranstoun
@@ -36,6 +36,16 @@ When a cog is signed, the signing must be portable, transparent, and replay-resi
 `contractFields` lists the top-level frontmatter keys whose values are covered by the cog's signature. `metadataFields` lists keys explicitly excluded — values that may change without invalidating the signature (timestamps, tags, registry annotations).
 
 The signing algorithm itself (key types, signature format, transport) is out of scope here; this note defines only the **fingerprint**: the deterministic byte sequence over which a signature is produced. Signing is governed end-to-end by an external signer/verifier; the canon defined here is the format the signer reads and the verifier checks.
+
+### What the signature attests
+
+A signed cog makes one narrow claim, and the narrowness is what makes it tractable. **The signature attests provenance and integrity, not truth.** Specifically:
+
+- The signature confirms that the cog's contract surface (the keys named in `contractFields`) was last in this exact state when the named signer applied the signature.
+- It does not assert that the values are factually correct, sound, or current. A cog claiming "WWII did not happen" can be perfectly well-signed; the signature only confirms the cog genuinely came from the named signer and has not been altered downstream. Whether the claim is true is a different problem — one no signing format can solve at web scale, and one this note deliberately does not take on.
+- The narrower claim is intentional. Editorial truth-curation is what made the Open Directory Project (DMOZ) unsustainable: human editors could not keep pace with the web, and the implicit claim that a categorised entry was *appropriate* (worth listing, accurately classified) aged badly. The MX signing model only attests *this is what the owner published, unaltered*. That smaller claim is what compounds.
+
+Implementations and downstream consumers SHOULD be precise in user-facing language: the system has *attested* a cog, not *verified* it. "Verified" implies a truth claim that no signer makes.
 
 ---
 
@@ -304,3 +314,4 @@ The following are flagged for community discussion before this draft is offered 
 | 1.0-proposed | 2026-04-26 | Initial draft. Imports the contract-fingerprinting model from earlier reference implementations, drops the `x-mx-` prefix to make the fields first-class, defines the canonical JSON / SHA-256 fingerprint algorithm. |
 | 1.0-draft | 2026-04-27 | Renamed from "MX Contract Fingerprinting and Signing Standard" to a "note" to clarify this is a draft by Tom Cranstoun, not a ratified standard. Made the note standalone — removed cross-references to other Gathering drafts and inlined required material. |
 | 1.1-draft | 2026-04-27 | §1 abstract gains an explicit statement that signing is optional. New §4.3 documents the mandatory fields when signing (`title`, `validatesAgainst` with resolvable validators, `schema`). New §4.4 documents the default-excluded metadata fields (`modified`, `version`, `created`, `author`, `updateInstructions`) plus the `x-mx-contractFields` / `x-mx-metadataFields` schema overrides. §6 split into signer (§6.1), verifier (§6.2), and recommended pre-signature review pipeline (§6.3) — the canonical Inventory → Classify → Lift → Declare-Contracts → Validate → Notarise sequence. |
+| 1.2-draft | 2026-04-27 | Added "What the signature attests" subsection in §1: the signature attests provenance and integrity, not truth. Distinguishes attestation (what we do) from verification (a truth claim we deliberately avoid), with the DMOZ contrast explaining why the narrower scope is what makes the model sustainable. |
