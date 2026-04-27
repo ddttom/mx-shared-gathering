@@ -1,21 +1,25 @@
-# MX Shared Drafts for The Gathering
+# MX Drafts for The Gathering
 
-Public home for the source `.cog.md` drafts of the four proposed MX standards. Offered to [The Gathering](https://tg.community) community for review via [Stream](https://stream.tg.community).
+Public home for the source `.cog.md` drafts of the MX metadata notes. These are draft notes authored by Tom Cranstoun and offered to [The Gathering](https://tg.community) community for review via [Stream](https://stream.tg.community). They are not ratified standards.
 
-## The four drafts
+## The drafts
 
-| Standard | Draft | Status |
-|----------|-------|--------|
-| **MXS-01** Core Metadata | [mxs-01-core-metadata.cog.md](mxs-01-core-metadata.cog.md) | Proposed (v1.1-proposed) |
-| **MXS-02** Extensions | [mxs-02-extensions.cog.md](mxs-02-extensions.cog.md) | Proposed (v1.0-proposed) |
-| **MXS-03** Provenance | [mxs-03-provenance.cog.md](mxs-03-provenance.cog.md) | Proposed (v1.0-proposed) |
-| **MXS-04** Carrier Formats | [mxs-04-carrier-formats.cog.md](mxs-04-carrier-formats.cog.md) | Proposed (v1.0-proposed) |
+| Draft | File | Status |
+|-------|------|--------|
+| **MX Core Metadata note** | [draft-core-metadata.cog.md](draft-core-metadata.cog.md) | Draft (v1.2-draft) |
+| **MX Extensions note** | [draft-extensions.cog.md](draft-extensions.cog.md) | Draft (v1.1-draft) |
+| **MX Provenance note** | [draft-provenance.cog.md](draft-provenance.cog.md) | Draft (v1.0-draft) |
+| **MX Carrier Formats note** | [draft-carrier-formats.cog.md](draft-carrier-formats.cog.md) | Draft (v1.1-draft) |
+| **MX Contract Fingerprinting and Signing note** | [draft-contract-fingerprinting.cog.md](draft-contract-fingerprinting.cog.md) | Draft (v1.0-draft) |
+| **MX Cog Identification note** | [draft-cog-identification.cog.md](draft-cog-identification.cog.md) | Draft (v1.0-draft) |
 
-All four are **proposed, not ratified**. None is final. Each will evolve through public review and, if the community consents, be ratified by The Gathering.
+Every draft here is **a draft, not a ratified standard**. None is final. Each will evolve through public review and, if the community consents, be ratified by The Gathering.
+
+Each draft is **standalone**: it defines its own conformance levels and field semantics inline, and refers only to actual external published standards (RFC, ISO, W3C, NIST, Schema.org, Dublin Core, SPDX, and similar). Drafts do not cross-reference each other.
 
 ## What this repo is — and what it isn't
 
-This repo holds the **source drafts** as they're authored: `.cog.md` files with MX frontmatter and prose. It is the canonical reading copy cited from *MX: The Protocols* (Chapter 20 and Appendix U).
+This repo holds the **source drafts** as they're authored: `.cog.md` files with MX frontmatter and prose. It is the canonical reading copy.
 
 The same content is also published under The Gathering's Stream platform in **RFC-format** form, one repo per draft, for the formal review and sync process:
 
@@ -28,10 +32,7 @@ Two formats, one set of drafts. Stream review happens in the RFC-format repos (t
 
 ## Related resources
 
-- **Appendix U** of *MX: The Protocols* — architecture summary and the "defer to existing standards" principle behind the four drafts.
-- **Appendix M** of *MX: The Protocols* — full prose reference for every field the drafts cite.
 - **The Gathering** — [tg.community](https://tg.community) · [stream.tg.community](https://stream.tg.community).
-- **Machine-readable canon** — the YAML files underlying these drafts are published at [mx.allabout.network/canon/](https://mx.allabout.network/canon/).
 
 ## Governance
 
@@ -41,4 +42,4 @@ Contributions welcome via Stream review. For editorial issues with the source dr
 
 ## Licence
 
-MIT. See [LICENCE](LICENCE). Free, open, vendor-neutral — the MX standard is for everyone.
+MIT. See [LICENCE](LICENCE). Free, open, vendor-neutral — the MX vocabulary is for everyone.

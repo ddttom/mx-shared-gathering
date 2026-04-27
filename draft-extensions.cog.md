@@ -1,40 +1,37 @@
 ---
-title: "MX Extensions Standard"
-version: "1.1-proposed"
+title: "MX Extensions note"
+version: "1.1-draft"
 created: 2026-04-02
-modified: 2026-04-26
-author: The Gathering
-description: "Formal specification of the MX namespace policy, carrier format mappings, and extension mechanisms for non-standard metadata fields."
+modified: 2026-04-27
+author: Tom Cranstoun
+description: "Draft specification of the MX namespace policy, carrier format mappings, and extension mechanisms for non-standard metadata fields. Authored by Tom Cranstoun and offered to The Gathering for review."
 
 mx:
-  status: proposed
+  status: draft
   license: MIT
   partOf: mx-the-gathering
   contentType: specification
-  buildsOn: [cog-unified-spec, mxs-01-core-metadata]
-  tags: [standard, extensions, namespace, carrier-formats, specification]
+  tags: [draft, extensions, namespace, carrier-formats, specification]
   audience: [humans, machines]
   cacheability: permanent
-  runbook: "This is the MX extensions standard. It defines the three-level namespace policy (standard, x-mx-, x-mx-p-), context-specific naming rules for different carrier formats, carrier format mappings for all supported file types, and the extension registration process. Cross-reference the MX Core Metadata Standard for conformance level definitions."
+  runbook: "This is the MX Extensions note — a draft authored by Tom Cranstoun, offered to The Gathering for review. It defines the three-level namespace policy (standard, x-mx-, x-mx-p-), context-specific naming rules for different carrier formats, carrier format mappings for all supported file types, and the extension registration process. This note stands alone; it does not depend on any other draft."
 ---
 
-# MX Extensions Standard
+# MX Extensions note
 
-**Version:** 1.1-proposed
-**Status:** Proposed (draft for Stream submission, awaiting community review)
-**Date:** 26 April 2026
-**Governing body:** The Gathering
+**Version:** 1.1-draft
+**Status:** Draft by Tom Cranstoun, offered to The Gathering for review
+**Date:** 27 April 2026
+**Author:** Tom Cranstoun
 **License:** MIT
 
 ---
 
 ## 1. Abstract
 
-This document defines the namespace policy, carrier format mappings, and extension mechanisms for the Machine Experience (MX) framework. It specifies how MX metadata is carried across different file types, how field names adapt to different syntactic contexts, and how vendors extend the MX vocabulary without polluting the standard namespace.
+This note defines the namespace policy, carrier format mappings, and extension mechanisms for the Machine Experience (MX) framework. It specifies how MX metadata is carried across different file types, how field names adapt to different syntactic contexts, and how vendors extend the MX vocabulary without polluting the standard namespace.
 
 The namespace policy establishes three levels: standard fields (no prefix, owned by The Gathering), public extensions (`x-mx-`, owned by CogNovaMX), and private extensions (`x-mx-p-`, owned by CogNovaMX, values obfuscated). The carrier format mappings define how MX metadata is expressed in markdown, HTML, JavaScript, CSS, images, shell scripts, sidecar files, and database contexts.
-
-This standard adopts the conformance level framework defined in the [MX Core Metadata Standard](mxs-01-core-metadata.cog.md).
 
 ---
 
@@ -44,7 +41,7 @@ The key words "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL NOT", "SHOULD", "S
 
 ### 2.1 Conformance levels
 
-This standard adopts the three conformance levels defined in the [MX Core Metadata Standard](mxs-01-core-metadata.cog.md), Section 2.1:
+This note defines three conformance levels (modelled on the [WCAG 2.1](https://www.w3.org/TR/WCAG21/) Level A/AA/AAA pattern):
 
 | Level | Name | Requirement for this document |
 |-------|------|-------------------------------|
@@ -56,15 +53,15 @@ A document claiming conformance at a given level MUST satisfy all requirements a
 
 ### 2.2 Draft status
 
-This document is a proposed standard under draft by The Gathering. It is authored for submission to the Stream public review process and awaits community ratification. Until ratified, the field definitions, conformance requirements, and normative rules in this document are the working draft — stable enough to build against, expected to evolve through review.
+This note is a draft authored by Tom Cranstoun and offered to The Gathering for review. It is not a ratified standard. Until The Gathering accepts it, the field definitions, conformance requirements, and normative rules in this note are working drafts — stable enough to build against, expected to evolve through review.
 
 ---
 
-## 3. Scope and relationship to other standards
+## 3. Scope
 
-### 3.1 What this document covers
+### 3.1 What this note covers
 
-This document specifies:
+This note specifies:
 
 - **Namespace policy** — the three-level prefix hierarchy and governance rules
 - **Context-specific naming** — how the same field appears in YAML, HTML, JSDoc, CSS, shell, XMP, sidecar, and SQL contexts
@@ -74,33 +71,20 @@ This document specifies:
 - **Private extension mechanism** — the `x-mx-p-` obfuscated extension system
 - **Extension registration process** — how to add new extension fields
 
-### 3.2 What this document does not cover
+### 3.2 Relationship to existing standards
 
-The following are defined in companion standards:
+This note draws on the following published standards. Field names use camelCase in YAML contexts (matching the [Schema.org Style Guide](https://schema.org/docs/styleguide.html)) and kebab-case in non-YAML contexts (HTML, JSDoc, CSS) where the surrounding format dictates kebab-case conventions:
 
-| Topic | Standard |
-|-------|----------|
-| Zone 1/Zone 2 core fields, conformance level framework | [MX Core Metadata Standard](mxs-01-core-metadata.cog.md) |
-| Trust, attribution, verification, decision records | [MX Provenance Standard](mxs-03-provenance.cog.md) |
-| AI governance, agent policies, training controls | [MX AI/Agent Policy Standard](deferred/mxs-04-ai-agent-policy.cog.md) |
-| Content-type-specific fields (code, media, database, etc.) | [MX Profile-Specific Metadata Standard](deferred/mxs-05-profile-metadata.cog.md) |
-
-### 3.3 Relationship to existing standards
-
-This standard builds upon:
-
-- **[MX Core Metadata Standard](mxs-01-core-metadata.cog.md)** — defines the conformance level framework this document adopts
-- **[Cog Unified Specification](../specifications/cog-unified-spec.cog.md)** — defines the cog file format and carrier format details
-- **[ADR-02: Namespace Policy](../architecture-decisions/adr-02-namespace-policy.cog.md)** — architecture decision establishing the three-level namespace
-- **[NDR-02: camelCase Naming](../naming-decisions/ndr-02-camelcase-naming.cog.md)** — field naming convention for YAML contexts
-- **[NDR-03: Spelling Neutrality](../naming-decisions/ndr-03-spelling-neutrality.cog.md)** — field names avoid regional spelling variants
-- **HTTP Extension Header Convention** — the `x-` prefix convention for non-standard headers, adapted for metadata namespaces
+- **HTTP "X-" extension header convention** ([RFC 6648](https://www.rfc-editor.org/rfc/rfc6648) provides historical context) — the `x-` prefix convention for non-standard headers, adapted for metadata namespaces as `x-mx-`
+- **Schema.org Style Guide** — vocabulary naming conventions
+- **Dublin Core DCMI Namespace** — namespace governance model
+- **XMP Specification** — Adobe's Extensible Metadata Platform, used for the `mx:` XMP namespace in image/media carriers
 
 ---
 
 ## 4. Terminology
 
-- **Cog** — A `.cog.md` file. The atomic unit of the MX document system. Defined by the [Cog Unified Specification](../specifications/cog-unified-spec.cog.md).
+- **Cog** — A `.cog.md` file. The atomic unit of the MX document system. A markdown document with structured YAML frontmatter, optionally containing typed content blocks within the body.
 - **Carrier format** — The mechanism by which a non-markdown file carries MX metadata (HTML meta tags, JSDoc comments, CSS comments, etc.).
 - **Namespace** — A prefix that identifies the owner and governance policy of a metadata field.
 - **Standard field** — A field with no prefix, owned by The Gathering, universal across all MX implementations.
@@ -137,9 +121,9 @@ MX metadata fields are organised into three namespace levels. Each level has a d
 
 ### 6.2 Standard fields (no prefix)
 
-Standard fields are the core MX vocabulary defined in the [MX Core Metadata Standard](mxs-01-core-metadata.cog.md) and this document. They have no prefix and are owned by The Gathering.
+Standard fields are the core MX vocabulary owned by The Gathering. They have no prefix.
 
-**Rule:** Implementations MUST NOT add a prefix to standard fields. A field defined in the core standard MUST always appear without a prefix in all contexts.
+**Rule:** Implementations MUST NOT add a prefix to standard fields. A field that is part of the core MX vocabulary MUST always appear without a prefix in all contexts.
 
 **Example (correct):**
 
@@ -252,7 +236,7 @@ Extension fields (`x-mx-` and `x-mx-p-`) already use kebab-case. In non-YAML con
 | **Field naming** | camelCase (Zone 2 fields under `mx:` object) |
 | **Conformance** | MUST (Level 1) for all markdown-based MX documents |
 
-**Definition:** The primary carrier format. All MX-aware markdown documents carry metadata in YAML frontmatter using the two-zone model defined in the [MX Core Metadata Standard](mxs-01-core-metadata.cog.md), Section 5.
+**Definition:** The primary carrier format. All MX-aware markdown documents carry metadata in YAML frontmatter using a two-zone model: Zone 1 (top-level) for document identity fields (title, description, author, dates, version) and Zone 2 (under the `mx:` object) for MX-operational fields. Implementations MUST NOT place Zone 1 fields inside the `mx:` object, and MUST NOT place Zone 2 fields at the top level.
 
 **Example:**
 
@@ -901,9 +885,9 @@ mx:
 
 ### 10.4 Workflow Contract Extensions
 
-The following fields are public extensions imported from cog-spec v1.0 (mx-upgraded-reginald) and used by workflow contract cogs — documents that declare an executable approval, review, or procedural workflow. Their shapes are domain-specific; the cog's referenced schema (the `schema` field, MXS-01 §6.7) defines the precise object structure.
+The following fields are public extensions used by workflow contract cogs — documents that declare an executable approval, review, or procedural workflow. Their shapes are domain-specific; an explicit `schema` reference on the cog (a top-level pointer to a JSON Schema, YAML schema, or Schema.org type that defines the contract) is the authoritative source for the precise object structure of these fields.
 
-These fields appear at the **top level** of the cog's frontmatter, not under `mx:`, because they are part of the contract that signing covers (see MXS-05 §2). All are conformance level MAY — they apply only to documents declaring a workflow contract.
+These fields appear at the **top level** of the cog's frontmatter, not under `mx:`, so that they form part of the cog's signed contract surface. All are conformance level MAY — they apply only to documents declaring a workflow contract.
 
 #### 10.4.1 `x-mx-thresholds`
 
@@ -1011,8 +995,8 @@ x-mx-targetEnvironment: production
 
 **Normative notes (10.4 group):**
 
-- These fields are typically members of the `contractFields` array (MXS-05) so that changes to thresholds, approvers, procedures, or target environment invalidate the cog's signature.
-- Implementations MUST resolve the cog's `schema` (MXS-01 §6.7) before validating the inner shape of these objects; the schema is authoritative for required keys.
+- These fields are typically named in a `contractFields` array on the cog so that changes to thresholds, approvers, procedures, or target environment invalidate any signature attached to the cog.
+- Implementations MUST resolve the cog's `schema` reference before validating the inner shape of these objects; the schema is authoritative for required keys.
 - The `runner` value in `x-mx-approvalProcedure` and `x-mx-reviewProcedure` MUST be a registry-resolvable runtime identifier.
 
 ---
@@ -1049,7 +1033,7 @@ This standard does not list individual `x-mx-p-` fields. By definition, private 
 
 ### 12.1 How to add new extension fields
 
-New extension fields are registered by CogNovaMX. The Gathering does not govern extension fields — vendor extensions are the vendor's decision.
+New extension fields are registered by CogNovaMX. The Gathering does not govern extension fields — vendor extensions are the vendor's call.
 
 ### 12.2 Registration steps
 
@@ -1058,13 +1042,13 @@ New extension fields are registered by CogNovaMX. The Gathering does not govern 
 3. **Document the context.** Describe the field's purpose, type, valid values, and which carrier formats it applies to.
 4. **No Gathering approval needed.** Extension fields follow vendor governance, not community governance.
 
-### 12.3 Promotion to standard
+### 12.3 Promotion to the core vocabulary
 
-An extension field MAY be promoted to a standard field through the following process:
+An extension field MAY be promoted into the core MX vocabulary through the following process:
 
 1. The vendor proposes promotion to The Gathering.
 2. The Gathering reviews the field's adoption, utility, and universality.
-3. If accepted, the field's prefix is removed, and it becomes a standard field with camelCase naming.
+3. If accepted, the field's prefix is removed, and it becomes a core field with camelCase naming.
 4. The old `x-mx-` prefixed version SHOULD be maintained as an alias for one major version cycle.
 
 ---
@@ -1131,23 +1115,16 @@ An extension field MAY be promoted to a standard field through the following pro
 
 ### 15.1 Normative references
 
-- [MX Core Metadata Standard](mxs-01-core-metadata.cog.md) — conformance level framework, Zone 1/Zone 2 field definitions
-- [Cog Unified Specification](../specifications/cog-unified-spec.cog.md) — the cog document format and carrier format details
-- [ADR-02: Namespace Policy](../architecture-decisions/adr-02-namespace-policy.cog.md) — architecture decision establishing the three-level namespace
-- [NDR-02: camelCase Naming](../naming-decisions/ndr-02-camelcase-naming.cog.md) — field naming convention
-- [NDR-03: Spelling Neutrality](../naming-decisions/ndr-03-spelling-neutrality.cog.md) — spelling-neutral vocabulary
-- [MX Provenance Standard](mxs-03-provenance.cog.md) — trust, attribution, verification
-- [MX AI/Agent Policy Standard](deferred/mxs-04-ai-agent-policy.cog.md) — AI governance and agent policies
-- [MX Profile-Specific Metadata Standard](deferred/mxs-05-profile-metadata.cog.md) — content-type-specific fields
+- [RFC 2119](https://www.rfc-editor.org/rfc/rfc2119) — Key words for use in RFCs to indicate requirement levels
 
 ### 15.2 Informative references
 
-- [RFC 2119](https://www.rfc-editor.org/rfc/rfc2119) — Key words for use in RFCs to indicate requirement levels
 - [RFC 6648](https://www.rfc-editor.org/rfc/rfc6648) — Deprecating the "X-" prefix (historical context for the `x-mx-` convention)
 - [HTTP Extension Headers](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers) — the `X-` prefix convention for non-standard headers
 - [XMP Specification](https://www.adobe.com/devnet/xmp.html) — Extensible Metadata Platform for media files
+- [Schema.org Style Guide](https://schema.org/docs/styleguide.html) — Vocabulary naming conventions
 - [Dublin Core DCMI Namespace](https://www.dublincore.org/specifications/dublin-core/dcmi-namespace/) — namespace governance model
-- [MX Standards Alignment](../specifications/mx-standards-alignment.cog.md) — how MX conventions align with existing web standards
+- [WCAG 2.1](https://www.w3.org/TR/WCAG21/) — Web Content Accessibility Guidelines (conformance level model that inspired the Level 1/2/3 framework in §2.1)
 
 ---
 
@@ -1155,5 +1132,6 @@ An extension field MAY be promoted to a standard field through the following pro
 
 | Version | Date | Changes |
 |---------|------|---------|
-| 1.0-draft | 2026-04-02 | Initial draft. Namespace policy, carrier format mappings, and extension mechanisms based on ADR-02 namespace policy. |
-| 1.1-proposed | 2026-04-26 | Added §10.4 "Workflow Contract Extensions" with five new x-mx-public fields imported from cog-spec v1.0 (mx-upgraded-reginald): `x-mx-thresholds`, `x-mx-approvers`, `x-mx-approvalProcedure`, `x-mx-reviewProcedure`, `x-mx-targetEnvironment`. All Zone 1 (top-level), conformance MAY, intended as members of the contract-fingerprint scope (MXS-05). |
+| 1.0-draft | 2026-04-02 | Initial draft. Namespace policy, carrier format mappings, and extension mechanisms. |
+| 1.1-proposed | 2026-04-26 | Added §10.4 "Workflow Contract Extensions" with five new x-mx-public fields used by workflow contract cogs: `x-mx-thresholds`, `x-mx-approvers`, `x-mx-approvalProcedure`, `x-mx-reviewProcedure`, `x-mx-targetEnvironment`. All Zone 1 (top-level), conformance MAY. |
+| 1.1-draft | 2026-04-27 | Renamed from "MX Extensions Standard" to "MX Extensions note" to clarify these are draft notes by Tom Cranstoun, not ratified standards. Made the note standalone — removed cross-references to other Gathering drafts and inlined required material. |

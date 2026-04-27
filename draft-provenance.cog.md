@@ -1,40 +1,37 @@
 ---
-title: "MX Provenance Standard"
-version: "1.0-proposed"
+title: "MX Provenance note"
+version: "1.0-draft"
 created: 2026-04-02
-modified: 2026-04-16
-author: The Gathering
-description: "Formal specification of MX provenance, trust, and verification metadata — attribution, quality assurance, maintenance tracking, and decision record references."
+modified: 2026-04-27
+author: Tom Cranstoun
+description: "Draft specification of MX provenance, trust, and verification metadata — attribution, quality assurance, maintenance tracking, and decision record references. Authored by Tom Cranstoun and offered to The Gathering for review."
 
 mx:
-  status: proposed
+  status: draft
   license: MIT
   partOf: mx-the-gathering
   contentType: specification
-  buildsOn: [cog-unified-spec, mxs-01-core-metadata]
-  tags: [standard, provenance, trust, attribution, verification, specification]
+  tags: [draft, provenance, trust, attribution, verification, specification]
   audience: [humans, machines]
   cacheability: permanent
-  runbook: "This is the MX provenance standard. It defines attribution fields, quality and trust fields, maintenance fields, decision record references, and migration fields. Use the conformance level tables to determine which fields are required at each level. Cross-reference the MX Core Metadata Standard for the conformance level framework and Zone 1/Zone 2 identity fields."
+  runbook: "This is the MX Provenance note — a draft authored by Tom Cranstoun, offered to The Gathering for review. It defines attribution fields, quality and trust fields, maintenance fields, decision record references, and migration fields. Use the conformance level tables to determine which fields are required at each level. This note stands alone; it does not depend on any other draft."
 ---
 
-# MX Provenance Standard
+# MX Provenance note
 
-**Version:** 1.0-proposed
-**Status:** Proposed (draft for Stream submission, awaiting community review)
-**Date:** 16 April 2026
-**Governing body:** The Gathering
+**Version:** 1.0-draft
+**Status:** Draft by Tom Cranstoun, offered to The Gathering for review
+**Date:** 27 April 2026
+**Author:** Tom Cranstoun
 **License:** MIT
 
 ---
 
 ## 1. Abstract
 
-This document defines the provenance, trust, and verification metadata vocabulary for the Machine Experience (MX) framework. It specifies the fields that establish who created content, how it was created, how trustworthy it is, who maintains it, and what governance decisions shaped it.
+This note defines the provenance, trust, and verification metadata vocabulary for the Machine Experience (MX) framework. It specifies the fields that establish who created content, how it was created, how trustworthy it is, who maintains it, and what governance decisions shaped it.
 
 The provenance vocabulary is organised into five groups: attribution fields (authorship and origin), quality and trust fields (reliability commitments), maintenance fields (ongoing stewardship), decision record references (governance links), and migration fields (content relocation tracking).
-
-This standard adopts the conformance level framework (Level 1, Level 2, Level 3) defined by the [MX Core Metadata Standard](mxs-01-core-metadata.cog.md).
 
 ---
 
@@ -44,11 +41,11 @@ The key words "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL NOT", "SHOULD", "S
 
 ### 2.1 Conformance levels
 
-This standard adopts the three conformance levels defined by the [MX Core Metadata Standard](mxs-01-core-metadata.cog.md):
+This note defines three conformance levels for provenance metadata (modelled on the [WCAG 2.1](https://www.w3.org/TR/WCAG21/) Level A/AA/AAA pattern). Throughout this note, references to a top-level `author` field describe a string identifying the document's creator, located in the YAML frontmatter outside the `mx:` object — a near-universal convention in markdown-based authoring systems.
 
 | Level | Name | Provenance requirement |
 |-------|------|------------------------|
-| Level 1 | **MX Core** | Author attribution present (`provenanceAuthor` or `author` from Core standard) |
+| Level 1 | **MX Core** | Author attribution present (`provenanceAuthor`, or a top-level `author` field) |
 | Level 2 | **MX Standard** | Adds `provenanceOrigin`, `maintainedDate`, and `reviewCycle` declared |
 | Level 3 | **MX Complete** | Full trust chain including `publisher`, `accuracyCommitment`, `correctionSla`, decision records, and quality triad |
 
@@ -56,15 +53,15 @@ A document claiming conformance at a given level MUST satisfy all requirements a
 
 ### 2.2 Draft status
 
-This document is a proposed standard under draft by The Gathering. It is authored for submission to the Stream public review process and awaits community ratification. Until ratified, the field definitions, conformance requirements, and normative rules in this document are the working draft — stable enough to build against, expected to evolve through review.
+This note is a draft authored by Tom Cranstoun and offered to The Gathering for review. It is not a ratified standard. Until The Gathering accepts it, the field definitions, conformance requirements, and normative rules in this note are working drafts — stable enough to build against, expected to evolve through review.
 
 ---
 
-## 3. Scope and relationship to other standards
+## 3. Scope
 
-### 3.1 What this document covers
+### 3.1 What this note covers
 
-This document specifies:
+This note specifies:
 
 - **Attribution fields** — authorship, publishing entity, content origin, source material, and generation instructions
 - **Quality and trust fields** — accuracy commitments, review cycles, compliance levels, and the quality triad
@@ -72,27 +69,9 @@ This document specifies:
 - **Decision record references** — links to architecture, naming, and business decision records
 - **Migration fields** — content relocation tracking
 
-### 3.2 What this document does not cover
+### 3.2 Relationship to existing standards
 
-The following are defined in companion standards:
-
-| Topic | Standard |
-|-------|----------|
-| Zone 1 identity fields, Zone 2 core operational fields, cog structural fields | [MX Core Metadata Standard](mxs-01-core-metadata.cog.md) |
-| Namespace policy, carrier formats, extension mechanisms | [MX Extensions Standard](mxs-02-extensions.cog.md) |
-| AI governance, agent policies, training controls | [MX AI/Agent Policy Standard](deferred/mxs-04-ai-agent-policy.cog.md) |
-| Content-type-specific fields (code, media, database, etc.) | [MX Profile-Specific Metadata Standard](deferred/mxs-05-profile-metadata.cog.md) |
-
-### 3.3 Relationship to existing standards
-
-This standard builds upon:
-
-- **[MX Core Metadata Standard](mxs-01-core-metadata.cog.md)** — defines the conformance level framework and foundational fields (including `author` in Zone 1)
-- **[Cog Unified Specification](../specifications/cog-unified-spec.cog.md)** — defines the cog file format that these fields populate
-- **[NDR-02: camelCase Naming](../naming-decisions/ndr-02-camelcase-naming.cog.md)** — all field names in this standard use camelCase
-- **[NDR-03: Spelling Neutrality](../naming-decisions/ndr-03-spelling-neutrality.cog.md)** — field names avoid regional spelling variants
-- **ISO 8601** — all date fields use YYYY-MM-DD format
-- **WCAG 2.1** — accessibility compliance referenced in the quality triad
+All field names in this note use camelCase (matching the [Schema.org Style Guide](https://schema.org/docs/styleguide.html)) and avoid regional spelling variants where an established identifier system (e.g. SPDX) supplies a canonical spelling. All date fields use [ISO 8601](https://www.iso.org/iso-8601-date-and-time-format.html) format (YYYY-MM-DD). The quality triad references [WCAG 2.1](https://www.w3.org/TR/WCAG21/) for accessibility and [Schema.org](https://schema.org/) JSON-LD for semantic structure.
 
 ---
 
@@ -102,15 +81,15 @@ This standard builds upon:
 - **Trust chain** — The complete set of provenance, quality, and maintenance metadata that allows an agent to assess content reliability.
 - **Quality triad** — The three quality dimensions: accessibility, semantic quality, and convergence.
 - **Decision record** — A formal record (ADR, NDR, or BDR) documenting an architectural, naming, or business decision that governs this content.
-- **Zone 1** — Top-level YAML frontmatter fields (outside the `mx:` object). Defined by the [MX Core Metadata Standard](mxs-01-core-metadata.cog.md).
-- **Zone 2** — Fields nested under the `mx:` object in YAML frontmatter.
+- **Zone 1** — Top-level YAML frontmatter fields (outside the `mx:` object). Document identity fields (title, description, author, dates, version).
+- **Zone 2** — Fields nested under the `mx:` object in YAML frontmatter. MX-operational fields including the provenance fields specified in this note.
 - **Profile** — A named set of fields applicable to a specific document type (e.g., `core`, `cog`, `report`, `migration`).
 
 ---
 
 ## 5. Provenance in the two-zone model
 
-Provenance fields reside in Zone 2 (the `mx:` object), complementing the Zone 1 `author` field defined by the [MX Core Metadata Standard](mxs-01-core-metadata.cog.md).
+Provenance fields reside in Zone 2 (the `mx:` object), complementing the top-level `author` field that markdown-based authoring conventionally places in Zone 1.
 
 The Zone 1 `author` field identifies the document creator. The Zone 2 provenance fields extend this with richer attribution: how the content was created (`provenanceOrigin`), who published it (`provenancePublisher`), and the original author if distinct from the Zone 1 `author` (`provenanceAuthor`).
 
@@ -158,7 +137,7 @@ mx:
 **Normative notes:**
 
 - Part of the provenance group.
-- At Level 1, a document MUST declare either `provenanceAuthor` or the Zone 1 `author` field from the [MX Core Metadata Standard](mxs-01-core-metadata.cog.md). Both MAY be present.
+- At Level 1, a document MUST declare either `provenanceAuthor` or a top-level `author` field. Both MAY be present.
 - When both are present, `provenanceAuthor` identifies the original content author, while `author` identifies the document creator. These are often the same person.
 
 ---
@@ -215,7 +194,7 @@ mx:
 - `human-directed` — content authored by a human, possibly with AI tooling assistance.
 - `ai-assisted` — content substantially generated by AI, with human review and direction.
 - `automated-fact-check` — content generated and verified by automated processes.
-- This field relates to the AI generation fields in the [MX AI/Agent Policy Standard](deferred/mxs-04-ai-agent-policy.cog.md). Where `provenanceOrigin` declares how content was created, AI policy fields govern how agents may interact with it.
+- `provenanceOrigin` declares how content was created. Companion AI/agent governance fields (out of scope for this note) cover how agents may interact with the content once created.
 
 ---
 
@@ -428,7 +407,7 @@ mx:
 **Normative notes:**
 
 - Used alongside `publisher`, `accuracyCommitment`, and `reviewCycle` to form a complete trust declaration.
-- When expressed as a string, the value corresponds to the conformance levels defined in the [MX Core Metadata Standard](mxs-01-core-metadata.cog.md).
+- When expressed as a string, the value corresponds to the conformance levels defined in §2.1 (`level-1`, `level-2`, `level-3`).
 
 ---
 
@@ -538,7 +517,7 @@ mx:
 **Normative notes:**
 
 - The value MUST use ISO 8601 date format (YYYY-MM-DD).
-- Distinct from `modified` (Zone 1, defined in the [MX Core Metadata Standard](mxs-01-core-metadata.cog.md)). The `modified` field tracks when the document was last changed; `maintainedDate` tracks when it was last confirmed to still be accurate — even if no changes were needed.
+- Distinct from a top-level `modified` field. `modified` tracks when the document was last changed; `maintainedDate` tracks when it was last confirmed to still be accurate — even if no changes were needed.
 - Agents SHOULD treat documents with a `maintainedDate` older than the `reviewCycle` as potentially stale.
 
 ---
@@ -564,7 +543,7 @@ mx:
 
 **Normative notes:**
 
-- Distinct from `maintainer` (defined in the [MX Core Metadata Standard](mxs-01-core-metadata.cog.md)), which identifies the person responsible for ongoing maintenance. `maintainedBy` records who performed the last accuracy confirmation — these may differ.
+- Distinct from a `maintainer` field (the person responsible for ongoing maintenance). `maintainedBy` records who performed the last accuracy confirmation — these may differ.
 
 ---
 
@@ -641,13 +620,13 @@ mx:
 
 ```yaml
 mx:
-  adr: "../architecture-decisions/adr-02-namespace-policy.cog.md"
+  adr: "decisions/adr-007-storage-strategy.md"
 ```
 
 ```yaml
 mx:
   adr:
-    path: "../architecture-decisions/adr-02-namespace-policy.cog.md"
+    path: "decisions/adr-007-storage-strategy.md"
     date: 2026-03-15
     status: accepted
 ```
@@ -675,13 +654,13 @@ mx:
 
 ```yaml
 mx:
-  ndr: "../naming-decisions/ndr-02-camelcase-naming.cog.md"
+  ndr: "decisions/ndr-002-camelcase-naming.md"
 ```
 
 ```yaml
 mx:
   ndr:
-    path: "../naming-decisions/ndr-02-camelcase-naming.cog.md"
+    path: "decisions/ndr-002-camelcase-naming.md"
     date: 2026-03-10
     status: accepted
 ```
@@ -708,13 +687,13 @@ mx:
 
 ```yaml
 mx:
-  bdr: "../business-decisions/bdr-003-hub-mount-table.cog.md"
+  bdr: "decisions/bdr-012-launch-pricing.md"
 ```
 
 ```yaml
 mx:
   bdr:
-    path: "../business-decisions/bdr-003-hub-mount-table.cog.md"
+    path: "decisions/bdr-012-launch-pricing.md"
     date: 2026-03-20
     status: accepted
 ```
@@ -834,7 +813,7 @@ mx:
 ## 12. Security and privacy considerations
 
 - The `provenanceAuthor` and `provenancePublisher` fields contain personally identifiable information. Implementations that publish metadata publicly SHOULD consider whether these values are appropriate for public exposure.
-- The `publisher.contact` sub-field MAY contain email addresses or other contact information. Implementations SHOULD apply the same privacy considerations as for `ownership.contact` in the [MX Core Metadata Standard](mxs-01-core-metadata.cog.md).
+- The `publisher.contact` sub-field MAY contain email addresses or other contact information. Implementations SHOULD consider whether such values are appropriate for public exposure before publishing this metadata externally.
 - The `provenanceOrigin` field declares the human-machine authorship balance. Publishers SHOULD declare this field honestly to maintain trust with consumers and agents.
 - Decision record references (`adr`, `ndr`, `bdr`) MAY link to internal governance documents. Implementations SHOULD verify that referenced documents are accessible to the intended audience before publishing these links externally.
 - The `generate` field contains instructions for content regeneration. Implementations SHOULD ensure that generation prompts do not expose sensitive business logic or proprietary processes in publicly accessible metadata.
@@ -845,21 +824,15 @@ mx:
 
 ### 13.1 Normative references
 
-- [MX Core Metadata Standard](mxs-01-core-metadata.cog.md) — conformance level framework, Zone 1/Zone 2 identity fields
-- [Cog Unified Specification](../specifications/cog-unified-spec.cog.md) — the cog document format
-- [NDR-02: camelCase Naming](../naming-decisions/ndr-02-camelcase-naming.cog.md) — field naming convention
-- [NDR-03: Spelling Neutrality](../naming-decisions/ndr-03-spelling-neutrality.cog.md) — spelling-neutral vocabulary
-- [MX Extensions Standard](mxs-02-extensions.cog.md) — namespace policy, carrier formats, extension mechanisms
-- [MX AI/Agent Policy Standard](deferred/mxs-04-ai-agent-policy.cog.md) — AI governance and agent policies (related to `provenanceOrigin`)
-- [MX Profile-Specific Metadata Standard](deferred/mxs-05-profile-metadata.cog.md) — content-type-specific fields
+- [RFC 2119](https://www.rfc-editor.org/rfc/rfc2119) — Key words for use in RFCs to indicate requirement levels
+- [ISO 8601](https://www.iso.org/iso-8601-date-and-time-format.html) — Date and time format
 
 ### 13.2 Informative references
 
-- [RFC 2119](https://www.rfc-editor.org/rfc/rfc2119) — Key words for use in RFCs to indicate requirement levels
-- [ISO 8601](https://www.iso.org/iso-8601-date-and-time-format.html) — Date and time format
-- [WCAG 2.1](https://www.w3.org/TR/WCAG21/) — Web Content Accessibility Guidelines (referenced in quality triad)
+- [WCAG 2.1](https://www.w3.org/TR/WCAG21/) — Web Content Accessibility Guidelines (referenced in quality triad and the conformance level model in §2.1)
 - [Schema.org](https://schema.org/) — Structured data vocabulary (referenced in semantic quality)
-- [MX Standards Alignment](../specifications/mx-standards-alignment.cog.md) — how MX conventions align with existing web standards
+- [Schema.org Style Guide](https://schema.org/docs/styleguide.html) — Vocabulary naming conventions
+- [Dublin Core DCMI Namespace](https://www.dublincore.org/specifications/dublin-core/dcmi-namespace/) — Provenance and stewardship metadata model
 
 ---
 
@@ -867,4 +840,5 @@ mx:
 
 | Version | Date | Changes |
 |---------|------|---------|
-| 1.0-draft | 2026-04-02 | Initial draft. Initial draft. |
+| 1.0-draft | 2026-04-02 | Initial draft. |
+| 1.0-draft | 2026-04-27 | Renamed from "MX Provenance Standard" to "MX Provenance note" to clarify these are draft notes by Tom Cranstoun, not ratified standards. Made the note standalone — removed cross-references to other Gathering drafts and inlined required material. |

@@ -1,42 +1,41 @@
 ---
-title: "MX Core Metadata Standard"
-version: "1.2-proposed"
+title: "MX Core Metadata note"
+version: "1.2-draft"
 created: 2026-04-02
-modified: 2026-04-26
-author: The Gathering
-description: "Formal specification of core MX metadata fields — the foundational vocabulary every MX-aware document must, should, or may declare. Machine-readable form: mx-canon/ssot/fields-data.yaml (sanitised open-standard core, ~103 fields)."
+modified: 2026-04-27
+author: Tom Cranstoun
+description: "Draft specification of core MX metadata fields — the foundational vocabulary every MX-aware document must, should, or may declare. Authored by Tom Cranstoun and offered to The Gathering for review. Machine-readable form: mx-canon/ssot/fields-data.yaml (sanitised core, ~103 fields)."
 
 mx:
-  status: proposed
+  status: draft
   license: MIT
   partOf: mx-the-gathering
   contentType: specification
-  buildsOn: [cog-unified-spec]
-  tags: [standard, metadata, core, conformance, specification]
+  tags: [draft, metadata, core, conformance, specification]
   audience: [humans, machines]
   cacheability: permanent
-  runbook: "This is the core MX metadata standard. It defines Zone 1 identity fields, Zone 2 operational fields, and cog structural fields. Use the conformance level tables to determine which fields are required at each level. Cross-reference companion standards for extensions, provenance, AI policy, and profile-specific fields."
+  runbook: "This is the MX Core Metadata note — a draft authored by Tom Cranstoun, offered to The Gathering for review. It defines Zone 1 identity fields, Zone 2 operational fields, and cog structural fields. Use the conformance level tables to determine which fields are required at each level. This note stands alone; it does not depend on any other draft."
 ---
 
-# MX Core Metadata Standard
+# MX Core Metadata note
 
-**Version:** 1.2-proposed
-**Status:** Proposed (draft for Stream submission, awaiting community review)
-**Date:** 26 April 2026
-**Governing body:** The Gathering
+**Version:** 1.2-draft
+**Status:** Draft by Tom Cranstoun, offered to The Gathering for review
+**Date:** 27 April 2026
+**Author:** Tom Cranstoun
 **License:** MIT
 
 ---
 
 ## 1. Abstract
 
-This document defines the core metadata vocabulary for the Machine Experience (MX) framework. It specifies the foundational fields that every MX-aware document — whether a cog file, a folder metadata file, or any carrier-format document — must, should, or may declare.
+This note defines the core metadata vocabulary for the Machine Experience (MX) framework. It specifies the foundational fields that every MX-aware document — whether a cog file, a folder metadata file, or any carrier-format document — must, should, or may declare.
 
 The core vocabulary is organised into three groups: Zone 1 identity fields (top-level document identity), Zone 2 operational fields (governance, classification, and distribution metadata under the `mx:` namespace), and cog structural fields (fields specific to the cog document format).
 
-This standard establishes the conformance level framework (Level 1, Level 2, Level 3) that all companion MX standards adopt by reference.
+This note establishes the conformance level framework (Level 1, Level 2, Level 3) that all companion MX drafts adopt by reference.
 
-**Machine-readable source.** The canonical field dictionary for this standard is [`mx-canon/ssot/fields-data.yaml`](../../../mx-canon/ssot/fields-data.yaml) — a sanitised core of ~103 fields covering identity, classification, relationships, lifecycle, machine-readability infrastructure, folder metadata, cog contract, and non-YAML markup carriers. Carrier-format schemas (code, database, media) live in the companion [`mx-canon/ssot/fields-data-carriers.yaml`](../../../mx-canon/ssot/fields-data-carriers.yaml) as specified in MXS-04. Vendor extensions (e.g. `cognovamx-fields.yaml`) are out of scope for this core standard.
+**Machine-readable source.** The canonical field dictionary for this note is [`mx-canon/ssot/fields-data.yaml`](../../../mx-canon/ssot/fields-data.yaml) — a sanitised core of ~103 fields covering identity, classification, relationships, lifecycle, machine-readability infrastructure, folder metadata, cog contract, and non-YAML markup carriers. Carrier-format schemas (code, database, media) live in the companion [`mx-canon/ssot/fields-data-carriers.yaml`](../../../mx-canon/ssot/fields-data-carriers.yaml) as specified in the MX Carrier Formats note. Vendor extensions (e.g. `cognovamx-fields.yaml`) are out of scope for this core note.
 
 ---
 
@@ -46,7 +45,7 @@ The key words "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL NOT", "SHOULD", "S
 
 ### 2.1 Conformance levels
 
-This standard defines three conformance levels. All companion MX standards ([MX Extensions Standard](mxs-02-extensions.cog.md), [MX Provenance Standard](mxs-03-provenance.cog.md), [MX AI/Agent Policy Standard](deferred/mxs-04-ai-agent-policy.cog.md) *(deferred)*, [MX Profile-Specific Metadata Standard](deferred/mxs-05-profile-metadata.cog.md) *(deferred)*) adopt these levels by reference.
+This note defines three conformance levels.
 
 | Level | Name | Requirement | Description |
 |-------|------|-------------|-------------|
@@ -58,52 +57,39 @@ A document claiming conformance at a given level MUST satisfy all requirements a
 
 ### 2.2 Draft status
 
-This document is a proposed standard under draft by The Gathering. It is authored for submission to the Stream public review process and awaits community ratification. Until ratified, the field definitions, conformance requirements, and normative rules in this document are the working draft — stable enough to build against, expected to evolve through review.
+This note is a draft authored by Tom Cranstoun and offered to The Gathering for review. It is not a ratified standard. Until The Gathering accepts it, the field definitions, conformance requirements, and normative rules in this note are working drafts — stable enough to build against, expected to evolve through review.
 
 ---
 
-## 3. Scope and relationship to other standards
+## 3. Scope
 
-### 3.1 What this document covers
+### 3.1 What this note covers
 
-This document specifies:
+This note specifies:
 
 - **Zone 1 identity fields** — top-level document identity (title, description, author, dates, version)
 - **Zone 2 core operational fields** — classification, governance, and distribution metadata
 - **Cog structural fields** — fields specific to the cog document format (.cog.md files)
 - **The conformance level framework** — Level 1/2/3 definitions
 
-### 3.2 What this document does not cover
+### 3.2 Relationship to existing standards
 
-The following are defined in companion standards:
+This note draws on the following published standards. All field names in this note use camelCase, follow spelling-neutral forms (e.g. `license`, not `licence`, when an SPDX-aligned identifier is required), and use ISO 8601 date format (YYYY-MM-DD) for all date fields:
 
-| Topic | Standard |
-|-------|----------|
-| Namespace policy, carrier formats, extension mechanisms | [MX Extensions Standard](mxs-02-extensions.cog.md) |
-| Trust, attribution, verification, decision records | [MX Provenance Standard](mxs-03-provenance.cog.md) |
-| AI governance, agent policies, training controls | [MX AI/Agent Policy Standard](deferred/mxs-04-ai-agent-policy.cog.md) *(deferred)* |
-| Content-type-specific fields (code, media, database, etc.) | [MX Profile-Specific Metadata Standard](deferred/mxs-05-profile-metadata.cog.md) *(deferred)* |
-
-### 3.3 Relationship to existing standards
-
-This standard builds upon:
-
-- **[Cog Unified Specification](../specifications/cog-unified-spec.cog.md)** — defines the cog file format that these fields populate
-- **[MX Standards Alignment](../specifications/mx-standards-alignment.cog.md)** — documents how MX conventions align with Schema.org, Dublin Core, and Open Graph
-- **[NDR-02: camelCase Naming](../naming-decisions/ndr-02-camelcase-naming.cog.md)** — all field names in this standard use camelCase
-- **[NDR-03: Spelling Neutrality](../naming-decisions/ndr-03-spelling-neutrality.cog.md)** — field names avoid regional spelling variants
-- **ISO 8601** — all date fields use YYYY-MM-DD format
+- **ISO 8601** — date and time format
 - **SPDX License List** — licence identifiers follow the SPDX standard
+- **Schema.org Style Guide** — vocabulary naming conventions (camelCase, lowercase first character)
+- **Dublin Core DCMI Namespace** — namespace governance model
 
 ---
 
 ## 4. Terminology
 
-- **Cog** — A `.cog.md` file. The atomic unit of the MX document system. One file, many block types. Defined by the [Cog Unified Specification](../specifications/cog-unified-spec.cog.md).
+- **Cog** — A `.cog.md` file. The atomic unit of the MX document system. A markdown document with structured YAML frontmatter, optionally containing typed content blocks (prose, action, definition, code, html, sop, etc.) within the body.
 - **Zone 1** — Top-level YAML frontmatter fields (outside the `mx:` object). Document identity fields.
 - **Zone 2** — Fields nested under the `mx:` object in YAML frontmatter. MX-operational fields.
 - **Profile** — A named set of fields applicable to a specific document type (e.g., `core`, `cog`, `folder`, `book`).
-- **Carrier format** — The mechanism by which a non-markdown file carries MX metadata (HTML meta tags, JSDoc comments, CSS comments, etc.). Defined in the [MX Extensions Standard](mxs-02-extensions.cog.md).
+- **Carrier format** — The mechanism by which a non-markdown file carries MX metadata (HTML meta tags, JSDoc comments, CSS comments, etc.). Out of scope for this note.
 - **SSOT** — Single Source of Truth. The authoritative source for a given piece of information.
 
 ---
@@ -164,7 +150,7 @@ Implementations MUST NOT place Zone 1 fields inside the `mx:` object. Implementa
 **Example:**
 
 ```yaml
-title: "MX Core Metadata Standard"
+title: "MX Core Metadata note"
 ```
 
 **Normative notes:**
@@ -471,7 +457,7 @@ mx:
 
 - Values MUST use SPDX licence identifiers as defined in the [SPDX Licence List](https://spdx.org/licenses/).
 - Common values: `proprietary`, `MIT`, `Apache-2.0`, `CC-BY-4.0`.
-- The field name uses the spelling-neutral form `license` (SPDX standard spelling), following [NDR-03](../naming-decisions/ndr-03-spelling-neutrality.cog.md).
+- The field name uses the spelling-neutral form `license` (SPDX standard spelling) so that the YAML key matches the SPDX identifier exactly across regional spellings.
 
 ---
 
@@ -727,7 +713,7 @@ mx:
 - File-type agnostic — the target can be `.md`, `.cog.md`, `.html`, `.json`, `.yaml`, or any other file type.
 - The inheriting file extends the target; it does not replace it.
 - The path MAY be relative or absolute.
-- For folder-level field inheritance, use `inheritable` on the parent folder instead (see [MX Profile-Specific Metadata Standard](deferred/mxs-05-profile-metadata.cog.md) *(deferred)*, folder profile).
+- For folder-level field inheritance, an `inheritable` field on the parent folder's metadata (out of scope for this note) is the preferred mechanism.
 
 ---
 
@@ -749,7 +735,7 @@ mx:
   ld:
     "@context": "https://schema.org"
     "@type": "TechArticle"
-    name: "MX Core Metadata Standard"
+    name: "MX Core Metadata note"
 ```
 
 **Normative notes:**
@@ -913,7 +899,7 @@ mx:
 
 - Structural composition. Included content is merged into the cog; the including cog's own content overrides included content of the same type.
 - Distinct from `buildsOn` (soft recommendation) and `requires` (hard dependency).
-- See the [Cog Unified Specification](../specifications/cog-unified-spec.cog.md) for the full inclusion specification.
+- The `resolution` sub-field controls when inclusion happens: `build` resolves at build time and inlines content; `runtime` resolves on each request.
 
 ---
 
@@ -939,7 +925,7 @@ mx:
 
 **Normative notes:**
 
-- Block types are defined in the [Cog Unified Specification](../specifications/cog-unified-spec.cog.md).
+- Block types are typed regions in the cog body (e.g. fenced code with a language tag, or a labelled section). Each value in the array names a block type expected to appear at least once in the document body.
 - The `prose` block is implicit in every cog and need not be declared.
 
 ---
@@ -1142,24 +1128,15 @@ These conformance levels apply only to cog documents (`.cog.md` files).
 
 ### 11.1 Normative references
 
-- [Cog Unified Specification](../specifications/cog-unified-spec.cog.md) — the cog document format
-- [NDR-02: camelCase Naming](../naming-decisions/ndr-02-camelcase-naming.cog.md) — field naming convention
-- [NDR-03: Spelling Neutrality](../naming-decisions/ndr-03-spelling-neutrality.cog.md) — spelling-neutral vocabulary
-- [ADR-02: Namespace Policy](../architecture-decisions/adr-02-namespace-policy.cog.md) — namespace governance
-- [MX Extensions Standard](mxs-02-extensions.cog.md) — namespace policy, carrier formats, extension mechanisms
-- [MX Provenance Standard](mxs-03-provenance.cog.md) — trust, attribution, verification
-- [MX AI/Agent Policy Standard](deferred/mxs-04-ai-agent-policy.cog.md) *(deferred)* — AI governance and agent policies
-- [MX Profile-Specific Metadata Standard](deferred/mxs-05-profile-metadata.cog.md) *(deferred)* — content-type-specific fields
-
-### 11.2 Informative references
-
 - [RFC 2119](https://www.rfc-editor.org/rfc/rfc2119) — Key words for use in RFCs to indicate requirement levels
 - [ISO 8601](https://www.iso.org/iso-8601-date-and-time-format.html) — Date and time format
 - [SPDX Licence List](https://spdx.org/licenses/) — Software Package Data Exchange licence identifiers
+
+### 11.2 Informative references
+
 - [Schema.org Style Guide](https://schema.org/docs/styleguide.html) — Vocabulary naming conventions
 - [Dublin Core DCMI Namespace](https://www.dublincore.org/specifications/dublin-core/dcmi-namespace/) — Namespace governance model
-- [WCAG 2.1](https://www.w3.org/TR/WCAG21/) — Web Content Accessibility Guidelines (conformance level model)
-- [MX Standards Alignment](../specifications/mx-standards-alignment.cog.md) — how MX conventions align with existing web standards
+- [WCAG 2.1](https://www.w3.org/TR/WCAG21/) — Web Content Accessibility Guidelines (conformance level model that inspired the Level 1/2/3 framework in §2.1)
 
 ---
 

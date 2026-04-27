@@ -1,85 +1,77 @@
 ---
-title: "MX Cog Identification Standard"
-version: "1.0-proposed"
+title: "MX Cog Identification note"
+version: "1.0-draft"
 created: 2026-04-27
 modified: 2026-04-27
-author: The Gathering
-description: "Frontmatter equivalent of the cog magic-header comment. Defines `cogHeader` (version, spec, runtime, runtimeDoc) so machine consumers can read the cog's spec/runtime conformance claim from queryable YAML rather than parsing a byte-zero HTML comment."
+author: Tom Cranstoun
+description: "Frontmatter equivalent of the cog magic-header comment. Defines `cogHeader` (version, spec, runtime, runtimeDoc) so machine consumers can read the cog's spec/runtime conformance claim from queryable YAML rather than parsing a byte-zero HTML comment. Authored by Tom Cranstoun and offered to The Gathering for review."
 
 mx:
-  status: proposed
+  status: draft
   license: MIT
   partOf: mx-the-gathering
   contentType: specification
-  buildsOn: [mxs-01-core-metadata]
-  inherits: mxs-01-core-metadata
-  tags: [standard, cog, identification, magic-header, conformance, specification]
+  tags: [draft, cog, identification, magic-header, conformance, specification]
   audience: [humans, machines]
   cacheability: permanent
-  runbook: "This standard defines a frontmatter equivalent of the cog magic-header comment. A cog file MAY declare `cogHeader` (with sub-keys version, spec, runtime, runtimeDoc) instead of, or in addition to, the magic-header HTML comment. When both are present they MUST agree. Read sections 4 (field definition) and 5 (equivalence rule) before implementing a parser or validator."
+  runbook: "This is the MX Cog Identification note — a draft authored by Tom Cranstoun, offered to The Gathering for review. It defines a frontmatter equivalent of the cog magic-header comment. A cog file MAY declare `cogHeader` (with sub-keys version, spec, runtime, runtimeDoc) instead of, or in addition to, the magic-header HTML comment. When both are present they MUST agree. Read sections 4 (field definition) and 5 (equivalence rule) before implementing a parser or validator. This note stands alone; it does not depend on any other draft."
 ---
 
-# MX Cog Identification Standard
+# MX Cog Identification note
 
-**Version:** 1.0-proposed
-**Status:** Proposed (draft for Stream submission, awaiting community review)
+**Version:** 1.0-draft
+**Status:** Draft by Tom Cranstoun, offered to The Gathering for review
 **Date:** 27 April 2026
-**Governing body:** The Gathering
+**Author:** Tom Cranstoun
 **License:** MIT
 
 ---
 
 ## 1. Abstract
 
-A cog file SHOULD identify itself as a cog and point an unfamiliar agent at the specification it claims to follow, the runtime that knows how to consume it, and the runtime's documentation. [Cog Specification v1](https://mx.allabout.network/drafts/cog-spec.v1.md) §2.5 defines a magic-header HTML comment for this purpose:
+A cog file SHOULD identify itself as a cog and point an unfamiliar agent at the specification it claims to follow, the runtime that knows how to consume it, and the runtime's documentation. The conventional mechanism is a magic-header HTML comment placed at byte zero of the cog file:
 
 ```html
-<!-- cog v1 spec=https://mx.allabout.network/drafts/cog-spec.v1.md runtime=https://mx.allabout.network/drafts/cog-runtime.md -->
+<!-- cog v1 spec=https://example.org/cog-spec.v1.md runtime=https://example.org/cog-runtime.md -->
 ```
 
-The comment is byte-zero self-identification — invisible in rendered Markdown, immediately visible to any agent reading the raw text. It is unambiguous for human and agent recognition but invisible to YAML-only consumers (registries, validators, the mx-graph builder, any tool that parses frontmatter and discards comments).
+The comment is byte-zero self-identification — invisible in rendered Markdown, immediately visible to any agent reading the raw text. It is unambiguous for human and agent recognition but invisible to YAML-only consumers (registries, validators, graph builders, any tool that parses frontmatter and discards comments).
 
-This standard defines a frontmatter equivalent: the `cogHeader` field. A cog MAY declare `cogHeader` instead of, or in addition to, the magic-header comment. Both forms carry the same information; either suffices for cog identification. Implementations SHOULD prefer `cogHeader` for programmatic consumption and the magic-header line for unambiguous file-level recognition.
+This note defines a frontmatter equivalent: the `cogHeader` field. A cog MAY declare `cogHeader` instead of, or in addition to, the magic-header comment. Both forms carry the same information; either suffices for cog identification. Implementations SHOULD prefer `cogHeader` for programmatic consumption and the magic-header comment for unambiguous file-level recognition.
 
 ---
 
 ## 2. Conformance
 
-The key words MUST, MUST NOT, REQUIRED, SHALL, SHALL NOT, SHOULD, SHOULD NOT, RECOMMENDED, MAY, and OPTIONAL in this document are to be interpreted as described in [BCP 14](https://datatracker.ietf.org/doc/html/bcp14) (RFC 2119 and RFC 8174) when, and only when, they appear in all capitals.
+The key words MUST, MUST NOT, REQUIRED, SHALL, SHALL NOT, SHOULD, SHOULD NOT, RECOMMENDED, MAY, and OPTIONAL in this document are to be interpreted as described in [BCP 14](https://datatracker.ietf.org/doc/html/bcp14) ([RFC 2119](https://datatracker.ietf.org/doc/html/rfc2119) and [RFC 8174](https://datatracker.ietf.org/doc/html/rfc8174)) when, and only when, they appear in all capitals.
 
 ### 2.1 Conformance levels
 
+This note defines three conformance levels (modelled on the [WCAG 2.1](https://www.w3.org/TR/WCAG21/) Level A/AA/AAA pattern):
+
 - **Level 1 (MUST when claimed)** — A cog declaring `cogHeader` MUST populate at minimum `version` and `spec`. A cog declaring both `cogHeader` and a magic-header comment MUST keep the two consistent.
 - **Level 2 (SHOULD when circulating)** — A cog intended for public registries, mixed audiences, or agent consumption SHOULD include either `cogHeader` or a magic-header comment (preferably both). Cogs operating only within a closed system MAY omit both.
-- **Level 3 (MAY)** — `cogHeader` is otherwise optional. Its absence does not invalidate a cog whose structural shape and frontmatter satisfy cog-spec v1.
+- **Level 3 (MAY)** — `cogHeader` is otherwise optional. Its absence does not invalidate a cog whose structural shape and frontmatter are otherwise valid.
 
 ### 2.2 Draft status
 
-This document is a proposed standard awaiting community review.
+This note is a draft authored by Tom Cranstoun and offered to The Gathering for review. It is not a ratified standard.
 
 ---
 
-## 3. Scope and relationship to other standards
+## 3. Scope
 
-### 3.1 What this document covers
+### 3.1 What this note covers
 
 - The `cogHeader` frontmatter field and its sub-keys (§4).
 - The equivalence rule between `cogHeader` and the magic-header comment (§5).
 - Verifier conformance for both forms (§7).
 
-### 3.2 What this document does not cover
+### 3.2 What this note does not cover
 
-- The magic-header comment parser itself — defined in [Cog Specification v1 §2.5](https://mx.allabout.network/drafts/cog-spec.v1.md).
-- The cog file format generally — defined in [Cog Specification v1](https://mx.allabout.network/drafts/cog-spec.v1.md).
-- Contract fingerprinting and signing — defined in [MXS-05](mxs-05-contract-fingerprinting.cog.md).
-
-### 3.3 Relationship to existing standards
-
-| Standard | Relationship |
-|----------|--------------|
-| [Cog Specification v1](https://mx.allabout.network/drafts/cog-spec.v1.md) §2.5 | Defines the magic-header comment this standard mirrors. |
-| [MXS-01 Core Metadata](mxs-01-core-metadata.cog.md) | `cogHeader` is a Zone 1 (top-level) frontmatter field, sibling to `schema` (§6.7) and `validatesAgainst` (§6.8). |
-| [MXS-05 Contract Fingerprinting](mxs-05-contract-fingerprinting.cog.md) | `cogHeader` is typically a member of `metadataFields` (not signed) — its values describe the cog's identity, not its contract. |
+- The wider cog file format (typed content blocks, the prose-block convention, the fenced-action-block convention).
+- The magic-header comment grammar at the byte level (the cog file format owns that grammar; this note describes the comment only insofar as `cogHeader` mirrors its content).
+- Contract fingerprinting and signing — `cogHeader` is informational, not part of any signed contract surface.
 
 ---
 
@@ -108,9 +100,9 @@ This document is a proposed standard awaiting community review.
 ```yaml
 cogHeader:
   version: v1
-  spec: https://mx.allabout.network/drafts/cog-spec.v1.md
-  runtime: https://mx.allabout.network/drafts/cog-runtime.md
-  runtimeDoc: https://mx.allabout.network/drafts/cog-runtime.md
+  spec: https://example.org/cog-spec.v1.md
+  runtime: https://example.org/cog-runtime.md
+  runtimeDoc: https://example.org/cog-runtime.md
 ```
 
 **Normative notes:**
@@ -118,7 +110,7 @@ cogHeader:
 - A cog declaring `cogHeader` MUST populate `version` and `spec`.
 - `runtime` and `runtimeDoc` are optional; consumers MUST NOT treat their absence as a conformance failure.
 - All URL-typed sub-keys SHOULD be HTTPS.
-- Implementations SHOULD treat `cogHeader` values as `metadataFields` (excluded from the contract fingerprint per [MXS-05](mxs-05-contract-fingerprinting.cog.md)) — these values describe the cog's identity, not its contract.
+- Implementations SHOULD treat `cogHeader` values as informational metadata (excluded from any contract fingerprint applied to the cog) — these values describe the cog's identity, not its contract.
 
 ---
 
@@ -126,7 +118,7 @@ cogHeader:
 
 A cog file MAY include any of:
 
-- A magic-header comment only (per cog-spec v1 §2.5).
+- A magic-header comment only.
 - A `cogHeader` field only.
 - Both forms.
 - Neither form (Level 2 SHOULD does not apply within a closed system).
@@ -157,7 +149,7 @@ Implementations SHOULD:
 ### 6.1 Magic-header comment only
 
 ```html
-<!-- cog v1 spec=https://mx.allabout.network/drafts/cog-spec.v1.md runtime=https://mx.allabout.network/drafts/cog-runtime.md -->
+<!-- cog v1 spec=https://example.org/cog-spec.v1.md runtime=https://example.org/cog-runtime.md -->
 ---
 title: Example cog
 description: Demonstrates magic-header-only identification.
@@ -176,8 +168,8 @@ title: Example cog
 description: Demonstrates cogHeader-only identification.
 cogHeader:
   version: v1
-  spec: https://mx.allabout.network/drafts/cog-spec.v1.md
-  runtime: https://mx.allabout.network/drafts/cog-runtime.md
+  spec: https://example.org/cog-spec.v1.md
+  runtime: https://example.org/cog-runtime.md
 ---
 
 # Example cog
@@ -188,14 +180,14 @@ Valid. The cog is identified by the frontmatter field; agents reading the raw by
 ### 6.3 Both forms
 
 ```html
-<!-- cog v1 spec=https://mx.allabout.network/drafts/cog-spec.v1.md runtime=https://mx.allabout.network/drafts/cog-runtime.md -->
+<!-- cog v1 spec=https://example.org/cog-spec.v1.md runtime=https://example.org/cog-runtime.md -->
 ---
 title: Example cog
 description: Demonstrates both forms in agreement.
 cogHeader:
   version: v1
-  spec: https://mx.allabout.network/drafts/cog-spec.v1.md
-  runtime: https://mx.allabout.network/drafts/cog-runtime.md
+  spec: https://example.org/cog-spec.v1.md
+  runtime: https://example.org/cog-runtime.md
 ---
 
 # Example cog
@@ -206,11 +198,11 @@ Valid. Both forms agree.
 ### 6.4 Mismatch (non-conformant)
 
 ```html
-<!-- cog v1 spec=https://mx.allabout.network/drafts/cog-spec.v1.md -->
+<!-- cog v1 spec=https://example.org/cog-spec.v1.md -->
 ---
 cogHeader:
   version: v2
-  spec: https://example.org/different-spec.md
+  spec: https://other.example.org/different-spec.md
 ---
 ```
 
@@ -235,17 +227,19 @@ A verifier:
 
 - URLs declared in `cogHeader.runtime` may leak deployment topology. A cog declaring an internal runtime URL is exposing that URL to any reader of the cog. Operators concerned with topology privacy SHOULD either publish a public runtime URL or omit the field.
 - A `cogHeader.spec` URL pointing at an attacker-controlled host is a phishing vector for runtimes that auto-fetch the spec. Runtimes SHOULD validate the spec URL against a trusted registry or operator-allowlist before fetching.
-- The magic-header comment and `cogHeader` field are NOT authenticated — anyone who can write the cog can lie about which spec it claims to follow. Authentication is handled by the witness/signature model in [MXS-05](mxs-05-contract-fingerprinting.cog.md), not by this standard.
+- The magic-header comment and `cogHeader` field are NOT authenticated — anyone who can write the cog can lie about which spec it claims to follow. Authentication, if required, is the responsibility of an external signing or witness mechanism, not this note.
 
 ---
 
 ## 9. References
 
-- [Cog Specification v1](https://mx.allabout.network/drafts/cog-spec.v1.md) — defines the cog file format and the magic-header comment
-- [MXS-01 Core Metadata Standard](mxs-01-core-metadata.cog.md) — `schema`, `validatesAgainst`, the two-zone frontmatter model
-- [MXS-05 Contract Fingerprinting Standard](mxs-05-contract-fingerprinting.cog.md) — signing model; `cogHeader` is typically `metadataFields`-scoped
-- [Cog Runtime](https://mx.allabout.network/drafts/cog-runtime.md) — runtime companion document
-- [BCP 14 / RFC 2119](https://datatracker.ietf.org/doc/html/rfc2119) — keywords for use in RFCs
+### 9.1 Normative references
+
+- [BCP 14](https://datatracker.ietf.org/doc/html/bcp14) ([RFC 2119](https://datatracker.ietf.org/doc/html/rfc2119), [RFC 8174](https://datatracker.ietf.org/doc/html/rfc8174)) — keywords for use in RFCs to indicate requirement levels
+
+### 9.2 Informative references
+
+- [WCAG 2.1](https://www.w3.org/TR/WCAG21/) — conformance level model that inspired the Level 1/2/3 framework in §2.1
 
 ---
 
@@ -254,3 +248,4 @@ A verifier:
 | Version | Date | Changes |
 |---------|------|---------|
 | 1.0-proposed | 2026-04-27 | Initial draft. Defines `cogHeader` as the frontmatter equivalent of the cog magic-header comment, including the equivalence rule when both forms appear in the same cog. |
+| 1.0-draft | 2026-04-27 | Renamed from "MX Cog Identification Standard" to a "note" to clarify this is a draft by Tom Cranstoun, not a ratified standard. Made the note standalone — removed cross-references to other Gathering drafts and inlined required material. |
