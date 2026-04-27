@@ -11,13 +11,13 @@ The **MX Field Definition Pattern note** is the primary note of the set: it spec
 | Draft | File | Status |
 |-------|------|--------|
 | **MX Field Definition Pattern note** *(primary)* | [draft-field-pattern.md](draft-field-pattern.md) | Draft (v1.0-draft) — the authoring pattern every sister note follows when defining a frontmatter field. |
-| **MX Core Metadata note** | [draft-core-metadata.md](draft-core-metadata.md) | Draft (v1.4-draft) — Zone 1 / Zone 2 document metadata and pass-through fields. |
-| **MX Cogs note** | [draft-cogs.md](draft-cogs.md) | Draft (v1.2-draft) — the `.cog.md` file format as an optional layer on top of MX. |
-| **MX Extensions note** | [draft-extensions.md](draft-extensions.md) | Draft (v1.2-draft) — namespace policy and context-specific naming. |
-| **MX Provenance note** | [draft-provenance.md](draft-provenance.md) | Draft (v1.1-draft) — attribution, trust, maintenance, decision records. |
-| **MX Carrier Formats note** | [draft-carrier-formats.md](draft-carrier-formats.md) | Draft (v1.2-draft) — carrier mechanisms (markdown, HTML, JSDoc, CSS, shell, XMP, sidecar, SQL) and code-specific provenance. |
-| **MX Workflow Contracts note** | [draft-workflow-contracts.md](draft-workflow-contracts.md) | Draft (v1.0-draft) — top-level fields for workflow contract cogs (thresholds, approvers, procedures, target environment). |
-| **MX Contract Fingerprinting and Signing note** | [draft-contract-fingerprinting.md](draft-contract-fingerprinting.md) | Draft (v1.4-draft) — *signing is optional*; this note specifies the contract a cog must satisfy when it elects to be signed. |
+| **MX Core Metadata note** | [draft-core-metadata.md](draft-core-metadata.md) | Draft (v1.5-draft) — Zone 1 / Zone 2 document metadata and pass-through fields. |
+| **MX Cogs note** | [draft-cogs.md](draft-cogs.md) | Draft (v1.3-draft) — the `.cog.md` file format as an optional layer on top of MX. |
+| **MX Extensions note** | [draft-extensions.md](draft-extensions.md) | Draft (v1.3-draft) — namespace policy and context-specific naming. |
+| **MX Provenance note** | [draft-provenance.md](draft-provenance.md) | Draft (v1.2-draft) — attribution, trust, maintenance, decision records. |
+| **MX Carrier Formats note** | [draft-carrier-formats.md](draft-carrier-formats.md) | Draft (v1.3-draft) — carrier mechanisms (markdown, HTML, JSDoc, CSS, shell, XMP, sidecar, SQL) and code-specific provenance. |
+| **MX Workflow Contracts note** | [draft-workflow-contracts.md](draft-workflow-contracts.md) | Draft (v1.1-draft) — top-level fields for workflow contract cogs (thresholds, approvers, procedures, target environment). |
+| **MX Contract Fingerprinting and Signing note** | [draft-contract-fingerprinting.md](draft-contract-fingerprinting.md) | Draft (v1.5-draft) — *signing is optional*; this note specifies the contract a cog must satisfy when it elects to be signed. |
 
 Every draft here is **a draft, not a ratified standard**. None is final. Each will evolve through public review and, if the community consents, be ratified by The Gathering.
 

@@ -20,7 +20,7 @@ author:
 
 # MX Carrier Formats note
 
-**Version:** 1.2-draft
+**Version:** 1.3-draft
 **Status:** Draft by Tom Cranstoun, offered to The Gathering for review
 **Date:** 27 April 2026
 **Author:** Tom Cranstoun
@@ -50,6 +50,8 @@ Database-content vocabulary and media-content vocabulary are also out of scope; 
 ## 2. Conformance
 
 The key words "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL NOT", "SHOULD", "SHOULD NOT", "RECOMMENDED", "MAY", and "OPTIONAL" in this document are to be interpreted as described in [RFC 2119](https://www.rfc-editor.org/rfc/rfc2119).
+
+Field definitions in this note conform to the **MX Field Definition Pattern note** (the primary note of this draft set). That pattern governs the structural template for every field — heading, property table, definition prose, example — and is binding on this note. This note adopts the pattern's authoring rules and does not restate them.
 
 ### 2.1 Conformance levels
 
@@ -670,6 +672,7 @@ MX is explicit about deferring to established vocabularies:
 ## 10. Changelog
 
 - **2026-04-27 (v1.2-draft)** — Absorbed carrier format mappings (HTML, JSDoc, CSS, EXIF/XMP, shell, sidecar, repo root, SQL) and non-YAML identity fields (`mx:*`) from the MX Extensions note. Scope broadened from "code provenance" to "carrier mechanisms plus code provenance"; the namespace policy and extension-registration material was left in the Extensions note.
+- **2026-04-27 (v1.3-draft)** — Defers to the MX Field Definition Pattern note (the primary note of the draft set). Field definitions in §4 and §5 conform to that pattern; the pattern's authoring rules are not restated here.
 - **2026-04-27 (v1.1-draft)** — Renamed from "MX Carrier Formats Standard" to "MX Carrier Formats note"; made standalone.
 - **2026-04-17 (v1.1-proposed)** — Cut from forty fields to two for the code vocabulary. Behavioural vocabulary deferred to language conventions.
 - **2026-04-15 (v1.0-proposed)** — Initial draft. Code-only scope.

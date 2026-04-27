@@ -15,7 +15,7 @@ author:
 
 # MX Extensions note
 
-**Version:** 1.2-draft
+**Version:** 1.3-draft
 **Status:** Draft by Tom Cranstoun, offered to The Gathering for review
 **Date:** 27 April 2026
 **Author:** Tom Cranstoun
@@ -34,6 +34,8 @@ The namespace policy establishes three levels: standard fields (no prefix, owned
 ## 2. Conformance
 
 The key words "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL NOT", "SHOULD", "SHOULD NOT", "RECOMMENDED", "MAY", and "OPTIONAL" in this document are to be interpreted as described in [RFC 2119](https://www.rfc-editor.org/rfc/rfc2119).
+
+Field definitions in this note conform to the **MX Field Definition Pattern note** (the primary note of this draft set). That pattern governs the structural template for every field — heading, property table, definition prose, example — and is binding on this note. This note adopts the pattern's authoring rules and does not restate them.
 
 ### 2.1 Conformance levels
 
@@ -369,6 +371,7 @@ An extension field MAY be promoted into the core MX vocabulary through the follo
 | 1.1-proposed | 2026-04-26 | Added §10.4 Workflow Contract Extensions (later removed in v1.2). |
 | 1.1-draft | 2026-04-27 | Renamed from "MX Extensions Standard" to "MX Extensions note". Made standalone. |
 | 1.2-draft | 2026-04-27 | Narrowed scope to namespace policy + context-specific naming. Carrier format mappings (formerly §8) and non-YAML identity fields (formerly §9) moved to the MX Carrier Formats note. Workflow contract extensions (formerly §10.4) moved to a new MX Workflow Contracts note. Conformance levels collapsed from three to two; carrier-related conformance tables removed. |
+| 1.3-draft | 2026-04-27 | Defers to the MX Field Definition Pattern note (the primary note of the draft set). Field definitions in §8 conform to that pattern; the pattern's authoring rules are not restated here. |
 
 ---
 

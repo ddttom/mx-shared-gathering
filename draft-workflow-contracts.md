@@ -16,7 +16,7 @@ author:
 
 # MX Workflow Contracts note
 
-**Version:** 1.0-draft
+**Version:** 1.1-draft
 **Status:** Draft by Tom Cranstoun, offered to The Gathering for review
 **Date:** 27 April 2026
 **Author:** Tom Cranstoun
@@ -37,6 +37,8 @@ All fields in this note are conformance level MAY. They apply only to documents 
 ## 2. Conformance
 
 The key words "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL NOT", "SHOULD", "SHOULD NOT", "RECOMMENDED", "MAY", and "OPTIONAL" in this document are to be interpreted as described in [RFC 2119](https://www.rfc-editor.org/rfc/rfc2119).
+
+Field definitions in this note conform to the **MX Field Definition Pattern note** (the primary note of this draft set). That pattern governs the structural template for every field — heading, property table, definition prose, example — and is binding on this note. This note adopts the pattern's authoring rules and does not restate them.
 
 A workflow contract cog is **conformant** with this note if every field it declares from §3 satisfies the field's own type and placement requirements (top-level Zone 1 placement, type as declared, value-shape consistent with the cog's `schema` reference where present).
 
@@ -196,6 +198,7 @@ The following rules apply across all fields in §3:
 ## 7. Changelog
 
 - **2026-04-27 (v1.0-draft)** — Initial draft. Five workflow-contract fields extracted from the MX Extensions note (where they were §10.4 in v1.1-proposed) into a standalone note: `x-mx-thresholds`, `x-mx-approvers`, `x-mx-approvalProcedure`, `x-mx-reviewProcedure`, `x-mx-targetEnvironment`. All Zone 1 (top-level), conformance MAY.
+- **2026-04-27 (v1.1-draft)** — Defers to the MX Field Definition Pattern note (the primary note of the draft set). Field definitions in §3 conform to that pattern; the pattern's authoring rules are not restated here.
 
 ---
 

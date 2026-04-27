@@ -17,7 +17,7 @@ author:
 
 # MX Contract Fingerprinting and Signing note
 
-**Version:** 1.2-draft
+**Version:** 1.5-draft
 **Status:** Draft by Tom Cranstoun, offered to The Gathering for review
 **Date:** 27 April 2026
 **Author:** Tom Cranstoun
@@ -40,6 +40,8 @@ The signature attests **provenance and integrity, not truth**: a verifier confir
 ## 2. Conformance
 
 The key words MUST, MUST NOT, REQUIRED, SHALL, SHALL NOT, SHOULD, SHOULD NOT, RECOMMENDED, MAY, and OPTIONAL in this document are to be interpreted as described in [BCP 14](https://datatracker.ietf.org/doc/html/bcp14) ([RFC 2119](https://datatracker.ietf.org/doc/html/rfc2119) and [RFC 8174](https://datatracker.ietf.org/doc/html/rfc8174)) when, and only when, they appear in all capitals.
+
+Field definitions in this note conform to the **MX Field Definition Pattern note** (the primary note of this draft set). That pattern governs the structural template for every field — heading, property table, definition prose, example — and is binding on this note. This note adopts the pattern's authoring rules and does not restate them.
 
 ### 2.1 Conformance levels
 
@@ -322,3 +324,4 @@ Implementations and downstream consumers SHOULD be precise in user-facing langua
 | 1.2-draft | 2026-04-27 | Added "What the signature attests" subsection in §1: the signature attests provenance and integrity, not truth. |
 | 1.3-draft | 2026-04-27 | Condensed §1 abstract; moved the attestation-vs-verification rationale into a new informative §9 "Rationale: attestation, not verification". Marked §6.3 (pre-signature review pipeline) as informative. Renamed §3.2 from "What this note does not cover" to "Out of scope" (IETF style). References renumbered to §10, change log to §11. |
 | 1.4-draft | 2026-04-27 | Reformatted to plain markdown with kramdown-rfc YAML frontmatter (matching the other vocabulary drafts). The old MX-style frontmatter and the runbook are removed; the file is renamed from `draft-contract-fingerprinting.cog.md` to `draft-contract-fingerprinting.md` to reflect that this is a draft note about cog signing, not itself a cog. |
+| 1.5-draft | 2026-04-27 | Defers to the MX Field Definition Pattern note (the primary note of the draft set). Field definitions in §4 conform to that pattern; the pattern's authoring rules are not restated here. |
