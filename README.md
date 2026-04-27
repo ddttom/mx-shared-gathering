@@ -2,22 +2,23 @@
 
 Public home for the MX metadata draft notes. These are draft notes authored by Tom Cranstoun and offered to [The Gathering](https://tg.community) community for review via [Stream](https://stream.tg.community). They are not ratified standards.
 
-The four drafts that propose the MX metadata vocabulary itself are written in plain markdown with kramdown-rfc YAML frontmatter. They cannot use MX metadata to describe themselves, since they are the documents specifying it. The two drafts that describe optional layers on top of MX (`cogs`, `contract-fingerprinting`) currently still use `.cog.md` and will be reformatted to match.
+The drafts that propose the MX metadata vocabulary itself are written in plain markdown with kramdown-rfc YAML frontmatter. They cannot use MX metadata to describe themselves, since they are the documents specifying it. The drafts that describe optional layers on top of MX (`cogs`, `contract-fingerprinting`) currently still use `.cog.md` and will be reformatted to match.
 
 ## The drafts
 
 | Draft | File | Status |
 |-------|------|--------|
-| **MX Core Metadata note** | [draft-core-metadata.md](draft-core-metadata.md) | Draft (v1.2-draft) — pure document metadata; no cog content. |
-| **MX Cogs note** | [draft-cogs.cog.md](draft-cogs.cog.md) | Draft (v1.0-draft) — the `.cog.md` file format as an optional layer on top of MX. |
-| **MX Extensions note** | [draft-extensions.md](draft-extensions.md) | Draft (v1.1-draft) — namespace policy and carrier-format mappings. |
-| **MX Provenance note** | [draft-provenance.md](draft-provenance.md) | Draft (v1.0-draft) — attribution, trust, maintenance, decision records. |
-| **MX Carrier Formats note** | [draft-carrier-formats.md](draft-carrier-formats.md) | Draft (v1.1-draft) — code-only carrier provenance. |
-| **MX Contract Fingerprinting and Signing note** | [draft-contract-fingerprinting.cog.md](draft-contract-fingerprinting.cog.md) | Draft (v1.1-draft) — *signing is optional*; this note specifies the contract a cog must satisfy when it elects to be signed. |
+| **MX Core Metadata note** | [draft-core-metadata.md](draft-core-metadata.md) | Draft (v1.4-draft) — Zone 1 / Zone 2 document metadata and pass-through fields. |
+| **MX Cogs note** | [draft-cogs.cog.md](draft-cogs.cog.md) | Draft (v1.1-draft) — the `.cog.md` file format as an optional layer on top of MX. |
+| **MX Extensions note** | [draft-extensions.md](draft-extensions.md) | Draft (v1.2-draft) — namespace policy and context-specific naming. |
+| **MX Provenance note** | [draft-provenance.md](draft-provenance.md) | Draft (v1.1-draft) — attribution, trust, maintenance, decision records. |
+| **MX Carrier Formats note** | [draft-carrier-formats.md](draft-carrier-formats.md) | Draft (v1.2-draft) — carrier mechanisms (markdown, HTML, JSDoc, CSS, shell, XMP, sidecar, SQL) and code-specific provenance. |
+| **MX Workflow Contracts note** | [draft-workflow-contracts.md](draft-workflow-contracts.md) | Draft (v1.0-draft) — top-level fields for workflow contract cogs (thresholds, approvers, procedures, target environment). |
+| **MX Contract Fingerprinting and Signing note** | [draft-contract-fingerprinting.cog.md](draft-contract-fingerprinting.cog.md) | Draft (v1.3-draft) — *signing is optional*; this note specifies the contract a cog must satisfy when it elects to be signed. |
 
 Every draft here is **a draft, not a ratified standard**. None is final. Each will evolve through public review and, if the community consents, be ratified by The Gathering.
 
-Each draft is **standalone**: it defines its own conformance levels and field semantics inline, and refers only to actual external published standards (RFC, ISO, W3C, NIST, Schema.org, Dublin Core, SPDX, and similar). Drafts do not cross-reference each other.
+Each draft is **standalone**: it defines its own conformance levels and field semantics inline, and refers only to actual external published standards (RFC, ISO, W3C, NIST, Schema.org, Dublin Core, SPDX, and similar) for normative content. Where one draft excludes a topic owned by a sister draft, it names the sister draft for orientation; no draft depends on another for normative material.
 
 ## How the drafts fit together
 
@@ -25,7 +26,8 @@ Each draft is **standalone**: it defines its own conformance levels and field se
 - **MX Cogs** adds an optional layer for documents that want to be navigable, composable, and runnable by agents. Most MX-aware documents will not be cogs.
 - **MX Extensions** governs the namespace policy (standard / vendor public / vendor private prefixes) so vendors can extend without polluting the core vocabulary.
 - **MX Provenance** covers attribution, trust, maintenance, and decision-record references — the metadata that makes a document's origin and stewardship verifiable.
-- **MX Carrier Formats** specifies the minimal code-specific provenance vocabulary; what code does (signatures, APIs, tests) defers to JSDoc, docstrings, OpenAPI, and similar.
+- **MX Carrier Formats** specifies how MX metadata is carried in each supported file format and adds a small code-specific provenance vocabulary; what code does (signatures, APIs, tests) defers to JSDoc, docstrings, OpenAPI, and similar.
+- **MX Workflow Contracts** defines a small set of optional top-level fields for cogs that declare an executable approval, review, or procedural workflow.
 - **MX Contract Fingerprinting and Signing** specifies the format a cog uses *when it chooses to be signed*. Signing is optional. The fingerprint format is open.
 
 ## What this repo is

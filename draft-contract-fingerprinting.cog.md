@@ -29,23 +29,13 @@ mx:
 
 ## 1. Abstract
 
-**Signing is optional.** Most cogs ship unsigned. This note specifies the contract a cog satisfies *when it elects to be signed* — it does not require a cog to be signed.
+**Signing is optional.** Most cogs ship unsigned. This note specifies the contract a cog satisfies *when it elects to be signed*; it does not require a cog to be signed.
 
-When a cog is signed, the signing must be portable, transparent, and replay-resistant: a cog moved between systems, registries, or implementations must be verifiable without reconstructing the original authoring environment. Two frontmatter fields — `contractFields` and `metadataFields` — make the signature scope explicit.
+When a cog is signed, two frontmatter fields make the signature scope explicit. `contractFields` lists top-level keys covered by the signature. `metadataFields` lists keys explicitly excluded (timestamps, tags, registry annotations) — values that may change without invalidating the signature.
 
-`contractFields` lists the top-level frontmatter keys whose values are covered by the cog's signature. `metadataFields` lists keys explicitly excluded — values that may change without invalidating the signature (timestamps, tags, registry annotations).
+This note defines only the **fingerprint** — the deterministic byte sequence over which a signature is produced (canonical JSON projection of the contract keys, hashed with SHA-256). Signature algorithm, key management, and transport are out of scope.
 
-The signing algorithm itself (key types, signature format, transport) is out of scope here; this note defines only the **fingerprint**: the deterministic byte sequence over which a signature is produced. Signing is governed end-to-end by an external signer/verifier; the canon defined here is the format the signer reads and the verifier checks.
-
-### What the signature attests
-
-A signed cog makes one narrow claim, and the narrowness is what makes it tractable. **The signature attests provenance and integrity, not truth.** Specifically:
-
-- The signature confirms that the cog's contract surface (the keys named in `contractFields`) was last in this exact state when the named signer applied the signature.
-- It does not assert that the values are factually correct, sound, or current. A cog claiming "WWII did not happen" can be perfectly well-signed; the signature only confirms the cog genuinely came from the named signer and has not been altered downstream. Whether the claim is true is a different problem — one no signing format can solve at web scale, and one this note deliberately does not take on.
-- The narrower claim is intentional. Editorial truth-curation is what made the Open Directory Project (DMOZ) unsustainable: human editors could not keep pace with the web, and the implicit claim that a categorised entry was *appropriate* (worth listing, accurately classified) aged badly. The MX signing model only attests *this is what the owner published, unaltered*. That smaller claim is what compounds.
-
-Implementations and downstream consumers SHOULD be precise in user-facing language: the system has *attested* a cog, not *verified* it. "Verified" implies a truth claim that no signer makes.
+The signature attests **provenance and integrity, not truth**: a verifier confirms that the cog's contract surface was last in this exact state when the named signer applied the signature, and nothing more. Section 9 explains why the narrower claim is deliberate.
 
 ---
 
@@ -75,7 +65,7 @@ This note is a draft authored by Tom Cranstoun and offered to The Gathering for 
 - The deterministic fingerprint algorithm (§5).
 - Conformance rules and verifier expectations (§6).
 
-### 3.2 What this note does not cover
+### 3.2 Out of scope
 
 - Signature algorithms (Ed25519, ECDSA, RSA, post-quantum) — defer to [W3C VC Data Integrity](https://www.w3.org/TR/vc-data-integrity/), [JWS (RFC 7515)](https://datatracker.ietf.org/doc/html/rfc7515), or [COSE (RFC 9052)](https://datatracker.ietf.org/doc/html/rfc9052).
 - Key management, distribution, or rotation — defer to organisational PKI.
@@ -254,7 +244,9 @@ A verifier:
 - SHOULD log the resolved `contractFields` set alongside any verification result for transparency.
 - MUST NOT silently substitute a default scope when the cog declares neither array.
 
-### 6.3 Recommended pre-signature review pipeline
+### 6.3 Recommended pre-signature review pipeline (Informative)
+
+*This subsection is informative; it describes recommended practice but is not normative.*
 
 A conforming signer SHOULD execute a multi-phase review before producing a signature. A typical pipeline:
 
@@ -289,15 +281,30 @@ The following are flagged for community discussion before this draft is offered 
 
 ---
 
-## 9. References
+## 9. Rationale: attestation, not verification
 
-### 9.1 Normative references
+*This section is informative.*
+
+A signed cog makes one narrow claim, and the narrowness is what makes it tractable. The signature attests provenance and integrity, not truth:
+
+- The signature confirms that the cog's contract surface (the keys named in `contractFields`) was last in this exact state when the named signer applied the signature.
+- It does not assert that the values are factually correct, sound, or current. A cog claiming "WWII did not happen" can be perfectly well-signed; the signature only confirms the cog genuinely came from the named signer and has not been altered downstream. Whether the claim is true is a different problem — one no signing format can solve at web scale, and one this note deliberately does not take on.
+
+The narrower claim is intentional. Editorial truth-curation is what made the Open Directory Project (DMOZ) unsustainable: human editors could not keep pace with the web, and the implicit claim that a categorised entry was *appropriate* (worth listing, accurately classified) aged badly. The signing model in this note attests only *this is what the owner published, unaltered*. That smaller claim is what compounds.
+
+Implementations and downstream consumers SHOULD be precise in user-facing language: the system has *attested* a cog, not *verified* it. "Verified" implies a truth claim that no signer in this model makes.
+
+---
+
+## 10. References
+
+### 10.1 Normative references
 
 - [BCP 14](https://datatracker.ietf.org/doc/html/bcp14) ([RFC 2119](https://datatracker.ietf.org/doc/html/rfc2119), [RFC 8174](https://datatracker.ietf.org/doc/html/rfc8174)) — keywords for use in RFCs to indicate requirement levels
 - [RFC 8259](https://datatracker.ietf.org/doc/html/rfc8259) — The JSON Data Interchange Format (canonical serialisation in §5)
 - [FIPS 180-4](https://csrc.nist.gov/publications/detail/fips/180/4/final) — SHA-256 hash function
 
-### 9.2 Informative references
+### 10.2 Informative references
 
 - [W3C Verifiable Credentials Data Integrity](https://www.w3.org/TR/vc-data-integrity/) — compatible signing model
 - [JWS RFC 7515](https://datatracker.ietf.org/doc/html/rfc7515) — JSON Web Signature
@@ -307,11 +314,12 @@ The following are flagged for community discussion before this draft is offered 
 
 ---
 
-## 10. Change log
+## 11. Change log
 
 | Version | Date | Changes |
 |---------|------|---------|
 | 1.0-proposed | 2026-04-26 | Initial draft. Imports the contract-fingerprinting model from earlier reference implementations, drops the `x-mx-` prefix to make the fields first-class, defines the canonical JSON / SHA-256 fingerprint algorithm. |
 | 1.0-draft | 2026-04-27 | Renamed from "MX Contract Fingerprinting and Signing Standard" to a "note" to clarify this is a draft by Tom Cranstoun, not a ratified standard. Made the note standalone — removed cross-references to other Gathering drafts and inlined required material. |
-| 1.1-draft | 2026-04-27 | §1 abstract gains an explicit statement that signing is optional. New §4.3 documents the mandatory fields when signing (`title`, `validatesAgainst` with resolvable validators, `schema`). New §4.4 documents the default-excluded metadata fields (`modified`, `version`, `created`, `author`, `updateInstructions`) plus the `x-mx-contractFields` / `x-mx-metadataFields` schema overrides. §6 split into signer (§6.1), verifier (§6.2), and recommended pre-signature review pipeline (§6.3) — the canonical Inventory → Classify → Lift → Declare-Contracts → Validate → Notarise sequence. |
-| 1.2-draft | 2026-04-27 | Added "What the signature attests" subsection in §1: the signature attests provenance and integrity, not truth. Distinguishes attestation (what we do) from verification (a truth claim we deliberately avoid), with the DMOZ contrast explaining why the narrower scope is what makes the model sustainable. |
+| 1.1-draft | 2026-04-27 | §1 abstract gains an explicit statement that signing is optional. New §4.3 documents the mandatory fields when signing (`title`, `validatesAgainst` with resolvable validators, `schema`). New §4.4 documents the default-excluded metadata fields plus the `x-mx-contractFields` / `x-mx-metadataFields` schema overrides. §6 split into signer (§6.1), verifier (§6.2), and recommended pre-signature review pipeline (§6.3). |
+| 1.2-draft | 2026-04-27 | Added "What the signature attests" subsection in §1: the signature attests provenance and integrity, not truth. |
+| 1.3-draft | 2026-04-27 | Condensed §1 abstract; moved the attestation-vs-verification rationale into a new informative §9 "Rationale: attestation, not verification". Marked §6.3 (pre-signature review pipeline) as informative. Renamed §3.2 from "What this note does not cover" to "Out of scope" (IETF style). References renumbered to §10, change log to §11. |

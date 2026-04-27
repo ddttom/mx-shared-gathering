@@ -1,6 +1,6 @@
 ---
 title: "MX Cogs note"
-version: "1.0-draft"
+version: "1.1-draft"
 created: 2026-04-27
 modified: 2026-04-27
 author: Tom Cranstoun
@@ -40,7 +40,14 @@ This note specifies:
 - The `cogHeader` frontmatter field that mirrors the magic-header comment for YAML-only consumers.
 - The cog structural fields (`partOf`, `buildsOn`, `requires`, `refersTo`, plus the cog-specific extensions for blocks, execute contracts, includes, deliverables, classification, and identifiers — many of which currently live in vendor extensions until ratified into the standard tier).
 
-Signing is **out of scope**. A cog can be signed but does not have to be; signing is governed by the MX Contract Fingerprinting and Signing draft note.
+**Out of scope:**
+
+- **Signing.** A cog can be signed but does not have to be; signing is governed by the MX Contract Fingerprinting and Signing draft note.
+- **Non-YAML carriers.** This note specifies the `.cog.md` markdown form only. How an MX-aware HTML page, JavaScript file, CSS file, or sidecar carries identity and operational metadata is governed by the MX Carrier Formats note.
+- **Document identity field semantics.** What `title`, `description`, `author`, `created`, `modified`, and `version` mean is governed by the MX Core Metadata note. Cogs inherit these definitions; this note does not redefine them.
+- **Namespace policy.** The `x-mx-` and `x-mx-p-` prefix conventions used by some cog fields are governed by the MX Extensions note.
+
+The two-zone YAML frontmatter model is carried over from MX Core: Zone 1 (top-level) holds document identity fields; Zone 2 (under the `mx:` object) holds operational fields. Cog structural fields live in Zone 2 unless explicitly noted as top-level (`cogHeader`, `contractFields`, `metadataFields`).
 
 ---
 
@@ -72,7 +79,6 @@ This note is a draft authored by Tom Cranstoun and offered to The Gathering for 
 - **Optional layer** — A capability some MX-aware documents adopt and others do not. A document that does not adopt the cog layer is still a valid MX document.
 - **Magic-header comment** — A specially formatted HTML comment placed at byte zero of a cog file, used for unambiguous file-level recognition by consumers that have not parsed the YAML.
 - **Profile** — A named set of fields applicable to a specific document type. The cog layer defines the `cog` profile.
-- **Zone 1 / Zone 2** — The two-zone YAML frontmatter model carried over from MX Core: Zone 1 holds top-level identity fields (title, description, author, dates, version); Zone 2 holds operational fields under the `mx:` object. Cog structural fields live in Zone 2 unless a field is explicitly noted as top-level (`cogHeader`, `contractFields`, `metadataFields`).
 
 ---
 
@@ -305,3 +311,4 @@ A cog at Level 1 is registry-locatable. At Level 2 it is identifiable to unfamil
 | Version | Date | Changes |
 |---------|------|---------|
 | 1.0-draft | 2026-04-27 | Initial draft. Consolidates the cog file format as an optional MX layer. Cog structural fields previously bundled in the MX Core Metadata note (§8) move here; the cog magic-header comment and `cogHeader` frontmatter field previously specified in the MX Cog Identification note are merged in here. The Cog Identification note is withdrawn. |
+| 1.1-draft | 2026-04-27 | Removed the Zone 1 / Zone 2 entry from §3 Terminology (the two-zone preamble is now stated once in §1 Abstract). Expanded the Abstract's "Out of scope" list to call out non-YAML carriers (governed by the MX Carrier Formats note), document identity field semantics (governed by the MX Core Metadata note), and namespace policy (governed by the MX Extensions note). |
