@@ -1,6 +1,6 @@
 ---
 title: "MX Contract Fingerprinting and Signing note"
-version: "1.0-draft"
+version: "1.1-draft"
 created: 2026-04-26
 modified: 2026-04-27
 author: Tom Cranstoun
@@ -19,7 +19,7 @@ mx:
 
 # MX Contract Fingerprinting and Signing note
 
-**Version:** 1.0-draft
+**Version:** 1.1-draft
 **Status:** Draft by Tom Cranstoun, offered to The Gathering for review
 **Date:** 27 April 2026
 **Author:** Tom Cranstoun
@@ -29,11 +29,13 @@ mx:
 
 ## 1. Abstract
 
-This note specifies how an MX cog declares the scope of its signature. Cog signing is intended to be portable, transparent, and replay-resistant: a cog moved between systems, registries, or implementations MUST be verifiable without reconstructing the original authoring environment. Two frontmatter fields — `contractFields` and `metadataFields` — make the signature scope explicit.
+**Signing is optional.** Most cogs ship unsigned. This note specifies the contract a cog satisfies *when it elects to be signed* — it does not require a cog to be signed.
+
+When a cog is signed, the signing must be portable, transparent, and replay-resistant: a cog moved between systems, registries, or implementations must be verifiable without reconstructing the original authoring environment. Two frontmatter fields — `contractFields` and `metadataFields` — make the signature scope explicit.
 
 `contractFields` lists the top-level frontmatter keys whose values are covered by the cog's signature. `metadataFields` lists keys explicitly excluded — values that may change without invalidating the signature (timestamps, tags, registry annotations).
 
-The signing algorithm itself (key types, signature format, transport) is out of scope here; this note defines only the **fingerprint**: the deterministic byte sequence over which a signature is produced.
+The signing algorithm itself (key types, signature format, transport) is out of scope here; this note defines only the **fingerprint**: the deterministic byte sequence over which a signature is produced. Signing is governed end-to-end by an external signer/verifier; the canon defined here is the format the signer reads and the verifier checks.
 
 ---
 
@@ -139,6 +141,39 @@ metadataFields:
 - Keys not listed in either array are **implementation-defined** — verifiers MAY default unlisted keys to either category, but MUST document their choice.
 - A best-practice declaration lists every top-level frontmatter key in exactly one of the two arrays.
 
+### 4.3 Mandatory fields when signing
+
+When a cog is signed, the following frontmatter MUST be present and well-formed. A signer MUST refuse to sign a cog that fails any of these checks; a verifier MUST refuse a signed cog whose mandatory fields are missing or malformed.
+
+| Field | Requirement | Rationale |
+|-------|-------------|-----------|
+| `title` | Non-empty string at the top level. | The signed claim records what was signed; without a title there is no human-readable identity to bind to. |
+| `validatesAgainst` | Non-empty array of validator names. Every entry MUST be resolvable — that is, registered with the verifying runtime — and MUST pass when executed. | The signature claims the cog passed every named validator at sign time. An unresolvable validator means the claim cannot be interpreted; a failing validator means the claim is false. |
+| `schema` | Reference to the schema document that defines the cog's contract structure. If declared in frontmatter, MUST resolve to a real schema. | The schema specifies the contract shape the signed claim covers. |
+
+These three fields together form the *minimum signed surface*. The fingerprint algorithm in §5 covers them automatically because they are top-level frontmatter keys typically named in `contractFields`.
+
+A signer SHOULD perform these checks during a pre-signature review pass (§6.4) before producing a fingerprint. A signer that emits signatures over cogs missing any of the three is not conforming.
+
+### 4.4 Default-excluded metadata fields
+
+When a schema does not explicitly declare which top-level keys are part of the contract, implementations SHOULD treat the following as `metadataFields` by default — that is, exclude them from the fingerprint:
+
+- `modified`
+- `version`
+- `created`
+- `author`
+- `updateInstructions`
+
+These values change with editorial activity that does not alter the contract surface. Excluding them by default lets a cog be re-edited (timestamp bumped, version incremented) without invalidating its signature.
+
+The default can be overridden via a schema declaration:
+
+- `x-mx-contractFields` (positive list) — when present, only the named keys are part of the contract; everything else is metadata.
+- `x-mx-metadataFields` (negative list) — when present, the named keys are excluded; everything else is contract.
+
+If both are declared, the positive list (`x-mx-contractFields`) takes priority.
+
 ---
 
 ## 5. The fingerprint algorithm
@@ -187,15 +222,40 @@ The fingerprint is `SHA-256` of these bytes.
 
 ---
 
-## 6. Verifier conformance
+## 6. Conformance: signers and verifiers
+
+### 6.1 Signer conformance
+
+A signer:
+
+- MUST refuse to sign a cog that fails the §4.3 mandatory-fields check (missing `title`, missing or unresolvable `validatesAgainst`, missing/invalid `schema`).
+- MUST run every validator listed in `validatesAgainst` and refuse to sign if any reports failure.
+- MUST treat `contractFields` and `metadataFields` as authoritative when both are declared.
+- MUST treat the §4.4 default-excluded metadata field list as the fallback when neither `contractFields` nor `metadataFields` is declared and the schema does not override.
+
+### 6.2 Verifier conformance
 
 A verifier:
 
 - MUST refuse a signed cog whose `contractFields` and `metadataFields` overlap.
 - MUST refuse a signed cog whose declared `contractFields` cannot be reconstructed from the frontmatter (missing keys would change the projection).
+- MUST refuse a signed cog missing any of the §4.3 mandatory fields, or whose `validatesAgainst` entries cannot be resolved or fail validation at verification time.
 - SHOULD warn when frontmatter contains top-level keys not listed in either array.
 - SHOULD log the resolved `contractFields` set alongside any verification result for transparency.
 - MUST NOT silently substitute a default scope when the cog declares neither array.
+
+### 6.3 Recommended pre-signature review pipeline
+
+A conforming signer SHOULD execute a multi-phase review before producing a signature. A typical pipeline:
+
+1. **Inventory** — enumerate all sections and top-level fields of the cog.
+2. **Classify** — assign each section a layer (declarative, executable, narrative).
+3. **Lift** — identify the load-bearing body sections that materially affect the contract.
+4. **Declare-Contracts** — audit that `schema` and `validatesAgainst` are declared, well-formed, and reference resolvable validators (§4.3 check).
+5. **Validate** — run every validator named in `validatesAgainst`. All MUST pass.
+6. **Notarise** — only when phases 1–5 succeed, compute the fingerprint per §5 and produce the signature.
+
+Implementations MAY combine, rename, or extend phases. The MUST is that a signer never produces a signature over an artefact that has not passed an equivalent of phases 4 and 5.
 
 ---
 
@@ -243,3 +303,4 @@ The following are flagged for community discussion before this draft is offered 
 |---------|------|---------|
 | 1.0-proposed | 2026-04-26 | Initial draft. Imports the contract-fingerprinting model from earlier reference implementations, drops the `x-mx-` prefix to make the fields first-class, defines the canonical JSON / SHA-256 fingerprint algorithm. |
 | 1.0-draft | 2026-04-27 | Renamed from "MX Contract Fingerprinting and Signing Standard" to a "note" to clarify this is a draft by Tom Cranstoun, not a ratified standard. Made the note standalone — removed cross-references to other Gathering drafts and inlined required material. |
+| 1.1-draft | 2026-04-27 | §1 abstract gains an explicit statement that signing is optional. New §4.3 documents the mandatory fields when signing (`title`, `validatesAgainst` with resolvable validators, `schema`). New §4.4 documents the default-excluded metadata fields (`modified`, `version`, `created`, `author`, `updateInstructions`) plus the `x-mx-contractFields` / `x-mx-metadataFields` schema overrides. §6 split into signer (§6.1), verifier (§6.2), and recommended pre-signature review pipeline (§6.3) — the canonical Inventory → Classify → Lift → Declare-Contracts → Validate → Notarise sequence. |

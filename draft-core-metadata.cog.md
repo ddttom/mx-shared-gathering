@@ -14,12 +14,12 @@ mx:
   tags: [draft, metadata, core, conformance, specification]
   audience: [humans, machines]
   cacheability: permanent
-  runbook: "This is the MX Core Metadata note — a draft authored by Tom Cranstoun, offered to The Gathering for review. It defines Zone 1 identity fields, Zone 2 operational fields, and cog structural fields. Use the conformance level tables to determine which fields are required at each level. This note stands alone; it does not depend on any other draft."
+  runbook: "This is the MX Core Metadata note — a draft authored by Tom Cranstoun, offered to The Gathering for review. It defines Zone 1 identity fields, Zone 2 operational fields, and pass-through fields for documents that adopt MX metadata. Use the conformance level tables to determine which fields are required at each level. This note stands alone; it does not depend on any other draft."
 ---
 
 # MX Core Metadata note
 
-**Version:** 1.2-draft
+**Version:** 1.3-draft
 **Status:** Draft by Tom Cranstoun, offered to The Gathering for review
 **Date:** 27 April 2026
 **Author:** Tom Cranstoun
@@ -29,13 +29,11 @@ mx:
 
 ## 1. Abstract
 
-This note defines the core metadata vocabulary for the Machine Experience (MX) framework. It specifies the foundational fields that every MX-aware document — whether a cog file, a folder metadata file, or any carrier-format document — must, should, or may declare.
+This note defines the core machine-readable document-metadata vocabulary for the Machine Experience (MX) framework. It specifies the foundational fields that every MX-aware document — whether a markdown file, an HTML page, a YAML sidecar, or any other text-bearing artefact — must, should, or may declare.
 
-The core vocabulary is organised into three groups: Zone 1 identity fields (top-level document identity), Zone 2 operational fields (governance, classification, and distribution metadata under the `mx:` namespace), and cog structural fields (fields specific to the cog document format).
+The core vocabulary is organised into three groups: Zone 1 identity fields (top-level document identity), Zone 2 operational fields (governance, classification, and distribution metadata under the `mx:` namespace), and pass-through fields (YAML keys whose semantics MX borrows from established external vocabularies — Dublin Core, Schema.org, BCP 47, SPDX — without redefinition).
 
-This note establishes the conformance level framework (Level 1, Level 2, Level 3) that all companion MX drafts adopt by reference.
-
-**Machine-readable source.** The canonical field dictionary for this note is [`mx-canon/ssot/fields-data.yaml`](../../../mx-canon/ssot/fields-data.yaml) — a sanitised core of ~103 fields covering identity, classification, relationships, lifecycle, machine-readability infrastructure, folder metadata, cog contract, and non-YAML markup carriers. Carrier-format schemas (code, database, media) live in the companion [`mx-canon/ssot/fields-data-carriers.yaml`](../../../mx-canon/ssot/fields-data-carriers.yaml) as specified in the MX Carrier Formats note. Vendor extensions (e.g. `cognovamx-fields.yaml`) are out of scope for this core note.
+The cog file format is **not** described here. Cogs are an optional layer on top of MX, covered by the MX Cogs draft note in the same draft set. A document can carry MX metadata without ever being a cog.
 
 ---
 
@@ -69,10 +67,16 @@ This note specifies:
 
 - **Zone 1 identity fields** — top-level document identity (title, description, author, dates, version)
 - **Zone 2 core operational fields** — classification, governance, and distribution metadata
-- **Cog structural fields** — fields specific to the cog document format (.cog.md files)
+- **Pass-through fields** — fields where MX provides a YAML key but defers the value semantics to a published external vocabulary
 - **The conformance level framework** — Level 1/2/3 definitions
 
-### 3.2 Relationship to existing standards
+### 3.2 What this note does not cover
+
+- The cog file format (an optional layer over MX). A separate draft note covers cogs.
+- Any signing or fingerprint contract a document might choose to carry.
+- Carrier-format mappings (how the same field is expressed in HTML meta tags, JSDoc, CSS comments, etc.).
+
+### 3.3 Relationship to existing standards
 
 This note draws on the following published standards. All field names in this note use camelCase, follow spelling-neutral forms (e.g. `license`, not `licence`, when an SPDX-aligned identifier is required), and use ISO 8601 date format (YYYY-MM-DD) for all date fields:
 
@@ -85,11 +89,10 @@ This note draws on the following published standards. All field names in this no
 
 ## 4. Terminology
 
-- **Cog** — A `.cog.md` file. The atomic unit of the MX document system. A markdown document with structured YAML frontmatter, optionally containing typed content blocks (prose, action, definition, code, html, sop, etc.) within the body.
 - **Zone 1** — Top-level YAML frontmatter fields (outside the `mx:` object). Document identity fields.
 - **Zone 2** — Fields nested under the `mx:` object in YAML frontmatter. MX-operational fields.
-- **Profile** — A named set of fields applicable to a specific document type (e.g., `core`, `cog`, `folder`, `book`).
-- **Carrier format** — The mechanism by which a non-markdown file carries MX metadata (HTML meta tags, JSDoc comments, CSS comments, etc.). Out of scope for this note.
+- **Pass-through field** — A field name MX provides as a YAML key whose value semantics are owned by an established external vocabulary (Dublin Core, Schema.org, BCP 47, SPDX, ...). MX does not redefine; it simply carries the key.
+- **Profile** — A named set of fields applicable to a specific document type (e.g., `core`, `folder`, `book`).
 - **SSOT** — Single Source of Truth. The authoritative source for a given piece of information.
 
 ---
@@ -745,319 +748,51 @@ mx:
 
 ---
 
-## 8. Field definitions — Cog structural fields
+## 8. Pass-through fields
 
-The following fields are specific to cog documents (`.cog.md` files). They provide registry classification, dependency management, and structural composition. All cog structural fields reside in Zone 2 (the `mx:` object).
+A **pass-through field** is a YAML key MX provides whose value semantics belong to an established external vocabulary. MX does not redefine the value's meaning. The key exists so authors don't have to switch syntax mid-frontmatter to use the external vocabulary; tooling treats the field as the aligned external field.
 
-### 8.1 `category`
+The pattern is:
 
-| Property | Value |
-|----------|-------|
-| **Type** | string |
-| **Zone** | 2 (mx:) |
-| **Profile** | cog |
-| **Conformance** | MUST (Level 1) for cog documents |
-| **Default** | *(none — explicit declaration required)* |
+1. The external vocabulary owns the value semantics.
+2. MX names a YAML key (camelCase, in keeping with the rest of the vocabulary).
+3. Canon entries declare the alignment via `alignsWith:` so that converters and validators can route the value to the external standard's schema.
 
-**Definition:** Cog category. Determines registry grouping.
+### 8.1 Inventory
 
-**Example:**
+The current pass-through inventory (matching the `alignsWith:` declarations in `fields-data.yaml`):
 
-```yaml
-mx:
-  category: standard
-```
+| Field | Aligns with | Value | Conformance |
+|-------|-------------|-------|:-----------:|
+| `date` | Dublin Core `dc:date`, Schema.org `Date` | ISO 8601 date for a generic reference event distinct from `created` / `modified`. | MAY |
+| `duration` | Schema.org `duration` | ISO 8601 duration (e.g. `PT1H30M`). For time-based content. | MAY |
+| `format` | Dublin Core `dc:format`, Schema.org `encodingFormat` | Media type or file format string. | MAY |
+| `rights` | Dublin Core `dc:rights`, Schema.org `license` | Free-form rights statement when an SPDX identifier does not fit. | MAY |
+| `displayName` | FOAF `displayName`, Schema.org `alternateName` | Citation form when it differs from `title`. | MAY |
+| `usage` | Schema.org `usageInfo` | Guidance on how the document is meant to be consumed. | MAY |
+| `url` | Schema.org `url`, Dublin Core `identifier` | Canonical URL where the document lives or is published. | MAY |
 
-**Normative notes:**
+### 8.2 Externally-aligned fields (genuineness family)
 
-- Common values: `mx-core`, `mx-tool`, `mx-contact`, `mx-ops`, `mx-content`.
-- This field is REQUIRED for all cog files.
+The following MX-defined fields carry semantics MX itself names but model after established standards. They are not strict pass-through (the field name is MX's), but they are alignment-anchored and tooling SHOULD interoperate with the cited standards:
 
----
+| Field | Aligns with | Purpose |
+|-------|-------------|---------|
+| `proofOfAuthorship` | W3C Verifiable Credentials, Signed Exchanges | Cryptographic claim that the named author wrote this. |
+| `integritySignature` | RFC 9421 HTTP Message Signatures, Subresource Integrity | Hash or signature over the artefact's content. |
+| `provenancePedigree` | W3C PROV-O, C2PA Content Credentials | Derivation chain back to the source. |
 
-### 8.2 `partOf`
+### 8.3 Adding a new pass-through field
 
-| Property | Value |
-|----------|-------|
-| **Type** | string |
-| **Zone** | 2 (mx:) |
-| **Profile** | cog |
-| **Conformance** | MUST (Level 1) for cog documents |
-| **Default** | *(none — explicit declaration required)* |
+A new pass-through field SHOULD be proposed only when an established external vocabulary cleanly covers the value semantics and there is value in surfacing the key in MX frontmatter. The proposal MUST:
 
-**Definition:** Parent collection, suite, or initiative.
+- Cite the external standard precisely (URL plus the specific field/property name).
+- Declare the alignment in canon via `alignsWith:`.
+- NOT redefine the value's meaning. MX's role is to carry the key, not to govern its semantics.
 
-**Example:**
-
-```yaml
-mx:
-  partOf: mx-the-gathering
-```
-
-**Normative notes:**
-
-- This field is REQUIRED for all cog files. Every cog MUST belong to a named collection.
+If the external standard does not cleanly cover the value, the field is not a pass-through and belongs in the proper Zone 1 / Zone 2 section instead, with full MX semantics.
 
 ---
-
-### 8.3 `buildsOn`
-
-| Property | Value |
-|----------|-------|
-| **Type** | array |
-| **Zone** | 2 (mx:) |
-| **Profile** | cog |
-| **Conformance** | SHOULD (Level 2) for cog documents |
-| **Default** | *(empty array)* |
-
-**Definition:** Context graph. Array of cog names this document builds upon. Soft dependency — provides context, not a hard requirement.
-
-**Example:**
-
-```yaml
-mx:
-  buildsOn: [what-is-a-cog, cog-unified-spec]
-```
-
-**Normative notes:**
-
-- `buildsOn` forms the cog knowledge graph. It is a soft dependency — the referenced cogs provide context but are not required for this cog to function.
-- Distinct from `requires` (hard dependency) and `refersTo` (informational link).
-
----
-
-### 8.4 `requires`
-
-| Property | Value |
-|----------|-------|
-| **Type** | array |
-| **Zone** | 2 (mx:) |
-| **Profile** | cog |
-| **Conformance** | SHOULD (Level 2) for cog documents |
-| **Default** | *(empty array)* |
-
-**Definition:** Hard dependencies. Array of cog names that MUST exist for this cog to function.
-
-**Example:**
-
-```yaml
-mx:
-  requires: [node-runtime, markdownlint-cli2]
-```
-
-**Normative notes:**
-
-- A cog MUST NOT be considered functional if any of its `requires` entries are missing.
-- Distinct from `buildsOn` (soft context dependency).
-
----
-
-### 8.5 `refersTo`
-
-| Property | Value |
-|----------|-------|
-| **Type** | array |
-| **Zone** | 2 (mx:) |
-| **Profile** | cog |
-| **Conformance** | MAY (Level 3) |
-| **Default** | *(empty array)* |
-
-**Definition:** Related cogs or external resources. Informational links, not dependencies.
-
-**Example:**
-
-```yaml
-mx:
-  refersTo: [field-dictionary, cog-unified-spec]
-```
-
----
-
-### 8.6 `includes`
-
-| Property | Value |
-|----------|-------|
-| **Type** | array |
-| **Zone** | 2 (mx:) |
-| **Profile** | cog |
-| **Conformance** | MAY (Level 3) |
-| **Default** | *(empty array)* |
-
-**Definition:** Cog composition — content reuse without duplication. Array of include declarations, each specifying a source cog, optional block filter, and resolution mode.
-
-**Example:**
-
-```yaml
-mx:
-  includes:
-    - source: "shared/validation-policy.cog.md"
-      blocks: [sop]
-      resolution: build
-```
-
-**Normative notes:**
-
-- Structural composition. Included content is merged into the cog; the including cog's own content overrides included content of the same type.
-- Distinct from `buildsOn` (soft recommendation) and `requires` (hard dependency).
-- The `resolution` sub-field controls when inclusion happens: `build` resolves at build time and inlines content; `runtime` resolves on each request.
-
----
-
-### 8.7 `blocks`
-
-| Property | Value |
-|----------|-------|
-| **Type** | array |
-| **Zone** | 2 (mx:) |
-| **Profile** | cog |
-| **Conformance** | MAY (Level 3) |
-| **Valid values** | prose, action, definition, essence, provenance, version, code, html, sop, security |
-| **Default** | *(none)* |
-
-**Definition:** Declares block types present in the document body.
-
-**Example:**
-
-```yaml
-mx:
-  blocks: [prose, definition, code]
-```
-
-**Normative notes:**
-
-- Block types are typed regions in the cog body (e.g. fenced code with a language tag, or a labelled section). Each value in the array names a block type expected to appear at least once in the document body.
-- The `prose` block is implicit in every cog and need not be declared.
-
----
-
-### 8.8 `execute`
-
-| Property | Value |
-|----------|-------|
-| **Type** | object |
-| **Zone** | 2 (mx:) |
-| **Profile** | cog |
-| **Conformance** | MAY (Level 3) |
-| **Default** | *(none)* |
-
-**Definition:** Action block. Contains runtime, command, actions, and policy. Its presence makes a cog an action-doc.
-
-**Example:**
-
-```yaml
-mx:
-  execute:
-    runtime: node
-    command: "node scripts/validate.js"
-```
-
-**Normative notes:**
-
-- The presence of an `execute` field distinguishes action-docs from info-docs.
-- Action cogs SHOULD live in the `scripts/` folder.
-
----
-
-### 8.9 `policy`
-
-| Property | Value |
-|----------|-------|
-| **Type** | string-or-object |
-| **Zone** | 2 (mx:) |
-| **Profile** | cog |
-| **Conformance** | MAY (Level 3) |
-| **Default** | *(none)* |
-
-**Definition:** Content handling rules for agents. Inherited from uber docs via effective doc resolution.
-
-**Example:**
-
-```yaml
-mx:
-  policy: "inherit from parent uber-doc"
-```
-
----
-
-### 8.10 `deliverable`
-
-| Property | Value |
-|----------|-------|
-| **Type** | string-or-array |
-| **Zone** | 2 (mx:) |
-| **Profile** | cog |
-| **Conformance** | MAY (Level 3) |
-| **Default** | *(none)* |
-
-**Definition:** What this cog produces or delivers. Declares the tangible output — a report, a validated artefact, a trained team, a published page.
-
-**Example:**
-
-```yaml
-mx:
-  deliverable: "validated cog registered in REGINALD"
-```
-
-**Normative notes:**
-
-- For action-docs, describes what running the actions produces.
-- For info-docs, describes the knowledge or artefact the cog represents.
-- The value MAY be an array for cogs with multiple deliverables.
-
----
-
-### 8.11 `cogId`
-
-| Property | Value |
-|----------|-------|
-| **Type** | string |
-| **Zone** | 2 (mx:) |
-| **Profile** | cog |
-| **Conformance** | SHOULD (Level 2) for cog documents |
-| **Default** | *(derived from filename)* |
-
-**Definition:** Unique cog identifier within the registry.
-
-**Example:**
-
-```yaml
-mx:
-  cogId: "field-dictionary"
-```
-
-**Normative notes:**
-
-- Typically derived from the filename without the `.cog.md` extension.
-- MUST be unique within the registry.
-
----
-
-### 8.12 `cogType`
-
-| Property | Value |
-|----------|-------|
-| **Type** | string |
-| **Zone** | 2 (mx:) |
-| **Profile** | cog |
-| **Conformance** | SHOULD (Level 2) for cog documents |
-| **Valid values** | info, action, routing, certificate-of-genuineness |
-| **Default** | *(none)* |
-
-**Definition:** Cog type classification.
-
-**Example:**
-
-```yaml
-mx:
-  cogType: info
-```
-
-**Normative notes:**
-
-- `info` — reference or documentation cog.
-- `action` — has an `execute` block; performs operations.
-- `routing` — agent navigation cog.
-- `certificate-of-genuineness` — publisher-provenanced credential with a publisher block.
 
 ---
 
@@ -1095,24 +830,9 @@ mx:
 | `inherits` | — | — | MAY |
 | `ld` | — | — | MAY |
 
-### 9.3 Cog structural fields
+### 9.3 Pass-through fields
 
-These conformance levels apply only to cog documents (`.cog.md` files).
-
-| Field | Level 1 (MUST) | Level 2 (SHOULD) | Level 3 (MAY) |
-|-------|:-:|:-:|:-:|
-| `category` | MUST | — | — |
-| `partOf` | MUST | — | — |
-| `buildsOn` | — | SHOULD | — |
-| `requires` | — | SHOULD | — |
-| `cogId` | — | SHOULD | — |
-| `cogType` | — | SHOULD | — |
-| `refersTo` | — | — | MAY |
-| `includes` | — | — | MAY |
-| `blocks` | — | — | MAY |
-| `execute` | — | — | MAY |
-| `policy` | — | — | MAY |
-| `deliverable` | — | — | MAY |
+All pass-through fields (§8) are MAY at Level 3. They appear in MX frontmatter at the author's discretion when an external vocabulary applies.
 
 ---
 
@@ -1144,5 +864,6 @@ These conformance levels apply only to cog documents (`.cog.md` files).
 
 | Version | Date | Changes |
 |---------|------|---------|
-| 1.0-draft | 2026-04-02 | Initial draft. Initial draft. |
-| 1.2-proposed | 2026-04-26 | Added Zone 1 fields `schema` (§6.7) and `validatesAgainst` (§6.8) — schema-reference and conformance-claim fields imported from cog-spec v1.0 (mx-upgraded-reginald). Both at conformance level MAY. |
+| 1.0-draft | 2026-04-02 | Initial draft. |
+| 1.2-proposed | 2026-04-26 | Added Zone 1 fields `schema` (§6.7) and `validatesAgainst` (§6.8) — schema-reference and conformance-claim fields. Both at conformance level MAY. |
+| 1.3-draft | 2026-04-27 | Removed all cog content (the 12 cog structural fields and the cog terminology entry); cogs are an optional layer covered by the MX Cogs draft note. Added §8 "Pass-through fields" naming the pattern, listing the canonical inventory (`date`, `duration`, `format`, `rights`, `displayName`, `usage`, `url`), and documenting the rule for adding new pass-through fields. |
