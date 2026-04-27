@@ -10,7 +10,7 @@ The **MX Field Definition Pattern note** is the primary note of the set: it spec
 
 | Draft | File | Status |
 |-------|------|--------|
-| **MX Field Definition Pattern note** *(primary)* | [draft-field-pattern.md](draft-field-pattern.md) | Draft (v1.0-draft) — the authoring pattern every sister note follows when defining a frontmatter field. |
+| **MX Field Definition Pattern note** *(primary)* | [draft-field-pattern.md](draft-field-pattern.md) | Draft (v1.1-draft) — the authoring pattern every sister note follows when defining a frontmatter field; recommends a reading order across the draft set. |
 | **MX Core Metadata note** | [draft-core-metadata.md](draft-core-metadata.md) | Draft (v1.5-draft) — Zone 1 / Zone 2 document metadata and pass-through fields. |
 | **MX Cogs note** | [draft-cogs.md](draft-cogs.md) | Draft (v1.3-draft) — the `.cog.md` file format as an optional layer on top of MX. |
 | **MX Extensions note** | [draft-extensions.md](draft-extensions.md) | Draft (v1.3-draft) — namespace policy and context-specific naming. |

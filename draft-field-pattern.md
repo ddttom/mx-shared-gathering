@@ -16,7 +16,7 @@ author:
 
 # MX Field Definition Pattern note
 
-**Version:** 1.0-draft
+**Version:** 1.1-draft
 **Status:** Draft by Tom Cranstoun, offered to The Gathering for review — **primary note of the MX draft set**
 **Date:** 27 April 2026
 **Author:** Tom Cranstoun
@@ -73,6 +73,21 @@ This note is a draft authored by Tom Cranstoun and offered to The Gathering for 
 ### 3.3 Relationship to existing standards
 
 This note follows the [IETF RFC format](https://www.rfc-editor.org/rfc/rfc7322) for standards-document authoring and uses the [RFC 2119](https://www.rfc-editor.org/rfc/rfc2119) keyword vocabulary. The pattern itself is a stylistic convention layered on top of those, not a redefinition of either.
+
+### 3.4 Recommended reading order across the draft set
+
+Each sister note is self-contained and may be read in any order. For a newcomer to the draft set, the following sequence orients the vocabulary from the floor upwards before reaching the optional layers:
+
+1. **MX Field Definition Pattern note** *(this note)* — the authoring pattern every other note follows when defining a frontmatter field. Read first.
+2. **MX Core Metadata note** — the floor. Document-identity and operational fields every MX-aware artefact declares (`title`, `author`, `created`, `description`, `status`, `contentType`, ...) plus the pass-through inventory.
+3. **MX Provenance note** — extends the floor with attribution, trust, maintenance, and decision-record references — the metadata that makes a document's origin and stewardship verifiable.
+4. **MX Extensions note** — namespace policy: how vendors extend the vocabulary (`x-mx-`, `x-mx-p-`) without polluting the core, plus context-specific naming across syntactic carriers.
+5. **MX Carrier Formats note** — how MX metadata is carried across markdown, HTML, JSDoc, CSS, shell, EXIF/XMP, sidecar, and SQL carriers, plus a small code-specific provenance vocabulary.
+6. **MX Cogs note** — the optional `.cog.md` layer for documents that want to be navigable, composable, and runnable by agents.
+7. **MX Workflow Contracts note** — top-level fields for cogs that declare an executable approval, review, or procedural workflow.
+8. **MX Contract Fingerprinting and Signing note** — the signing format a cog uses *when it elects to be signed*. Signing is optional.
+
+The order moves from authoring discipline (this note) to the universal floor, then enriches the floor (provenance, extensions), maps it onto carriers (carrier formats), and finally reaches the optional cog layer and its three specialisations. A reader interested only in a specific topic — say, signing a contract cog — can jump directly to the relevant note; the listed prerequisites are recommendations, not normative dependencies.
 
 ---
 
@@ -231,6 +246,7 @@ A second-order consideration: a uniform field-definition pattern makes automated
 | Version | Date | Changes |
 |---------|------|---------|
 | 1.0-draft | 2026-04-27 | Initial draft. Proposes a single uniform pattern for defining a frontmatter field inside any MX draft note: heading, property table, definition prose, example, optional supplementary material. Defines the property table's required and optional rows, naming and ordering conventions, and authoring rules. Documents the pass-through field pattern as a recognised second variant (§4.4) for fields whose semantics are owned by external vocabularies. Makes the pattern normative for the entire MX draft set: every sister note proposing fields MUST adhere. Introduces no new frontmatter fields itself, and motivates the discipline by noting that machines need *more* fields, tightly constrained, to understand document intent. |
+| 1.1-draft | 2026-04-27 | Added §3.4 "Recommended reading order across the draft set": an eight-item ordered list orienting newcomers from the authoring pattern (this note) through the universal floor, provenance, extensions, carrier mapping, and the optional cog layer. The reading order is advisory; each sister note remains self-contained. |
 
 ---
 
