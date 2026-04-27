@@ -109,8 +109,6 @@ contractFields:
   - x-mx-approvalProcedure
 ```
 
-**Normative notes:**
-
 - The array MUST be disjoint from `metadataFields`.
 - Every entry SHOULD reference a key that exists in the frontmatter; verifiers MAY treat stray entries as a warning.
 - Entries MAY include `x-mx-` and `x-mx-p-` namespaced fields. Private fields included in `contractFields` are still covered by the signature even though their values are obfuscated.
@@ -134,8 +132,6 @@ metadataFields:
   - modified
   - tags
 ```
-
-**Normative notes:**
 
 - The array MUST be disjoint from `contractFields`.
 - Keys not listed in either array are **implementation-defined** — verifiers MAY default unlisted keys to either category, but MUST document their choice.

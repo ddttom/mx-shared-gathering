@@ -133,8 +133,6 @@ cogHeader:
   runtimeDoc: https://example.org/cog-runtime.md
 ```
 
-**Normative notes:**
-
 - A cog declaring `cogHeader` MUST populate `version` and `spec`.
 - `runtime` and `runtimeDoc` are optional; consumers MUST NOT treat their absence as a conformance failure.
 - All URL-typed sub-keys SHOULD be HTTPS.
@@ -199,8 +197,6 @@ mx:
   buildsOn: [what-is-a-cog, cog-unified-spec]
 ```
 
-**Normative notes:**
-
 - `buildsOn` forms the cog knowledge graph. The referenced cogs provide context but are not required for this cog to function.
 - Distinct from `requires` (hard dependency) and `refersTo` (informational link).
 
@@ -220,8 +216,6 @@ mx:
 mx:
   requires: [node-runtime, markdownlint-cli2]
 ```
-
-**Normative notes:**
 
 - A cog MUST NOT be considered functional if any of its `requires` entries are missing.
 - Distinct from `buildsOn` (soft context) and `refersTo` (informational link).
