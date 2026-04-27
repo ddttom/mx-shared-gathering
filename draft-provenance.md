@@ -17,7 +17,7 @@ author:
 
 # MX Provenance note
 
-**Version:** 1.0-draft
+**Version:** 1.1-draft
 **Status:** Draft by Tom Cranstoun, offered to The Gathering for review
 **Date:** 27 April 2026
 **Author:** Tom Cranstoun
@@ -29,7 +29,7 @@ author:
 
 This note defines the provenance, trust, and verification metadata vocabulary for the Machine Experience (MX) framework. It specifies the fields that establish who created content, how it was created, how trustworthy it is, who maintains it, and what governance decisions shaped it.
 
-The provenance vocabulary is organised into five groups: attribution fields (authorship and origin), quality and trust fields (reliability commitments), maintenance fields (ongoing stewardship), decision record references (governance links), and migration fields (content relocation tracking).
+The provenance vocabulary is organised into five groups: **attribution fields** (authorship and origin), **quality and trust fields** (reliability commitments), **maintenance fields** (ongoing stewardship), **decision record references** (governance links), and **migration fields** (content relocation tracking).
 
 ---
 
@@ -39,7 +39,7 @@ The key words "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL NOT", "SHOULD", "S
 
 ### 2.1 Conformance levels
 
-This note defines three conformance levels for provenance metadata (modelled on the [WCAG 2.1](https://www.w3.org/TR/WCAG21/) Level A/AA/AAA pattern). Throughout this note, references to a top-level `author` field describe a string identifying the document's creator, located in the YAML frontmatter outside the `mx:` object — a near-universal convention in markdown-based authoring systems.
+This note defines three conformance levels for provenance metadata. References to a top-level `author` field describe a string identifying the document's creator, located in the YAML frontmatter outside the `mx:` object — a near-universal convention in markdown-based authoring systems.
 
 | Level | Name | Provenance requirement |
 |-------|------|------------------------|
@@ -57,9 +57,7 @@ This note is a draft authored by Tom Cranstoun and offered to The Gathering for 
 
 ## 3. Scope
 
-### 3.1 What this note covers
-
-This note specifies:
+### 3.1 In scope
 
 - **Attribution fields** — authorship, publishing entity, content origin, source material, and generation instructions
 - **Quality and trust fields** — accuracy commitments, review cycles, compliance levels, and the quality triad
@@ -67,25 +65,20 @@ This note specifies:
 - **Decision record references** — links to architecture, naming, and business decision records
 - **Migration fields** — content relocation tracking
 
-### 3.2 Relationship to existing standards
+### 3.2 Out of scope
 
-All field names in this note use camelCase (matching the [Schema.org Style Guide](https://schema.org/docs/styleguide.html)) and avoid regional spelling variants where an established identifier system (e.g. SPDX) supplies a canonical spelling. All date fields use [ISO 8601](https://www.iso.org/iso-8601-date-and-time-format.html) format (YYYY-MM-DD). The quality triad references [WCAG 2.1](https://www.w3.org/TR/WCAG21/) for accessibility and [Schema.org](https://schema.org/) JSON-LD for semantic structure.
+- **Document identity fields** — `title`, `description`, `author`, `created`, `modified`, `version` are governed by the MX Core Metadata note. This note refers to the top-level `author` but does not redefine it.
+- **AI/agent governance** — how agents may interact with content (read, edit, regenerate, attribute) is a separate concern; this note declares only how content was created (`provenanceOrigin`).
+- **Cryptographic verification** — fingerprinting, signing, and signature verification are governed by a separate note. The `provenancePedigree`, `proofOfAuthorship`, and `integritySignature` fields are named in core metadata; their cryptographic mechanics are out of scope here.
+- **Carrier-format mappings** — how these fields are expressed in HTML, JSDoc, CSS, etc. is governed by the MX Carrier Formats note.
 
----
+### 3.3 Relationship to existing standards
 
-## 4. Terminology
-
-- **Provenance** — The chain of authorship, origin, and publication that establishes who created content and how.
-- **Trust chain** — The complete set of provenance, quality, and maintenance metadata that allows an agent to assess content reliability.
-- **Quality triad** — The three quality dimensions: accessibility, semantic quality, and convergence.
-- **Decision record** — A formal record (ADR, NDR, or BDR) documenting an architectural, naming, or business decision that governs this content.
-- **Zone 1** — Top-level YAML frontmatter fields (outside the `mx:` object). Document identity fields (title, description, author, dates, version).
-- **Zone 2** — Fields nested under the `mx:` object in YAML frontmatter. MX-operational fields including the provenance fields specified in this note.
-- **Profile** — A named set of fields applicable to a specific document type (e.g., `core`, `cog`, `report`, `migration`).
+All field names in this note use camelCase (matching the [Schema.org Style Guide](https://schema.org/docs/styleguide.html)) and avoid regional spelling variants where an established identifier system supplies a canonical spelling. All date fields use [ISO 8601](https://www.iso.org/iso-8601-date-and-time-format.html) format (YYYY-MM-DD). The quality triad references [WCAG 2.1](https://www.w3.org/TR/WCAG21/) for accessibility and [Schema.org](https://schema.org/) JSON-LD for semantic structure.
 
 ---
 
-## 5. Provenance in the two-zone model
+## 4. Provenance in the two-zone model
 
 Provenance fields reside in Zone 2 (the `mx:` object), complementing the top-level `author` field that markdown-based authoring conventionally places in Zone 1.
 
@@ -111,104 +104,76 @@ mx:
 
 ---
 
-## 6. Field definitions — Attribution fields
+## 5. Attribution fields
 
-### 6.1 `provenanceAuthor`
+### 5.1 `provenanceAuthor`
 
 | Property | Value |
 |----------|-------|
 | **Type** | string |
 | **Zone** | 2 (mx:) |
-| **Profile** | core |
 | **Conformance** | MUST (Level 1) |
-| **Default** | *(none — explicit declaration required)* |
 
-**Definition:** Person or entity who originally authored the document content.
-
-**Example:**
+Person or entity who originally authored the document content.
 
 ```yaml
 mx:
   provenanceAuthor: "Tom Cranstoun"
 ```
 
-**Normative notes:**
-
-- Part of the provenance group.
 - At Level 1, a document MUST declare either `provenanceAuthor` or a top-level `author` field. Both MAY be present.
 - When both are present, `provenanceAuthor` identifies the original content author, while `author` identifies the document creator. These are often the same person.
 
 ---
 
-### 6.2 `provenancePublisher`
+### 5.2 `provenancePublisher`
 
 | Property | Value |
 |----------|-------|
 | **Type** | string |
 | **Zone** | 2 (mx:) |
-| **Profile** | core |
 | **Conformance** | SHOULD (Level 2) |
-| **Default** | *(none)* |
 
-**Definition:** Entity that published the document.
-
-**Example:**
+Entity that published the document. Distinct from `publisher` (§5.5), which is a richer object used in trust-declaration cogs.
 
 ```yaml
 mx:
   provenancePublisher: "CogNovaMX Ltd"
 ```
 
-**Normative notes:**
-
-- Part of the provenance group.
-- Distinct from `publisher` (Section 6.5), which is a richer object used in Certificate of Genuineness cogs.
-
 ---
 
-### 6.3 `provenanceOrigin`
+### 5.3 `provenanceOrigin`
 
 | Property | Value |
 |----------|-------|
 | **Type** | string |
 | **Zone** | 2 (mx:) |
-| **Profile** | core |
 | **Conformance** | SHOULD (Level 2) |
 | **Valid values** | human-directed, ai-assisted, automated-fact-check |
-| **Default** | *(none)* |
 
-**Definition:** How the content was created. Declares the human-machine authorship balance.
+How the content was created. Declares the human-machine authorship balance.
 
-**Example:**
+- `human-directed` — content authored by a human, possibly with AI tooling assistance.
+- `ai-assisted` — content substantially generated by AI, with human review and direction.
+- `automated-fact-check` — content generated and verified by automated processes.
 
 ```yaml
 mx:
   provenanceOrigin: human-directed
 ```
 
-**Normative notes:**
-
-- Part of the provenance group.
-- `human-directed` — content authored by a human, possibly with AI tooling assistance.
-- `ai-assisted` — content substantially generated by AI, with human review and direction.
-- `automated-fact-check` — content generated and verified by automated processes.
-- `provenanceOrigin` declares how content was created. Companion AI/agent governance fields (out of scope for this note) cover how agents may interact with the content once created.
-
 ---
 
-### 6.4 `source`
+### 5.4 `source`
 
 | Property | Value |
 |----------|-------|
 | **Type** | string-or-array |
 | **Zone** | 2 (mx:) |
-| **Profile** | cog, report |
 | **Conformance** | MAY (Level 3) |
-| **Default** | *(none)* |
 
-**Definition:** Origin source material or input files. Declares the content provenance chain — what materials were used to create this document.
-
-**Example:**
+Origin source material or input files. Declares the content provenance chain — what materials were used to create this document. Paths MAY be relative or absolute.
 
 ```yaml
 mx:
@@ -222,27 +187,17 @@ mx:
     - "customer-feedback.md"
 ```
 
-**Normative notes:**
-
-- Content provenance, distinct from the provenance block type (which declares authorship).
-- The value MAY be a single string or an array of strings.
-- Paths MAY be relative or absolute.
-
 ---
 
-### 6.5 `publisher`
+### 5.5 `publisher`
 
 | Property | Value |
 |----------|-------|
 | **Type** | string-or-object |
 | **Zone** | 2 (mx:) |
-| **Profile** | cog |
 | **Conformance** | MAY (Level 3) |
-| **Default** | *(none)* |
 
-**Definition:** Entity that publishes and stands behind this cog. Can be a string (name) or an object with `name`, `url`, and `contact` sub-fields.
-
-**Example:**
+Entity that publishes and stands behind this document. Can be a string (name) or an object with `name`, `url`, and `contact` sub-fields. Distinct from `provenancePublisher` (§5.2), which is a flat provenance field. The `publisher` field supports richer structured data and is used alongside `accuracyCommitment`, `reviewCycle`, and `mxCompliance` to form a complete trust declaration.
 
 ```yaml
 mx:
@@ -257,26 +212,17 @@ mx:
     contact: "info@cognovamx.com"
 ```
 
-**Normative notes:**
-
-- Distinct from `provenancePublisher` (Section 6.2), which is a flat provenance field. The `publisher` field supports richer structured data and is used in Certificate of Genuineness cogs.
-- Used alongside `accuracyCommitment`, `reviewCycle`, and `mxCompliance` to form a complete trust declaration.
-
 ---
 
-### 6.6 `generate`
+### 5.6 `generate`
 
 | Property | Value |
 |----------|-------|
 | **Type** | object |
 | **Zone** | 2 (mx:) |
-| **Profile** | cog |
 | **Conformance** | MAY (Level 3) |
-| **Default** | *(none)* |
 
-**Definition:** Generation instructions for AI agents. Describes how to regenerate this content if lost or outdated.
-
-**Example:**
+Generation instructions. Describes how to regenerate this content if lost or outdated. If a document is lost, an agent with access to the `generate` instructions and source material can recreate it.
 
 ```yaml
 mx:
@@ -285,109 +231,73 @@ mx:
     source: "quarterly-report.csv"
 ```
 
-**Normative notes:**
-
-- Part of MX OS metadata. If a document is lost, an agent with access to the `generate` instructions and source material can recreate it.
-- The `prompt` sub-field SHOULD contain instructions specific enough for an agent to produce a faithful reconstruction.
+- The `prompt` sub-field SHOULD contain instructions specific enough to produce a faithful reconstruction.
 - The `source` sub-field identifies the input data required for regeneration.
 
 ---
 
-## 7. Field definitions — Quality and trust fields
+## 6. Quality and trust fields
 
-### 7.1 `accuracyCommitment`
+### 6.1 `accuracyCommitment`
 
 | Property | Value |
 |----------|-------|
 | **Type** | string |
 | **Zone** | 2 (mx:) |
-| **Profile** | cog |
 | **Conformance** | MAY (Level 3) |
-| **Default** | *(none)* |
 
-**Definition:** Publisher's commitment to content accuracy. A human-readable statement of the accuracy standard the publisher holds themselves to.
-
-**Example:**
+Publisher's commitment to content accuracy. A human-readable statement of the accuracy standard the publisher holds themselves to. The value SHOULD be a clear, actionable statement that a reader can use to assess the publisher's reliability. Used alongside `publisher`, `reviewCycle`, and `correctionSla` to form a complete trust declaration.
 
 ```yaml
 mx:
   accuracyCommitment: "All factual claims verified against source documentation"
 ```
 
-**Normative notes:**
-
-- Part of the trust metadata group.
-- Used alongside `publisher`, `reviewCycle`, and `correctionSla` to form a complete trust declaration.
-- The value SHOULD be a clear, actionable statement that an agent or reader can use to assess the publisher's reliability.
-
 ---
 
-### 7.2 `reviewCycle`
+### 6.2 `reviewCycle`
 
 | Property | Value |
 |----------|-------|
 | **Type** | string |
 | **Zone** | 2 (mx:) |
-| **Profile** | cog |
 | **Conformance** | SHOULD (Level 2) |
-| **Default** | *(none)* |
 
-**Definition:** How often cog content is reviewed for accuracy.
-
-**Example:**
+How often content is reviewed for accuracy. Common values: `weekly`, `monthly`, `quarterly`, `annually`, `on-change`.
 
 ```yaml
 mx:
   reviewCycle: quarterly
 ```
 
-**Normative notes:**
-
-- Part of the trust metadata group.
-- Common values: `weekly`, `monthly`, `quarterly`, `annually`, `on-change`.
-- Agents MAY use this field to assess whether content is likely to be current.
-
 ---
 
-### 7.3 `correctionSla`
+### 6.3 `correctionSla`
 
 | Property | Value |
 |----------|-------|
 | **Type** | string |
 | **Zone** | 2 (mx:) |
-| **Profile** | cog |
 | **Conformance** | MAY (Level 3) |
-| **Default** | *(none)* |
 
-**Definition:** Service-level agreement for correcting errors. Sets expectations for error correction urgency.
-
-**Example:**
+Service-level agreement for correcting errors. The value SHOULD be a human-readable duration string. Communicates the publisher's responsiveness to reported errors.
 
 ```yaml
 mx:
   correctionSla: "24 hours"
 ```
 
-**Normative notes:**
-
-- The value SHOULD be a human-readable duration string.
-- This field communicates the publisher's responsiveness to reported errors, helping agents and consumers assess trust.
-
 ---
 
-### 7.4 `mxCompliance`
+### 6.4 `mxCompliance`
 
 | Property | Value |
 |----------|-------|
 | **Type** | string-or-object |
 | **Zone** | 2 (mx:) |
-| **Profile** | cog |
 | **Conformance** | MAY (Level 3) |
-| **Default** | *(none)* |
 
-**Definition:** MX compliance level or detailed compliance metadata.
-
-**Example:**
+MX compliance level or detailed compliance metadata. When expressed as a string, the value corresponds to the conformance levels in §2.1 (`level-1`, `level-2`, `level-3`). Used alongside `publisher`, `accuracyCommitment`, and `reviewCycle` to form a complete trust declaration.
 
 ```yaml
 mx:
@@ -402,189 +312,91 @@ mx:
     auditor: "Maxine"
 ```
 
-**Normative notes:**
-
-- Used alongside `publisher`, `accuracyCommitment`, and `reviewCycle` to form a complete trust declaration.
-- When expressed as a string, the value corresponds to the conformance levels defined in §2.1 (`level-1`, `level-2`, `level-3`).
-
 ---
 
-### 7.5 `accessibility`
+### 6.5 The quality triad: `accessibility`, `semantic`, `convergence`
 
-| Property | Value |
-|----------|-------|
-| **Type** | string-or-object |
-| **Zone** | 2 (mx:) |
-| **Profile** | cog |
-| **Conformance** | MAY (Level 3) |
-| **Default** | *(none)* |
+The quality triad is three optional MAY-level fields that together describe document quality across complementary dimensions. Each field MAY be a string (compliance level or summary) or an object with structured assessment data.
 
-**Definition:** Accessibility compliance level. Part of the quality triad: accessibility, semantic, convergence.
-
-**Example:**
+| Field | Dimension | Aligns with |
+|-------|-----------|-------------|
+| `accessibility` | How well content serves users with disabilities | [WCAG 2.1](https://www.w3.org/TR/WCAG21/), Pa11y |
+| `semantic` | How well content uses semantic HTML and structured data | [Schema.org](https://schema.org/) JSON-LD, microdata |
+| `convergence` | How well content aligns human and machine experiences | MX dual-experience principle |
 
 ```yaml
 mx:
   accessibility: "WCAG 2.1 AA"
-```
-
-**Normative notes:**
-
-- The quality triad measures three dimensions of document quality that are central to the MX philosophy.
-- Accessibility measures how well the content serves users with disabilities, following established standards (WCAG 2.1, Pa11y).
-- The value MAY be a string (compliance level) or an object with structured assessment data.
-
----
-
-### 7.6 `semantic`
-
-| Property | Value |
-|----------|-------|
-| **Type** | string-or-object |
-| **Zone** | 2 (mx:) |
-| **Profile** | cog |
-| **Conformance** | MAY (Level 3) |
-| **Default** | *(none)* |
-
-**Definition:** Semantic quality level. How well the cog uses semantic HTML and structured data.
-
-**Example:**
-
-```yaml
-mx:
   semantic: "Schema.org JSON-LD"
-```
-
-**Normative notes:**
-
-- Part of the quality triad: accessibility, semantic, convergence.
-- Semantic quality measures how well the content uses structured data, semantic HTML, and machine-readable formats.
-- The value MAY be a string (summary) or an object with structured assessment data.
-
----
-
-### 7.7 `convergence`
-
-| Property | Value |
-|----------|-------|
-| **Type** | string-or-object |
-| **Zone** | 2 (mx:) |
-| **Profile** | cog |
-| **Conformance** | MAY (Level 3) |
-| **Default** | *(none)* |
-
-**Definition:** Convergence score. How well the cog aligns human and machine experiences.
-
-**Example:**
-
-```yaml
-mx:
   convergence: high
 ```
 
-**Normative notes:**
-
-- Part of the quality triad: accessibility, semantic, convergence.
-- Core to MX's dual-experience philosophy. Convergence measures whether the same content serves both human readers and AI agents effectively.
-- Common values when expressed as a string: `low`, `medium`, `high`.
-- The value MAY be a string (summary) or an object with structured assessment data.
+Common values for `convergence` when expressed as a string: `low`, `medium`, `high`.
 
 ---
 
-## 8. Field definitions — Maintenance fields
+## 7. Maintenance fields
 
-### 8.1 `maintainedDate`
+### 7.1 `maintainedDate`
 
 | Property | Value |
 |----------|-------|
 | **Type** | string |
 | **Zone** | 2 (mx:) |
-| **Profile** | cog |
 | **Conformance** | SHOULD (Level 2) |
-| **Default** | *(none)* |
 
-**Definition:** Date the cog was last confirmed accurate by its maintainer. Helps agents assess content freshness.
-
-**Example:**
+Date the content was last confirmed accurate by its maintainer. Distinct from a top-level `modified` field. `modified` tracks when the document was last changed; `maintainedDate` tracks when it was last confirmed to still be accurate — even if no changes were needed. Agents SHOULD treat documents with a `maintainedDate` older than the `reviewCycle` as potentially stale.
 
 ```yaml
 mx:
   maintainedDate: 2026-04-02
 ```
 
-**Normative notes:**
-
-- The value MUST use ISO 8601 date format (YYYY-MM-DD).
-- Distinct from a top-level `modified` field. `modified` tracks when the document was last changed; `maintainedDate` tracks when it was last confirmed to still be accurate — even if no changes were needed.
-- Agents SHOULD treat documents with a `maintainedDate` older than the `reviewCycle` as potentially stale.
-
 ---
 
-### 8.2 `maintainedBy`
+### 7.2 `maintainedBy`
 
 | Property | Value |
 |----------|-------|
 | **Type** | string |
 | **Zone** | 2 (mx:) |
-| **Profile** | cog |
 | **Conformance** | MAY (Level 3) |
-| **Default** | *(none)* |
 
-**Definition:** Person or team who last confirmed accuracy.
-
-**Example:**
+Person or team who last confirmed accuracy. Distinct from a `maintainer` field (the person responsible for ongoing maintenance). `maintainedBy` records who performed the last accuracy confirmation — these may differ.
 
 ```yaml
 mx:
   maintainedBy: "Tom Cranstoun"
 ```
 
-**Normative notes:**
-
-- Distinct from a `maintainer` field (the person responsible for ongoing maintenance). `maintainedBy` records who performed the last accuracy confirmation — these may differ.
-
 ---
 
-### 8.3 `expires`
+### 7.3 `expires`
 
 | Property | Value |
 |----------|-------|
 | **Type** | string |
 | **Zone** | 2 (mx:) |
-| **Profile** | cog |
 | **Conformance** | MAY (Level 3) |
-| **Default** | *(none)* |
 
-**Definition:** Expiry date for time-sensitive cogs. Content SHOULD be reviewed or archived after this date.
-
-**Example:**
+Expiry date for time-sensitive content. Content SHOULD be reviewed or archived after this date. Agents encountering expired content SHOULD flag it for review rather than treating it as authoritative. Distinct from `cacheability` (how long to cache a fetch) — `expires` indicates when the content itself is no longer current.
 
 ```yaml
 mx:
   expires: 2026-12-31
 ```
 
-**Normative notes:**
-
-- The value MUST use ISO 8601 date format (YYYY-MM-DD).
-- Agents encountering expired content SHOULD flag it for review rather than treating it as authoritative.
-- Distinct from `cacheability` (how long to cache a fetch) — `expires` indicates when the content itself is no longer current.
-
 ---
 
-### 8.4 `updateTriggers`
+### 7.4 `updateTriggers`
 
 | Property | Value |
 |----------|-------|
 | **Type** | array |
 | **Zone** | 2 (mx:) |
-| **Profile** | cog |
 | **Conformance** | MAY (Level 3) |
-| **Default** | *(empty array)* |
 
-**Definition:** Conditions that trigger a cog update. Events that should prompt a content review or revision.
-
-**Example:**
+Conditions that trigger a content update. Events that should prompt a content review or revision. Values are context-specific strings describing trigger conditions. Tooling MAY use these values to automate review notifications when trigger conditions are detected.
 
 ```yaml
 mx:
@@ -593,32 +405,31 @@ mx:
     - new-field-added
 ```
 
-**Normative notes:**
-
-- Values are context-specific strings describing trigger conditions.
-- Agents and tooling MAY use these values to automate review notifications when trigger conditions are detected.
-
 ---
 
-## 9. Field definitions — Decision record references
+## 8. Decision record references
 
-### 9.1 `adr`
+The fields `adr`, `ndr`, and `bdr` link a document to the formal decision record that governs an aspect of its content. Decision records provide governance traceability — they explain why certain choices were made.
+
+All three fields share the same shape: a string path to the decision record, or an object with `path`, `date`, and `status` sub-fields.
+
+| Field | Decision type | Typical content |
+|-------|---------------|-----------------|
+| `adr` | Architecture Decision Record | Architectural choices: storage strategy, transport protocol, deployment topology |
+| `ndr` | Naming Decision Record | Naming conventions: identifier style, file naming, vocabulary policy |
+| `bdr` | Business Decision Record | Business decisions: pricing, market positioning, partnership terms |
 
 | Property | Value |
 |----------|-------|
 | **Type** | string-or-object |
 | **Zone** | 2 (mx:) |
-| **Profile** | cog |
 | **Conformance** | MAY (Level 3) |
-| **Default** | *(none)* |
-
-**Definition:** Architecture Decision Record reference. Links to the ADR governing architectural choices that affect this document.
-
-**Example:**
 
 ```yaml
 mx:
   adr: "decisions/adr-007-storage-strategy.md"
+  ndr: "decisions/ndr-002-camelcase-naming.md"
+  bdr: "decisions/bdr-012-launch-pricing.md"
 ```
 
 ```yaml
@@ -629,186 +440,74 @@ mx:
     status: accepted
 ```
 
-**Normative notes:**
-
-- The value MAY be a string (path to the ADR) or an object with `path`, `date`, and `status` sub-fields.
-- Decision records provide governance traceability — they explain why certain choices were made.
-
 ---
 
-### 9.2 `ndr`
+## 9. Migration fields
 
-| Property | Value |
-|----------|-------|
-| **Type** | string-or-object |
-| **Zone** | 2 (mx:) |
-| **Profile** | cog |
-| **Conformance** | MAY (Level 3) |
-| **Default** | *(none)* |
-
-**Definition:** Naming Decision Record reference. Links to the NDR governing naming conventions that affect this document.
-
-**Example:**
-
-```yaml
-mx:
-  ndr: "decisions/ndr-002-camelcase-naming.md"
-```
-
-```yaml
-mx:
-  ndr:
-    path: "decisions/ndr-002-camelcase-naming.md"
-    date: 2026-03-10
-    status: accepted
-```
-
-**Normative notes:**
-
-- The value MAY be a string (path to the NDR) or an object with `path`, `date`, and `status` sub-fields.
-
----
-
-### 9.3 `bdr`
-
-| Property | Value |
-|----------|-------|
-| **Type** | string-or-object |
-| **Zone** | 2 (mx:) |
-| **Profile** | cog |
-| **Conformance** | MAY (Level 3) |
-| **Default** | *(none)* |
-
-**Definition:** Business Decision Record reference. Links to the BDR governing business decisions that affect this document.
-
-**Example:**
-
-```yaml
-mx:
-  bdr: "decisions/bdr-012-launch-pricing.md"
-```
-
-```yaml
-mx:
-  bdr:
-    path: "decisions/bdr-012-launch-pricing.md"
-    date: 2026-03-20
-    status: accepted
-```
-
-**Normative notes:**
-
-- The value MAY be a string (path to the BDR) or an object with `path`, `date`, and `status` sub-fields.
-
----
-
-## 10. Field definitions — Migration fields
-
-### 10.1 `movedFrom`
+### 9.1 `movedFrom`
 
 | Property | Value |
 |----------|-------|
 | **Type** | string |
 | **Zone** | 2 (mx:) |
-| **Profile** | migration |
 | **Conformance** | MAY (Level 3) |
-| **Default** | *(none)* |
 
-**Definition:** Previous file path before content was relocated. Used for redirect generation and link maintenance.
-
-**Example:**
+Previous file path before content was relocated. Used for redirect generation and link maintenance. The value SHOULD be the full relative path from the repository root. Tooling MAY use this field to generate redirects or update internal links automatically. SHOULD be paired with `movedDate`.
 
 ```yaml
 mx:
   movedFrom: "datalake/knowledge/reference/field-definitions.md"
 ```
 
-**Normative notes:**
-
-- The value SHOULD be the full relative path from the repository root.
-- Tooling MAY use this field to generate redirects or update internal links automatically.
-- SHOULD be paired with `movedDate` to record when the relocation occurred.
-
 ---
 
-### 10.2 `movedDate`
+### 9.2 `movedDate`
 
 | Property | Value |
 |----------|-------|
 | **Type** | string |
 | **Zone** | 2 (mx:) |
-| **Profile** | migration |
 | **Conformance** | MAY (Level 3) |
-| **Default** | *(none)* |
 
-**Definition:** Date content was relocated.
-
-**Example:**
+Date content was relocated. SHOULD be paired with `movedFrom` to provide a complete migration record.
 
 ```yaml
 mx:
   movedDate: 2026-03-15
 ```
 
-**Normative notes:**
+---
 
-- The value MUST use ISO 8601 date format (YYYY-MM-DD).
-- SHOULD be paired with `movedFrom` to provide a complete migration record.
+## 10. Conformance summary
+
+| Field | Group | Level 1 (MUST) | Level 2 (SHOULD) | Level 3 (MAY) |
+|-------|-------|:-:|:-:|:-:|
+| `provenanceAuthor` | attribution | MUST | — | — |
+| `provenancePublisher` | attribution | — | SHOULD | — |
+| `provenanceOrigin` | attribution | — | SHOULD | — |
+| `source` | attribution | — | — | MAY |
+| `publisher` | attribution | — | — | MAY |
+| `generate` | attribution | — | — | MAY |
+| `reviewCycle` | quality | — | SHOULD | — |
+| `accuracyCommitment` | quality | — | — | MAY |
+| `correctionSla` | quality | — | — | MAY |
+| `mxCompliance` | quality | — | — | MAY |
+| `accessibility` | quality | — | — | MAY |
+| `semantic` | quality | — | — | MAY |
+| `convergence` | quality | — | — | MAY |
+| `maintainedDate` | maintenance | — | SHOULD | — |
+| `maintainedBy` | maintenance | — | — | MAY |
+| `expires` | maintenance | — | — | MAY |
+| `updateTriggers` | maintenance | — | — | MAY |
+| `adr` | decisions | — | — | MAY |
+| `ndr` | decisions | — | — | MAY |
+| `bdr` | decisions | — | — | MAY |
+| `movedFrom` | migration | — | — | MAY |
+| `movedDate` | migration | — | — | MAY |
 
 ---
 
-## 11. Conformance levels summary
-
-### 11.1 Attribution fields
-
-| Field | Level 1 (MUST) | Level 2 (SHOULD) | Level 3 (MAY) |
-|-------|:-:|:-:|:-:|
-| `provenanceAuthor` | MUST | — | — |
-| `provenancePublisher` | — | SHOULD | — |
-| `provenanceOrigin` | — | SHOULD | — |
-| `source` | — | — | MAY |
-| `publisher` | — | — | MAY |
-| `generate` | — | — | MAY |
-
-### 11.2 Quality and trust fields
-
-| Field | Level 1 (MUST) | Level 2 (SHOULD) | Level 3 (MAY) |
-|-------|:-:|:-:|:-:|
-| `reviewCycle` | — | SHOULD | — |
-| `accuracyCommitment` | — | — | MAY |
-| `correctionSla` | — | — | MAY |
-| `mxCompliance` | — | — | MAY |
-| `accessibility` | — | — | MAY |
-| `semantic` | — | — | MAY |
-| `convergence` | — | — | MAY |
-
-### 11.3 Maintenance fields
-
-| Field | Level 1 (MUST) | Level 2 (SHOULD) | Level 3 (MAY) |
-|-------|:-:|:-:|:-:|
-| `maintainedDate` | — | SHOULD | — |
-| `maintainedBy` | — | — | MAY |
-| `expires` | — | — | MAY |
-| `updateTriggers` | — | — | MAY |
-
-### 11.4 Decision record references
-
-| Field | Level 1 (MUST) | Level 2 (SHOULD) | Level 3 (MAY) |
-|-------|:-:|:-:|:-:|
-| `adr` | — | — | MAY |
-| `ndr` | — | — | MAY |
-| `bdr` | — | — | MAY |
-
-### 11.5 Migration fields
-
-| Field | Level 1 (MUST) | Level 2 (SHOULD) | Level 3 (MAY) |
-|-------|:-:|:-:|:-:|
-| `movedFrom` | — | — | MAY |
-| `movedDate` | — | — | MAY |
-
----
-
-## 12. Security and privacy considerations
+## 11. Security and privacy considerations
 
 - The `provenanceAuthor` and `provenancePublisher` fields contain personally identifiable information. Implementations that publish metadata publicly SHOULD consider whether these values are appropriate for public exposure.
 - The `publisher.contact` sub-field MAY contain email addresses or other contact information. Implementations SHOULD consider whether such values are appropriate for public exposure before publishing this metadata externally.
@@ -818,25 +517,30 @@ mx:
 
 ---
 
-## 13. References
+## 12. References
 
-### 13.1 Normative references
+### 12.1 Normative references
 
 - [RFC 2119](https://www.rfc-editor.org/rfc/rfc2119) — Key words for use in RFCs to indicate requirement levels
 - [ISO 8601](https://www.iso.org/iso-8601-date-and-time-format.html) — Date and time format
 
-### 13.2 Informative references
+### 12.2 Informative references
 
-- [WCAG 2.1](https://www.w3.org/TR/WCAG21/) — Web Content Accessibility Guidelines (referenced in quality triad and the conformance level model in §2.1)
+- [WCAG 2.1](https://www.w3.org/TR/WCAG21/) — Web Content Accessibility Guidelines (referenced in quality triad and the conformance level model)
 - [Schema.org](https://schema.org/) — Structured data vocabulary (referenced in semantic quality)
 - [Schema.org Style Guide](https://schema.org/docs/styleguide.html) — Vocabulary naming conventions
 - [Dublin Core DCMI Namespace](https://www.dublincore.org/specifications/dublin-core/dcmi-namespace/) — Provenance and stewardship metadata model
 
 ---
 
-## 14. Change log
+## 13. Change log
 
 | Version | Date | Changes |
 |---------|------|---------|
 | 1.0-draft | 2026-04-02 | Initial draft. |
-| 1.0-draft | 2026-04-27 | Renamed from "MX Provenance Standard" to "MX Provenance note" to clarify these are draft notes by Tom Cranstoun, not ratified standards. Made the note standalone — removed cross-references to other Gathering drafts and inlined required material. |
+| 1.0-draft | 2026-04-27 | Renamed from "MX Provenance Standard" to "MX Provenance note". Made the note standalone. |
+| 1.1-draft | 2026-04-27 | Removed Terminology section (terms inlined where used). Renamed "What this note does not cover" to "Out of scope" (IETF style). Pruned redundant "Normative notes" preambles where they restated definitions. Compressed the quality triad (`accessibility`, `semantic`, `convergence`) from three full sections to one combined section with a reference table. Collapsed `adr` / `ndr` / `bdr` from three near-identical sections to one section with a unified definition and a small differentiation table. Collapsed five conformance-summary tables into one combined table. |
+
+---
+
+*End of MX Provenance note draft.*
