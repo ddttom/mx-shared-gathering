@@ -28,12 +28,6 @@ Each draft is **standalone**: it defines its own conformance levels and field se
 - **MX Carrier Formats** specifies the minimal code-specific provenance vocabulary; what code does (signatures, APIs, tests) defers to JSDoc, docstrings, OpenAPI, and similar.
 - **MX Contract Fingerprinting and Signing** specifies the format a cog uses *when it chooses to be signed*. Signing is optional. The fingerprint format is open.
 
-## Reginald
-
-**Reginald is Digital Domain Technologies Ltd's proprietary implementation for signing and serving cogs.** The fingerprint format defined in the Contract Fingerprinting and Signing note is open and free for anyone to implement; Reginald is one such implementation, and the only one DDT supports. Operators wanting to sign or serve cogs at scale can either run Reginald or build their own implementation against the open format.
-
-The drafts in this repository describe the **format**. They are vendor-neutral. Reginald the product is not part of The Gathering's standard suite; it is a separate commercial offering from DDT.
-
 ## What this repo is
 
 This repo is the canonical home for the drafts. There is one copy in one place, in one format. Public review and citation happen here.
