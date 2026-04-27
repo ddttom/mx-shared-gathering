@@ -16,7 +16,7 @@ author:
 
 # MX Core Metadata note
 
-**Version:** 1.5-draft
+**Version:** 1.0
 **Status:** Draft by Tom Cranstoun, offered to The Gathering for review
 **Date:** 27 April 2026
 **Author:** Tom Cranstoun
@@ -671,18 +671,6 @@ If the external standard does not cleanly cover the value, the field is not a pa
 - [Schema.org Style Guide](https://schema.org/docs/styleguide.html) — Vocabulary naming conventions
 - [Dublin Core DCMI Namespace](https://www.dublincore.org/specifications/dublin-core/dcmi-namespace/) — Namespace governance model
 - [WCAG 2.1](https://www.w3.org/TR/WCAG21/) — Web Content Accessibility Guidelines (conformance level model)
-
----
-
-## 11. Change log
-
-| Version | Date | Changes |
-|---------|------|---------|
-| 1.0-draft | 2026-04-02 | Initial draft. |
-| 1.2-proposed | 2026-04-26 | Added Zone 1 fields `schema` and `validatesAgainst` — schema-reference and conformance-claim fields. Both at conformance level MAY. |
-| 1.3-draft | 2026-04-27 | Removed all cog content; cogs are an optional layer covered by the MX Cogs note. Added Pass-through fields section naming the pattern, listing the canonical inventory, and documenting the rule for adding new pass-through fields. |
-| 1.4-draft | 2026-04-27 | Removed Terminology section (Zone definitions inlined into §4). Renamed "What this note does not cover" to "Out of scope" (IETF style). Pruned redundant "Normative notes" preambles where they restated the field definition. Collapsed three conformance-summary tables into one combined table. Renumbered sections after Terminology removal. |
-| 1.5-draft | 2026-04-27 | Defers to the MX Field Definition Pattern note (the primary note of the draft set). Field definitions in §5-§6 and the pass-through inventory in §7 conform to that pattern; the pattern's authoring rules are not restated here. |
 
 ---
 

@@ -16,7 +16,7 @@ author:
 
 # MX Workflow Contracts note
 
-**Version:** 1.1-draft
+**Version:** 1.0
 **Status:** Draft by Tom Cranstoun, offered to The Gathering for review
 **Date:** 27 April 2026
 **Author:** Tom Cranstoun
@@ -192,13 +192,6 @@ The following rules apply across all fields in §3:
 - [JSON Schema](https://json-schema.org/) — schema referenced by `schema` for object shape validation
 - [Schema.org](https://schema.org/) — alternative schema vocabulary for `schema` references
 - [WCAG 2.1](https://www.w3.org/TR/WCAG21/) — Web Content Accessibility Guidelines (conformance level model)
-
----
-
-## 7. Changelog
-
-- **2026-04-27 (v1.0-draft)** — Initial draft. Five workflow-contract fields extracted from the MX Extensions note (where they were §10.4 in v1.1-proposed) into a standalone note: `x-mx-thresholds`, `x-mx-approvers`, `x-mx-approvalProcedure`, `x-mx-reviewProcedure`, `x-mx-targetEnvironment`. All Zone 1 (top-level), conformance MAY.
-- **2026-04-27 (v1.1-draft)** — Defers to the MX Field Definition Pattern note (the primary note of the draft set). Field definitions in §3 conform to that pattern; the pattern's authoring rules are not restated here.
 
 ---
 

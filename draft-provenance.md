@@ -17,7 +17,7 @@ author:
 
 # MX Provenance note
 
-**Version:** 1.2-draft
+**Version:** 1.0
 **Status:** Draft by Tom Cranstoun, offered to The Gathering for review
 **Date:** 27 April 2026
 **Author:** Tom Cranstoun
@@ -532,17 +532,6 @@ mx:
 - [Schema.org](https://schema.org/) — Structured data vocabulary (referenced in semantic quality)
 - [Schema.org Style Guide](https://schema.org/docs/styleguide.html) — Vocabulary naming conventions
 - [Dublin Core DCMI Namespace](https://www.dublincore.org/specifications/dublin-core/dcmi-namespace/) — Provenance and stewardship metadata model
-
----
-
-## 13. Change log
-
-| Version | Date | Changes |
-|---------|------|---------|
-| 1.0-draft | 2026-04-02 | Initial draft. |
-| 1.0-draft | 2026-04-27 | Renamed from "MX Provenance Standard" to "MX Provenance note". Made the note standalone. |
-| 1.1-draft | 2026-04-27 | Removed Terminology section (terms inlined where used). Renamed "What this note does not cover" to "Out of scope" (IETF style). Pruned redundant "Normative notes" preambles where they restated definitions. Compressed the quality triad (`accessibility`, `semantic`, `convergence`) from three full sections to one combined section with a reference table. Collapsed `adr` / `ndr` / `bdr` from three near-identical sections to one section with a unified definition and a small differentiation table. Collapsed five conformance-summary tables into one combined table. |
-| 1.2-draft | 2026-04-27 | Defers to the MX Field Definition Pattern note (the primary note of the draft set). Field definitions in §5-§9 conform to that pattern; the pattern's authoring rules are not restated here. |
 
 ---
 

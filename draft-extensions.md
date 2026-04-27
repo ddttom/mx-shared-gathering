@@ -15,7 +15,7 @@ author:
 
 # MX Extensions note
 
-**Version:** 1.3-draft
+**Version:** 1.0
 **Status:** Draft by Tom Cranstoun, offered to The Gathering for review
 **Date:** 27 April 2026
 **Author:** Tom Cranstoun
@@ -360,18 +360,6 @@ An extension field MAY be promoted into the core MX vocabulary through the follo
 - [Schema.org Style Guide](https://schema.org/docs/styleguide.html) — Vocabulary naming conventions
 - [Dublin Core DCMI Namespace](https://www.dublincore.org/specifications/dublin-core/dcmi-namespace/) — namespace governance model
 - [WCAG 2.1](https://www.w3.org/TR/WCAG21/) — Web Content Accessibility Guidelines (conformance level model)
-
----
-
-## 14. Change log
-
-| Version | Date | Changes |
-|---------|------|---------|
-| 1.0-draft | 2026-04-02 | Initial draft. Namespace policy, carrier format mappings, and extension mechanisms. |
-| 1.1-proposed | 2026-04-26 | Added §10.4 Workflow Contract Extensions (later removed in v1.2). |
-| 1.1-draft | 2026-04-27 | Renamed from "MX Extensions Standard" to "MX Extensions note". Made standalone. |
-| 1.2-draft | 2026-04-27 | Narrowed scope to namespace policy + context-specific naming. Carrier format mappings (formerly §8) and non-YAML identity fields (formerly §9) moved to the MX Carrier Formats note. Workflow contract extensions (formerly §10.4) moved to a new MX Workflow Contracts note. Conformance levels collapsed from three to two; carrier-related conformance tables removed. |
-| 1.3-draft | 2026-04-27 | Defers to the MX Field Definition Pattern note (the primary note of the draft set). Field definitions in §8 conform to that pattern; the pattern's authoring rules are not restated here. |
 
 ---
 

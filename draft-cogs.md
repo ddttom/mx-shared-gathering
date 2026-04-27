@@ -16,7 +16,7 @@ author:
 
 # MX Cogs note
 
-**Version:** 1.3-draft
+**Version:** 1.0
 **Status:** Draft by Tom Cranstoun, offered to The Gathering for review
 **Date:** 27 April 2026
 **Author:** Tom Cranstoun
@@ -305,11 +305,4 @@ A cog at Level 1 is registry-locatable. At Level 2 it is identifiable to unfamil
 
 ---
 
-## 10. Change log
-
-| Version | Date | Changes |
-|---------|------|---------|
-| 1.0-draft | 2026-04-27 | Initial draft. Consolidates the cog file format as an optional MX layer. Cog structural fields previously bundled in the MX Core Metadata note (§8) move here; the cog magic-header comment and `cogHeader` frontmatter field previously specified in the MX Cog Identification note are merged in here. The Cog Identification note is withdrawn. |
-| 1.1-draft | 2026-04-27 | Removed the Zone 1 / Zone 2 entry from §3 Terminology (the two-zone preamble is now stated once in §1 Abstract). Expanded the Abstract's "Out of scope" list to call out non-YAML carriers (governed by the MX Carrier Formats note), document identity field semantics (governed by the MX Core Metadata note), and namespace policy (governed by the MX Extensions note). |
-| 1.2-draft | 2026-04-27 | Reformatted to plain markdown with kramdown-rfc YAML frontmatter (matching the other vocabulary drafts). The old MX-style frontmatter and the runbook are removed; the file is renamed from `draft-cogs.cog.md` to `draft-cogs.md` to reflect that this is a draft note about the cog format, not itself a cog. |
-| 1.3-draft | 2026-04-27 | Defers to the MX Field Definition Pattern note (the primary note of the draft set). Field definitions in §6 conform to that pattern; the pattern's authoring rules are not restated here. |
+*End of MX Cogs note draft.*

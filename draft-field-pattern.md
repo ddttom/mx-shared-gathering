@@ -16,7 +16,7 @@ author:
 
 # MX Field Definition Pattern note
 
-**Version:** 1.1-draft
+**Version:** 1.0
 **Status:** Draft by Tom Cranstoun, offered to The Gathering for review — **primary note of the MX draft set**
 **Date:** 27 April 2026
 **Author:** Tom Cranstoun
@@ -238,15 +238,6 @@ A second-order consideration: a uniform field-definition pattern makes automated
 
 - [RFC 7322](https://www.rfc-editor.org/rfc/rfc7322) — RFC Style Guide (style precedent for standards-document authoring)
 - [Schema.org Style Guide](https://schema.org/docs/styleguide.html) — Vocabulary naming conventions
-
----
-
-## 10. Change log
-
-| Version | Date | Changes |
-|---------|------|---------|
-| 1.0-draft | 2026-04-27 | Initial draft. Proposes a single uniform pattern for defining a frontmatter field inside any MX draft note: heading, property table, definition prose, example, optional supplementary material. Defines the property table's required and optional rows, naming and ordering conventions, and authoring rules. Documents the pass-through field pattern as a recognised second variant (§4.4) for fields whose semantics are owned by external vocabularies. Makes the pattern normative for the entire MX draft set: every sister note proposing fields MUST adhere. Introduces no new frontmatter fields itself, and motivates the discipline by noting that machines need *more* fields, tightly constrained, to understand document intent. |
-| 1.1-draft | 2026-04-27 | Added §3.4 "Recommended reading order across the draft set": an eight-item ordered list orienting newcomers from the authoring pattern (this note) through the universal floor, provenance, extensions, carrier mapping, and the optional cog layer. The reading order is advisory; each sister note remains self-contained. |
 
 ---
 

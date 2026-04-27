@@ -17,7 +17,7 @@ author:
 
 # MX Contract Fingerprinting and Signing note
 
-**Version:** 1.5-draft
+**Version:** 1.0
 **Status:** Draft by Tom Cranstoun, offered to The Gathering for review
 **Date:** 27 April 2026
 **Author:** Tom Cranstoun
@@ -314,14 +314,4 @@ Implementations and downstream consumers SHOULD be precise in user-facing langua
 
 ---
 
-## 11. Change log
-
-| Version | Date | Changes |
-|---------|------|---------|
-| 1.0-proposed | 2026-04-26 | Initial draft. Imports the contract-fingerprinting model from earlier reference implementations, drops the `x-mx-` prefix to make the fields first-class, defines the canonical JSON / SHA-256 fingerprint algorithm. |
-| 1.0-draft | 2026-04-27 | Renamed from "MX Contract Fingerprinting and Signing Standard" to a "note" to clarify this is a draft by Tom Cranstoun, not a ratified standard. Made the note standalone — removed cross-references to other Gathering drafts and inlined required material. |
-| 1.1-draft | 2026-04-27 | §1 abstract gains an explicit statement that signing is optional. New §4.3 documents the mandatory fields when signing (`title`, `validatesAgainst` with resolvable validators, `schema`). New §4.4 documents the default-excluded metadata fields plus the `x-mx-contractFields` / `x-mx-metadataFields` schema overrides. §6 split into signer (§6.1), verifier (§6.2), and recommended pre-signature review pipeline (§6.3). |
-| 1.2-draft | 2026-04-27 | Added "What the signature attests" subsection in §1: the signature attests provenance and integrity, not truth. |
-| 1.3-draft | 2026-04-27 | Condensed §1 abstract; moved the attestation-vs-verification rationale into a new informative §9 "Rationale: attestation, not verification". Marked §6.3 (pre-signature review pipeline) as informative. Renamed §3.2 from "What this note does not cover" to "Out of scope" (IETF style). References renumbered to §10, change log to §11. |
-| 1.4-draft | 2026-04-27 | Reformatted to plain markdown with kramdown-rfc YAML frontmatter (matching the other vocabulary drafts). The old MX-style frontmatter and the runbook are removed; the file is renamed from `draft-contract-fingerprinting.cog.md` to `draft-contract-fingerprinting.md` to reflect that this is a draft note about cog signing, not itself a cog. |
-| 1.5-draft | 2026-04-27 | Defers to the MX Field Definition Pattern note (the primary note of the draft set). Field definitions in §4 conform to that pattern; the pattern's authoring rules are not restated here. |
+*End of MX Contract Fingerprinting and Signing note draft.*
