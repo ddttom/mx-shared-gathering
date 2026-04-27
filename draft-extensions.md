@@ -1,20 +1,17 @@
 ---
 title: "MX Extensions note"
-version: "1.1-draft"
-created: 2026-04-02
-modified: 2026-04-27
-author: Tom Cranstoun
-description: "Draft specification of the MX namespace policy, carrier format mappings, and extension mechanisms for non-standard metadata fields. Authored by Tom Cranstoun and offered to The Gathering for review."
-
-mx:
-  status: draft
-  license: MIT
-  partOf: mx-the-gathering
-  contentType: specification
-  tags: [draft, extensions, namespace, carrier-formats, specification]
-  audience: [humans, machines]
-  cacheability: permanent
-  runbook: "This is the MX Extensions note — a draft authored by Tom Cranstoun, offered to The Gathering for review. It defines the three-level namespace policy (standard, x-mx-, x-mx-p-), context-specific naming rules for different carrier formats, carrier format mappings for all supported file types, and the extension registration process. This note stands alone; it does not depend on any other draft."
+docname: draft-cranstoun-mx-extensions
+date: 2026-04-27
+consensus: false
+keyword:
+  - mx
+  - extensions
+  - namespace
+  - carrier-formats
+author:
+  - fullname: Tom Cranstoun
+    organization: CogNovaMX
+    email: info@cognovamx.com
 ---
 
 # MX Extensions note

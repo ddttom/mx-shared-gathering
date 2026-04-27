@@ -1,16 +1,18 @@
 # MX Drafts for The Gathering
 
-Public home for the source `.cog.md` drafts of the MX metadata notes. These are draft notes authored by Tom Cranstoun and offered to [The Gathering](https://tg.community) community for review via [Stream](https://stream.tg.community). They are not ratified standards.
+Public home for the MX metadata draft notes. These are draft notes authored by Tom Cranstoun and offered to [The Gathering](https://tg.community) community for review via [Stream](https://stream.tg.community). They are not ratified standards.
+
+The four drafts that propose the MX metadata vocabulary itself are written in plain markdown with kramdown-rfc YAML frontmatter. They cannot use MX metadata to describe themselves, since they are the documents specifying it. The two drafts that describe optional layers on top of MX (`cogs`, `contract-fingerprinting`) currently still use `.cog.md` and will be reformatted to match.
 
 ## The drafts
 
 | Draft | File | Status |
 |-------|------|--------|
-| **MX Core Metadata note** | [draft-core-metadata.cog.md](draft-core-metadata.cog.md) | Draft (v1.3-draft) — pure document metadata; no cog content. |
+| **MX Core Metadata note** | [draft-core-metadata.md](draft-core-metadata.md) | Draft (v1.2-draft) — pure document metadata; no cog content. |
 | **MX Cogs note** | [draft-cogs.cog.md](draft-cogs.cog.md) | Draft (v1.0-draft) — the `.cog.md` file format as an optional layer on top of MX. |
-| **MX Extensions note** | [draft-extensions.cog.md](draft-extensions.cog.md) | Draft (v1.1-draft) — namespace policy and carrier-format mappings. |
-| **MX Provenance note** | [draft-provenance.cog.md](draft-provenance.cog.md) | Draft (v1.0-draft) — attribution, trust, maintenance, decision records. |
-| **MX Carrier Formats note** | [draft-carrier-formats.cog.md](draft-carrier-formats.cog.md) | Draft (v1.1-draft) — code-only carrier provenance. |
+| **MX Extensions note** | [draft-extensions.md](draft-extensions.md) | Draft (v1.1-draft) — namespace policy and carrier-format mappings. |
+| **MX Provenance note** | [draft-provenance.md](draft-provenance.md) | Draft (v1.0-draft) — attribution, trust, maintenance, decision records. |
+| **MX Carrier Formats note** | [draft-carrier-formats.md](draft-carrier-formats.md) | Draft (v1.1-draft) — code-only carrier provenance. |
 | **MX Contract Fingerprinting and Signing note** | [draft-contract-fingerprinting.cog.md](draft-contract-fingerprinting.cog.md) | Draft (v1.1-draft) — *signing is optional*; this note specifies the contract a cog must satisfy when it elects to be signed. |
 
 Every draft here is **a draft, not a ratified standard**. None is final. Each will evolve through public review and, if the community consents, be ratified by The Gathering.
@@ -32,18 +34,9 @@ Each draft is **standalone**: it defines its own conformance levels and field se
 
 The drafts in this repository describe the **format**. They are vendor-neutral. Reginald the product is not part of The Gathering's standard suite; it is a separate commercial offering from DDT.
 
-## What this repo is — and what it isn't
+## What this repo is
 
-This repo holds the **source drafts** as they're authored: `.cog.md` files with MX frontmatter and prose. It is the canonical reading copy.
-
-The same content is also published under The Gathering's Stream platform in **RFC-format** form, one repo per draft, for the formal review and sync process:
-
-- [TG-Community/draft-cranstoun-mx-core-metadata](https://github.com/TG-Community/draft-cranstoun-mx-core-metadata)
-- [TG-Community/draft-cranstoun-mx-extensions](https://github.com/TG-Community/draft-cranstoun-mx-extensions)
-- [TG-Community/draft-cranstoun-mx-provenance](https://github.com/TG-Community/draft-cranstoun-mx-provenance)
-- [TG-Community/draft-cranstoun-mx-carrier-formats](https://github.com/TG-Community/draft-cranstoun-mx-carrier-formats)
-
-Two formats, one set of drafts. Stream review happens in the RFC-format repos (that's where the platform expects to find them); reading, citing, and linking happens here.
+This repo is the canonical home for the drafts. There is one copy in one place, in one format. Public review and citation happen here.
 
 ## Related resources
 

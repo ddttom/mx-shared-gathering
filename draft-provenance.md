@@ -1,20 +1,18 @@
 ---
 title: "MX Provenance note"
-version: "1.0-draft"
-created: 2026-04-02
-modified: 2026-04-27
-author: Tom Cranstoun
-description: "Draft specification of MX provenance, trust, and verification metadata — attribution, quality assurance, maintenance tracking, and decision record references. Authored by Tom Cranstoun and offered to The Gathering for review."
-
-mx:
-  status: draft
-  license: MIT
-  partOf: mx-the-gathering
-  contentType: specification
-  tags: [draft, provenance, trust, attribution, verification, specification]
-  audience: [humans, machines]
-  cacheability: permanent
-  runbook: "This is the MX Provenance note — a draft authored by Tom Cranstoun, offered to The Gathering for review. It defines attribution fields, quality and trust fields, maintenance fields, decision record references, and migration fields. Use the conformance level tables to determine which fields are required at each level. This note stands alone; it does not depend on any other draft."
+docname: draft-cranstoun-mx-provenance
+date: 2026-04-27
+consensus: false
+keyword:
+  - mx
+  - provenance
+  - trust
+  - attribution
+  - verification
+author:
+  - fullname: Tom Cranstoun
+    organization: CogNovaMX
+    email: info@cognovamx.com
 ---
 
 # MX Provenance note

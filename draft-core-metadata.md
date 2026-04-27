@@ -1,20 +1,17 @@
 ---
 title: "MX Core Metadata note"
-version: "1.2-draft"
-created: 2026-04-02
-modified: 2026-04-27
-author: Tom Cranstoun
-description: "Draft specification of core MX metadata fields — the foundational vocabulary every MX-aware document must, should, or may declare. Authored by Tom Cranstoun and offered to The Gathering for review. Machine-readable form: mx-canon/ssot/fields-data.yaml (sanitised core, ~103 fields)."
-
-mx:
-  status: draft
-  license: MIT
-  partOf: mx-the-gathering
-  contentType: specification
-  tags: [draft, metadata, core, conformance, specification]
-  audience: [humans, machines]
-  cacheability: permanent
-  runbook: "This is the MX Core Metadata note — a draft authored by Tom Cranstoun, offered to The Gathering for review. It defines Zone 1 identity fields, Zone 2 operational fields, and pass-through fields for documents that adopt MX metadata. Use the conformance level tables to determine which fields are required at each level. This note stands alone; it does not depend on any other draft."
+docname: draft-cranstoun-mx-core-metadata
+date: 2026-04-27
+consensus: false
+keyword:
+  - mx
+  - metadata
+  - core
+  - conformance
+author:
+  - fullname: Tom Cranstoun
+    organization: CogNovaMX
+    email: info@cognovamx.com
 ---
 
 # MX Core Metadata note

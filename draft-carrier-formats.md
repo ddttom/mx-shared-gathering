@@ -1,20 +1,17 @@
 ---
 title: "MX Carrier Formats note"
-version: "1.1-draft"
-created: 2026-04-15
-modified: 2026-04-27
-author: Tom Cranstoun
-description: "Draft specification of MX metadata fields for code as a carrier format. Minimal scope: code-specific provenance only. What the code DOES defers to language conventions (JSDoc, Python docstrings, Doxygen, rustdoc). Databases and media defer to DCAT, CSVW, Schema.org, EXIF, IPTC, XMP, ID3. Authored by Tom Cranstoun and offered to The Gathering for review."
-
-mx:
-  status: draft
-  license: MIT
-  partOf: mx-the-gathering
-  contentType: specification
-  tags: [draft, carriers, code, specification, provenance]
-  audience: [humans, machines]
-  cacheability: permanent
-  runbook: "This is the MX Carrier Formats note — a draft authored by Tom Cranstoun, offered to The Gathering for review. It adds the minimal vocabulary of fields specific to code as a document — provenance only (source repository, commit-level derivation). What the code does (signatures, APIs, tests, type systems, behaviour) is deliberately out of scope and defers to each language's own documentation convention. An implementation that handles source code SHOULD adopt the relevant fields when they apply; other implementations MAY ignore this note entirely. This note stands alone; it does not depend on any other draft."
+docname: draft-cranstoun-mx-carrier-formats
+date: 2026-04-27
+consensus: false
+keyword:
+  - mx
+  - carriers
+  - code
+  - provenance
+author:
+  - fullname: Tom Cranstoun
+    organization: CogNovaMX
+    email: info@cognovamx.com
 ---
 
 # MX Carrier Formats note
