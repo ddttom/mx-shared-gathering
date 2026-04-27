@@ -11,7 +11,7 @@ mx:
   license: MIT
   partOf: mx-the-gathering
   contentType: specification
-  buildsOn: [mxs-01-core-metadata, cog-spec-v1]
+  buildsOn: [mxs-01-core-metadata]
   inherits: mxs-01-core-metadata
   tags: [standard, cog, identification, magic-header, conformance, specification]
   audience: [humans, machines]
