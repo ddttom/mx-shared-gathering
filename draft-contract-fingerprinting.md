@@ -1,20 +1,18 @@
 ---
 title: "MX Contract Fingerprinting and Signing note"
-version: "1.2-draft"
-created: 2026-04-26
-modified: 2026-04-27
-author: Tom Cranstoun
-description: "Draft specification of contract fingerprinting and signing for MX cogs. Defines which frontmatter fields are covered by a cog's signature (contractFields) and which are explicitly excluded (metadataFields). Foundation for portable, replay-resistant cog signing. Authored by Tom Cranstoun and offered to The Gathering for review."
-
-mx:
-  status: draft
-  license: MIT
-  partOf: mx-the-gathering
-  contentType: specification
-  tags: [draft, signing, contract, fingerprint, integrity, specification]
-  audience: [humans, machines]
-  cacheability: permanent
-  runbook: "This is the MX Contract Fingerprinting and Signing note — a draft authored by Tom Cranstoun, offered to The Gathering for review. It defines the cog signing model. A signed cog declares two arrays at the top level of its frontmatter: contractFields (keys covered by the signature) and metadataFields (keys explicitly excluded from the signature). The fingerprint is computed by canonicalising the projection of the frontmatter to contractFields keys and hashing the result. Read sections 5 (algorithm) and 6 (conformance) before implementing a verifier. This note stands alone; it does not depend on any other draft."
+docname: draft-cranstoun-mx-contract-fingerprinting
+date: 2026-04-27
+consensus: false
+keyword:
+  - mx
+  - signing
+  - fingerprint
+  - contract
+  - integrity
+author:
+  - fullname: Tom Cranstoun
+    organization: CogNovaMX
+    email: info@cognovamx.com
 ---
 
 # MX Contract Fingerprinting and Signing note
@@ -323,3 +321,4 @@ Implementations and downstream consumers SHOULD be precise in user-facing langua
 | 1.1-draft | 2026-04-27 | §1 abstract gains an explicit statement that signing is optional. New §4.3 documents the mandatory fields when signing (`title`, `validatesAgainst` with resolvable validators, `schema`). New §4.4 documents the default-excluded metadata fields plus the `x-mx-contractFields` / `x-mx-metadataFields` schema overrides. §6 split into signer (§6.1), verifier (§6.2), and recommended pre-signature review pipeline (§6.3). |
 | 1.2-draft | 2026-04-27 | Added "What the signature attests" subsection in §1: the signature attests provenance and integrity, not truth. |
 | 1.3-draft | 2026-04-27 | Condensed §1 abstract; moved the attestation-vs-verification rationale into a new informative §9 "Rationale: attestation, not verification". Marked §6.3 (pre-signature review pipeline) as informative. Renamed §3.2 from "What this note does not cover" to "Out of scope" (IETF style). References renumbered to §10, change log to §11. |
+| 1.4-draft | 2026-04-27 | Reformatted to plain markdown with kramdown-rfc YAML frontmatter (matching the other vocabulary drafts). The old MX-style frontmatter and the runbook are removed; the file is renamed from `draft-contract-fingerprinting.cog.md` to `draft-contract-fingerprinting.md` to reflect that this is a draft note about cog signing, not itself a cog. |

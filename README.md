@@ -2,19 +2,19 @@
 
 Public home for the MX metadata draft notes. These are draft notes authored by Tom Cranstoun and offered to [The Gathering](https://tg.community) community for review via [Stream](https://stream.tg.community). They are not ratified standards.
 
-The drafts that propose the MX metadata vocabulary itself are written in plain markdown with kramdown-rfc YAML frontmatter. They cannot use MX metadata to describe themselves, since they are the documents specifying it. The drafts that describe optional layers on top of MX (`cogs`, `contract-fingerprinting`) currently still use `.cog.md` and will be reformatted to match.
+All drafts are written in plain markdown with kramdown-rfc YAML frontmatter. They cannot use MX metadata to describe themselves, since they are the documents specifying it.
 
 ## The drafts
 
 | Draft | File | Status |
 |-------|------|--------|
 | **MX Core Metadata note** | [draft-core-metadata.md](draft-core-metadata.md) | Draft (v1.4-draft) — Zone 1 / Zone 2 document metadata and pass-through fields. |
-| **MX Cogs note** | [draft-cogs.cog.md](draft-cogs.cog.md) | Draft (v1.1-draft) — the `.cog.md` file format as an optional layer on top of MX. |
+| **MX Cogs note** | [draft-cogs.md](draft-cogs.md) | Draft (v1.2-draft) — the `.cog.md` file format as an optional layer on top of MX. |
 | **MX Extensions note** | [draft-extensions.md](draft-extensions.md) | Draft (v1.2-draft) — namespace policy and context-specific naming. |
 | **MX Provenance note** | [draft-provenance.md](draft-provenance.md) | Draft (v1.1-draft) — attribution, trust, maintenance, decision records. |
 | **MX Carrier Formats note** | [draft-carrier-formats.md](draft-carrier-formats.md) | Draft (v1.2-draft) — carrier mechanisms (markdown, HTML, JSDoc, CSS, shell, XMP, sidecar, SQL) and code-specific provenance. |
 | **MX Workflow Contracts note** | [draft-workflow-contracts.md](draft-workflow-contracts.md) | Draft (v1.0-draft) — top-level fields for workflow contract cogs (thresholds, approvers, procedures, target environment). |
-| **MX Contract Fingerprinting and Signing note** | [draft-contract-fingerprinting.cog.md](draft-contract-fingerprinting.cog.md) | Draft (v1.3-draft) — *signing is optional*; this note specifies the contract a cog must satisfy when it elects to be signed. |
+| **MX Contract Fingerprinting and Signing note** | [draft-contract-fingerprinting.md](draft-contract-fingerprinting.md) | Draft (v1.4-draft) — *signing is optional*; this note specifies the contract a cog must satisfy when it elects to be signed. |
 
 Every draft here is **a draft, not a ratified standard**. None is final. Each will evolve through public review and, if the community consents, be ratified by The Gathering.
 
