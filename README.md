@@ -17,6 +17,7 @@ The **MX Field Definition Pattern note** is the primary note of the set: it spec
 | **MX Provenance note** | [draft-provenance.md](draft-provenance.md) | Draft (v1.0) — attribution, trust, maintenance, decision records. |
 | **MX Carrier Formats note** | [draft-carrier-formats.md](draft-carrier-formats.md) | Draft (v1.0) — carrier mechanisms (markdown, HTML, JSDoc, CSS, shell, XMP, sidecar, SQL) and code-specific provenance. |
 | **MX Workflow Contracts note** | [draft-workflow-contracts.md](draft-workflow-contracts.md) | Draft (v1.0) — top-level fields for workflow contract cogs (thresholds, approvers, procedures, target environment). |
+| **MX Agent Directory Discovery note** | [draft-agent-directory-discovery.md](draft-agent-directory-discovery.md) | Draft (v1.0) — three-layer discoverability standard for `llms.txt` and any agent-directory file: HTML transport, sitemap inclusion, in-page `<link>`. |
 | **MX Contract Fingerprinting and Signing note** | [draft-contract-fingerprinting.md](draft-contract-fingerprinting.md) | Draft (v1.0) — *signing is optional*; this note specifies the contract a cog must satisfy when it elects to be signed. |
 
 Every draft here is **a draft, not a ratified standard**. None is final. Each will evolve through public review and, if the community consents, be ratified by The Gathering.
