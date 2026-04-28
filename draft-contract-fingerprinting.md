@@ -286,7 +286,7 @@ A signed cog makes one narrow claim, and the narrowness is what makes it tractab
 - The signature confirms that the cog's contract surface (the keys named in `contractFields`) was last in this exact state when the named signer applied the signature.
 - It does not assert that the values are factually correct, sound, or current. A cog claiming "WWII did not happen" can be perfectly well-signed; the signature only confirms the cog genuinely came from the named signer and has not been altered downstream. Whether the claim is true is a different problem — one no signing format can solve at web scale, and one this note deliberately does not take on.
 
-The narrower claim is intentional. Editorial truth-curation is what made the Open Directory Project (DMOZ) unsustainable: human editors could not keep pace with the web, and the implicit claim that a categorised entry was *appropriate* (worth listing, accurately classified) aged badly. The signing model in this note attests only *this is what the owner published, unaltered*. That smaller claim is what compounds.
+The narrower claim is intentional. The signing model in this note attests only *this is what the owner published, unaltered*. That smaller claim is what compounds — it is a question a signature can actually answer, every time, without taking on an editorial truth-curation burden that no human review process could keep current at web scale.
 
 Implementations and downstream consumers SHOULD be precise in user-facing language: the system has *attested* a cog, not *verified* it. "Verified" implies a truth claim that no signer in this model makes.
 
