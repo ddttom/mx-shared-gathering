@@ -26,7 +26,7 @@ author:
 
 ## 1. Abstract
 
-MX Core defines machine-readable document metadata. **Cogs are an optional layer on top of MX.** A cog is a `.cog.md` file: a markdown document with structured YAML frontmatter that, in addition to the MX core fields it carries, declares additional fields describing its place in a registry, its dependencies, the typed content blocks in its body, an optional execution contract, and how it identifies itself to unfamiliar consumers.
+MX Core defines machine-readable document metadata. **Cogs (Community Owned Governance Standards) are an optional layer on top of MX.** A cog is a `.cog.md` file: a markdown document with structured YAML frontmatter that, in addition to the MX core fields it carries, declares additional fields describing its place in a registry, its dependencies, the typed content blocks in its body, an optional execution contract, and how it identifies itself to unfamiliar consumers.
 
 A document does not need to be a cog to carry MX metadata. A blog post, a sidecar YAML, or an HTML page can declare title, author, dates, audience, license without ever being a cog. Cogs are the vocabulary you reach for when you want a document to be **navigable**, **composable**, and **runnable** by agents and runtimes — not the floor for being MX-aware.
 
