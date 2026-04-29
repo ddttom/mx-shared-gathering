@@ -244,7 +244,7 @@ The following fields classify a cog within its registry. They currently live in 
 | Field | Type | Zone | Purpose |
 |-------|------|:----:|---------|
 | `cogId` | string | 2 | Unique cog identifier within the registry. Typically derived from the filename without `.cog.md`. MUST be unique within its `partOf` namespace. |
-| `cogType` | string | 2 | Cog classification. Common values: `info` (reference / documentation), `action` (carries an execute contract), `routing` (agent navigation), `certificate-of-genuineness` (publisher-provenanced credential). |
+| `cogType` | string | 2 | Cog classification. Common values: `info` (reference / documentation), `action` (carries an execute contract), `routing` (agent navigation), `certificate-of-genuineness` (publisher-provenanced credential), `community-owned-governance-standard` (cog whose definition is owned and stewarded by an open community, with no single vendor authority, serving as a published governance reference for that community). |
 | `category` | string | 2 | Registry grouping (e.g. `mx-core`, `mx-tool`, `mx-content`). Coarser than `cogType`. |
 
 ### 6.6 Composition and content-shape fields
