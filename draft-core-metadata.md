@@ -618,6 +618,66 @@ If the external standard does not cleanly cover the value, the field is not a pa
 
 ---
 
+## 7a. Document discovery and lifecycle
+
+This section proposes a fourteen-field extension to the MX Core covering document discovery, version chains, lifecycle dates, machine-readable affordances, semantic identifiers, and consumption policy. Each field has a direct analogue in Dublin Core or Schema.org and applies to any MX-governed document regardless of vendor. The fields are written into the YAML frontmatter under Zone 2 (the `mx:` object) and, where the carrier supports XMP metadata (e.g. tagged PDFs under ISO 14289-1), should be propagated into the carrier's metadata packet so they survive copying and reformatting.
+
+### 7a.1 Identity and provenance
+
+| Field | Zone | Type | Definition | Analogue |
+|-------|:-:|------|-----------|----------|
+| `canonicalUrl` | 2 | string | Canonical URL where the document is officially hosted. An agent receiving a copy of the artefact can fetch this URL to obtain the current authoritative version. | Schema.org `mainEntityOfPage`, Dublin Core `identifier` |
+| `supersedes` | 2 | string-or-array | URL or identifier of an earlier document this one replaces. | Dublin Core `replaces` |
+| `supersededBy` | 2 | string | URL of the later document that replaces this one. The inverse of `supersedes`. | Dublin Core `isReplacedBy` |
+
+### 7a.2 Lifecycle dates
+
+| Field | Zone | Type | Definition | Analogue |
+|-------|:-:|------|-----------|----------|
+| `expires` | 2 | string | ISO-8601 date after which the document's content is no longer authoritative. Pricing PDFs, SLAs, compliance reports benefit from explicit expiry. | Dublin Core `valid` (end date) |
+| `reviewBy` | 2 | string | ISO-8601 date by which the document is scheduled for the next editorial review. Distinct from `expires`; review may confirm continued validity. | (none direct) |
+
+### 7a.3 Action affordances
+
+| Field | Zone | Type | Definition | Analogue |
+|-------|:-:|------|-----------|----------|
+| `relatedDocs` | 2 | array | List of URLs an agent should consider fetching for full context on this document. | Dublin Core `relation` |
+| `supportContact` | 2 | string | Contact address (mailto, URL, or organisation reference) for follow-up questions. | Schema.org `contactPoint` |
+
+### 7a.4 Semantics and structure
+
+| Field | Zone | Type | Definition | Analogue |
+|-------|:-:|------|-----------|----------|
+| `summary` | 2 | string | One-to-two-sentence machine-summary of the document. Targets agents that need to decide whether the artefact is relevant before reading the body. | Schema.org `abstract` |
+| `topic` | 2 | array | Controlled-vocabulary identifiers for the topics the document covers (Wikidata QIDs, Schema.org Concept URLs). | Schema.org `about`, Dublin Core `subject` |
+| `entities` | 2 | array | Named entities (people, organisations, products) the document is about, given as stable identifiers (Wikidata QIDs, ORCID IDs, organisation domain names). | Schema.org `mentions` |
+| `speakable` | 2 | string | Optional inline summary suitable for a voice agent to read aloud. | Schema.org SpeakableSpecification |
+| `conformsTo` | 2 | array | Standards this document declares conformance to, as URIs or stable identifiers. Centralises what would otherwise be spread across many separate fields. | Dublin Core `conformsTo` |
+
+### 7a.5 Consumption policy (negative space)
+
+| Field | Zone | Type | Definition |
+|-------|:-:|------|-----------|
+| `trainingDataPolicy` | 2 | string | Whether this artefact may be included in AI training corpora. The flip side of robots.txt, embedded so it survives copying and syndication. |
+| `doNotIndex` | 2 | boolean | When `true`, the document should not be added to public indices (search, llms.txt, sitemap) even where it is technically reachable. Embedded equivalent of robots.txt `noindex`. |
+
+### 7a.6 Conformance levels
+
+This proposal raises four of the fourteen fields to MUST status at the proposed Level 2 of the MX Core profile: `canonicalUrl`, `summary`, `conformsTo`, `trainingDataPolicy`. The reasoning, in each case:
+
+- `canonicalUrl` — without it, agents holding a copy of the artefact cannot find the current authoritative version. The single highest-value addition to the standard.
+- `summary` — without it, agents read the whole document to decide if it is relevant. The energy and inference saving is direct.
+- `conformsTo` — without it, conformance claims are scattered across many implicit fields. Centralising them lets an agent read one field and know which contracts the document claims.
+- `trainingDataPolicy` — in 2026, AI training corpora regularly ingest public documents. An explicit policy is the only way for a publisher to express a position the consumer can act on.
+
+The remaining ten fields are SHOULD at Level 2 and MAY at Level 1.
+
+### 7a.7 XMP rendering
+
+For carriers that support XMP metadata (PDFs, audio, video), the same fields should be written into the XMP packet using a registered namespace. The reference implementation in CogNovaMX uses `https://schemas.cognovamx.com/mx/1.0/` with the prefix `mx`, so a tagged PDF carries XMP properties such as `mx:CanonicalUrl`, `mx:Summary`, `mx:ConformsTo`. The Gathering may wish to propose a vendor-neutral namespace once the field set is ratified.
+
+---
+
 ## 8. Conformance summary
 
 | Field | Zone | Level 1 (MUST) | Level 2 (SHOULD) | Level 3 (MAY) |
