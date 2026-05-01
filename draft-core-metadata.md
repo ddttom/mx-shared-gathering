@@ -574,6 +574,46 @@ mx:
 
 ---
 
+### 6.17 `hold`
+
+| Property | Value |
+|----------|-------|
+| **Type** | boolean |
+| **Zone** | 2 (mx:) |
+| **Conformance** | MAY (Level 3) |
+| **Default** | false |
+
+Publication-block flag. When `true`, the document is otherwise ready but is being held back from release, send, or merge pending an external decision. Distinct from `status: draft`, which means "still in progress"; `hold: true` says "complete or near-complete, but blocked from going out".
+
+The flag is for human-readable workflow signalling. Implementations MAY use it to suppress publication, send, or notification automations; consumers SHOULD treat the absence of `hold` (and `hold: false`) as "not held". When `hold` is `true`, `holdReason` SHOULD be provided.
+
+```yaml
+mx:
+  hold: true
+```
+
+---
+
+### 6.18 `holdReason`
+
+| Property | Value |
+|----------|-------|
+| **Type** | string |
+| **Zone** | 2 (mx:) |
+| **Conformance** | MAY (Level 3) |
+
+Free-text companion to `hold`. Records why the document is being held back and, where possible, the condition that will release it. Single sentence in present tense.
+
+`holdReason` is meaningful only when `hold: true`. Setting `holdReason` without `hold` is permitted but SHOULD be treated by implementations as a hold not yet activated.
+
+```yaml
+mx:
+  hold: true
+  holdReason: "Tom holding the draft set overnight; release decision 1 May."
+```
+
+---
+
 ## 7. Pass-through fields
 
 A **pass-through field** is a YAML key MX provides whose value semantics belong to an established external vocabulary. MX does not redefine the value's meaning. The key exists so authors don't have to switch syntax mid-frontmatter to use the external vocabulary; tooling treats the field as the aligned external field.
