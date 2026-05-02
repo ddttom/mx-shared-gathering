@@ -259,6 +259,73 @@ The following fields describe the cog's body content and how it composes with ot
 | `policy` | string-or-object | 2 | Content-handling rules for agents. Inheritable from a parent uber-doc. |
 | `deliverable` | string-or-array | 2 | What this cog produces or delivers — a report, a validated artefact, a published page. For action cogs, describes what running the actions yields; for info cogs, describes the knowledge or artefact the cog represents. |
 
+### 6.7 Action contract fields
+
+The following fields apply to cogs that declare an `execute` block or a procedure-declaring field. They make two questions a consumer always asks of an action cog answerable from frontmatter alone: *what shape does a successful output take* (`produces`), and *what should the runtime do when a failure arises that I have not catalogued* (`defaultRemedy` paired with `troubleshooting`). Both fields reside in Zone 2 (the `mx:` object).
+
+#### 6.7.1 `produces`
+
+| Property | Value |
+|----------|-------|
+| **Type** | object |
+| **Zone** | 2 (mx:) |
+| **Profile** | cog |
+| **Conformance** | SHOULD (Level 3) for cogs that emit a structured output; MAY otherwise |
+
+**Definition:** Output contract. Declares the typed shape a successful execution of this cog produces, so consumers can reason about (and validate) the output without first running the cog. Distinct from `deliverable` (§6.6), which names what the cog yields in human terms; `produces` declares a machine-checkable shape.
+
+**Sub-keys:**
+
+| Sub-key | Type | Required when present | Definition |
+|---------|------|-----------------------|-----------|
+| `shape` | string | yes | Pointer to a JSON Schema, YAML schema, or named profile describing the output. Resolved using the same rules the host runtime applies to a cog's input `schema` field. |
+| `format` | string | optional | MIME type or named format identifier (`application/json`, `text/markdown`, `application/pdf`). |
+| `example` | any | optional | An illustrative output value matching `shape`. |
+
+**Example:**
+
+```yaml
+mx:
+  produces:
+    shape: ./schemas/audit-report.v1.yaml
+    format: application/json
+    example:
+      summary: "12 issues, 3 critical"
+      issues: []
+```
+
+- A cog with no `execute` block and no procedure-declaring field SHOULD NOT declare `produces`.
+- Distinct from the document-level `schema` field (input contract for the document itself) and from `deliverable` (semantic description, not typed shape).
+- Runtimes MAY validate the produced output against `produces.shape` after execution; runtimes that do so MUST report a shape mismatch as an unmodelled failure (see `defaultRemedy`).
+
+#### 6.7.2 `defaultRemedy`
+
+| Property | Value |
+|----------|-------|
+| **Type** | string |
+| **Zone** | 2 (mx:) |
+| **Profile** | cog |
+| **Conformance** | SHOULD (Level 3) when `troubleshooting` is declared; MAY otherwise |
+
+**Definition:** Catch-all remedy. Names the runtime-resolvable remedy a runtime SHOULD invoke when a failure arises that does not match any entry in `troubleshooting`. Resolves through the same registry used for `troubleshooting[].remedy` and obeys the same dotted-name syntax (lowercase, two or more dot-separated segments).
+
+**Example:**
+
+```yaml
+mx:
+  defaultRemedy: cogs.remedies.halt-and-escalate
+  troubleshooting:
+    - condition: required-field-missing
+      remedy: cogs.remedies.request-supplier-resubmit
+    - condition: validator-timeout
+      remedy: cogs.remedies.retry-with-backoff
+```
+
+- The value MUST match the validator name regex (`^[a-z][a-z0-9_-]*(\.[a-z][a-z0-9_-]*)+$`).
+- A cog declaring `defaultRemedy` without `troubleshooting` is valid but unusual; it asserts a single fallback for every failure mode.
+- Distinct from a per-condition `troubleshooting` entry: `defaultRemedy` catches unmodelled conditions, not named ones, and removes the runtime's need to guess a safe behaviour.
+- Combines naturally with `produces`: if a runtime cannot produce an output matching `produces.shape`, the situation is an unmodelled failure and `defaultRemedy` applies.
+
 ---
 
 ## 7. Conformance summary
@@ -272,6 +339,7 @@ The following fields describe the cog's body content and how it composes with ot
 | `refersTo` | — | — | MAY |
 | `cogId`, `cogType`, `category` | — | — | MAY |
 | `blocks`, `includes`, `execute`, `policy`, `deliverable` | — | — | MAY |
+| `produces`, `defaultRemedy` | — | — | MAY (SHOULD when the cog declares an `execute` block or a procedure-declaring field) |
 
 A cog at Level 1 is registry-locatable. At Level 2 it is identifiable to unfamiliar consumers and provides its context graph. At Level 3 it is fully described — dependencies, classifications, body content shape, and any execution contract.
 
