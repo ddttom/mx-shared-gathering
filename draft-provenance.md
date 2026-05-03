@@ -13,6 +13,7 @@ author:
   - fullname: Tom Cranstoun
     organization: CogNovaMX
     email: info@cognovamx.com
+canonicalUri: https://raw.githubusercontent.com/ddttom/mx-shared-gathering/main/draft-provenance.md
 ---
 
 # MX Provenance note

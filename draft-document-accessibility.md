@@ -16,6 +16,7 @@ author:
   - fullname: Tom Cranstoun
     organization: CogNovaMX
     email: info@cognovamx.com
+canonicalUri: https://raw.githubusercontent.com/ddttom/mx-shared-gathering/main/draft-document-accessibility.md
 ---
 
 # MX Document Accessibility note
@@ -157,7 +158,7 @@ A publisher could reasonably ask why this note specifies three conformance level
 
 The answer is that accessibility claims fail in three distinct ways and each layer catches a different one. A PDF can be byte-level tagged (Level 1) but carry no machine-readable declaration of what standard it claims, so a downstream consumer has to parse the file to find out (the Level 2 problem). A PDF can carry an explicit `accessibilityConformance: PDF/UA-1` declaration in its source frontmatter and its XMP packet but be untagged at the byte level (the Level 1 problem; the declaration is a lie). A PDF can be tagged and declared but never independently checked, so the publisher's claim is unverified (the Level 3 problem; trust is asserted but not earned).
 
-The three layers reinforce each other: structural truth (Level 1), declared truth (Level 2), and verified truth (Level 3). A publisher claiming Level 3 is making the strongest claim available without this note proposing a new verification infrastructure; the note relies entirely on existing checker tooling and existing standards.
+The three layers reinforce each other: structural truth (Level 1), declared truth (Level 2), and verified truth (Level 3). A publisher claiming Level 3 is making the strongest claim available without requiring new verification infrastructure; the note relies entirely on existing checker tooling and existing standards.
 
 The European Accessibility Act, the Americans with Disabilities Act, the UK Equality Act, and analogous regulations in other jurisdictions create a legal incentive for Level 3 specifically: a self-declaration without independent verification carries less defensive weight than an independently-checked one.
 
@@ -209,7 +210,7 @@ The declarations described here do not expose any user data, do not require the 
 
 ## 10. IANA considerations
 
-This note proposes no new IANA registrations. The Schema.org accessibility properties referenced in this note are defined and maintained by Schema.org under their published process; the carrier-format-specific properties (`pdfuaid:part`, `pdfaid:part`, `dc:language`) are defined and maintained by their respective standards bodies.
+This note requests no new IANA registrations. The Schema.org accessibility properties referenced in this note are defined and maintained by Schema.org under their published process; the carrier-format-specific properties (`pdfuaid:part`, `pdfaid:part`, `dc:language`) are defined and maintained by their respective standards bodies.
 
 ---
 

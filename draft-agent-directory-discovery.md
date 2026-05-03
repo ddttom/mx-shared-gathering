@@ -14,6 +14,7 @@ author:
   - fullname: Tom Cranstoun
     organization: CogNovaMX
     email: info@cognovamx.com
+canonicalUri: https://raw.githubusercontent.com/ddttom/mx-shared-gathering/main/draft-agent-directory-discovery.md
 ---
 
 # MX Agent Directory Discovery note
@@ -231,7 +232,7 @@ The optional inline content form (§6.4) places the full directory content into 
 
 ## 10. IANA considerations
 
-This note proposes no new IANA registrations. The `<link rel>` values described in §6 are agent-directory-specific identifiers that do not require IANA registration; they are dispatched on by name within consuming software.
+This note requests no new IANA registrations. The `<link rel>` values described in §6 are agent-directory-specific identifiers that do not require IANA registration; they are dispatched on by name within consuming software.
 
 If the agent-directory community wishes to register specific rel values (e.g. `llms-txt`) with the IANA Link Relation Type registry, that registration is owned by the directory's defining community, not by this note.
 

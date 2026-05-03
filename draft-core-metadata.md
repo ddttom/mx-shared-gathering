@@ -12,6 +12,7 @@ author:
   - fullname: Tom Cranstoun
     organization: CogNovaMX
     email: info@cognovamx.com
+canonicalUri: https://raw.githubusercontent.com/ddttom/mx-shared-gathering/main/draft-core-metadata.md
 ---
 
 # MX Core Metadata note
@@ -634,7 +635,6 @@ The pattern is:
 | `rights` | Dublin Core `dc:rights`, Schema.org `license` | Free-form rights statement when an SPDX identifier does not fit. | MAY |
 | `displayName` | FOAF `displayName`, Schema.org `alternateName` | Citation form when it differs from `title`. | MAY |
 | `usage` | Schema.org `usageInfo` | Guidance on how the document is meant to be consumed. | MAY |
-| `url` | Schema.org `url`, Dublin Core `identifier` | Canonical URL where the document lives or is published. | MAY |
 
 ### 7.2 Externally-aligned fields (genuineness family)
 
@@ -660,15 +660,17 @@ If the external standard does not cleanly cover the value, the field is not a pa
 
 ## 7a. Document discovery and lifecycle
 
-This section proposes a fourteen-field extension to the MX Core covering document discovery, version chains, lifecycle dates, machine-readable affordances, semantic identifiers, and consumption policy. Each field has a direct analogue in Dublin Core or Schema.org and applies to any MX-governed document regardless of vendor. The fields are written into the YAML frontmatter under Zone 2 (the `mx:` object) and, where the carrier supports XMP metadata (e.g. tagged PDFs under ISO 14289-1), should be propagated into the carrier's metadata packet so they survive copying and reformatting.
+This section covers document discovery, version chains, lifecycle dates, machine-readable affordances, semantic identifiers, and consumption policy. Each field has a direct analogue in Dublin Core or Schema.org and applies to any MX-governed document regardless of vendor. The fields are written into the YAML frontmatter under Zone 2 (the `mx:` object) and, where the carrier supports XMP metadata (e.g. tagged PDFs under ISO 14289-1), should be propagated into the carrier's metadata packet so they survive copying and reformatting.
 
 ### 7a.1 Identity and provenance
 
 | Field | Zone | Type | Definition | Analogue |
 |-------|:-:|------|-----------|----------|
-| `canonicalUrl` | 2 | string | Canonical URL where the document is officially hosted. An agent receiving a copy of the artefact can fetch this URL to obtain the current authoritative version. | Schema.org `mainEntityOfPage`, Dublin Core `identifier` |
+| `canonicalUri` | 2 | URI (RFC 3986) | Canonical location of this document, expressed as a URI. The scheme tells the receiver what kind of location it is: `file://` for a carrier that lives on disk, `smb://` / `nfs://` / internal `https://` for a carrier reachable inside a network, a publicly resolvable `https://` for a carrier on the public internet. | Schema.org `mainEntityOfPage`, Dublin Core `identifier` |
 | `supersedes` | 2 | string-or-array | URL or identifier of an earlier document this one replaces. | Dublin Core `replaces` |
 | `supersededBy` | 2 | string | URL of the later document that replaces this one. The inverse of `supersedes`. | Dublin Core `isReplacedBy` |
+
+`canonicalUri` carries the carrier's authoritative location at every tier; the URI scheme tells the receiver how to interpret it. A cog that lives only on disk SHOULD use a `file://` URI naming the carrier. A cog served from a network volume or internal corporate application SHOULD use the URI reachable inside the relevant network (`smb://`, `nfs://`, or an internal `https://`). When a cog is hosted in a publicly reachable source repository or website, the value MUST be that public URI: without it, an agent holding a copy cannot find the authoritative version.
 
 ### 7a.2 Lifecycle dates
 
@@ -703,18 +705,18 @@ This section proposes a fourteen-field extension to the MX Core covering documen
 
 ### 7a.6 Conformance levels
 
-This proposal raises four of the fourteen fields to MUST status at the proposed Level 2 of the MX Core profile: `canonicalUrl`, `summary`, `conformsTo`, `trainingDataPolicy`. The reasoning, in each case:
+Four of the fourteen fields are MUST at Level 2 of the MX Core profile: `canonicalUri`, `summary`, `conformsTo`, `trainingDataPolicy`. The reasoning, in each case:
 
-- `canonicalUrl` — without it, agents holding a copy of the artefact cannot find the current authoritative version. The single highest-value addition to the standard.
+- `canonicalUri` — without it, agents holding a copy of the artefact cannot find the current authoritative version. The URI scheme also tells the receiver what kind of location it is: `file://` for on-disk, an internal scheme for network-reachable, a publicly resolvable `https://` for public. The single highest-value field of the standard.
 - `summary` — without it, agents read the whole document to decide if it is relevant. The energy and inference saving is direct.
 - `conformsTo` — without it, conformance claims are scattered across many implicit fields. Centralising them lets an agent read one field and know which contracts the document claims.
-- `trainingDataPolicy` — in 2026, AI training corpora regularly ingest public documents. An explicit policy is the only way for a publisher to express a position the consumer can act on.
+- `trainingDataPolicy` — AI training corpora routinely ingest public documents. An explicit policy is the only way for a publisher to express a position the consumer can act on.
 
 The remaining ten fields are SHOULD at Level 2 and MAY at Level 1.
 
 ### 7a.7 XMP rendering
 
-For carriers that support XMP metadata (PDFs, audio, video), the same fields should be written into the XMP packet using a registered namespace. The reference implementation in CogNovaMX uses `https://schemas.cognovamx.com/mx/1.0/` with the prefix `mx`, so a tagged PDF carries XMP properties such as `mx:CanonicalUrl`, `mx:Summary`, `mx:ConformsTo`. The Gathering may wish to propose a vendor-neutral namespace once the field set is ratified.
+For carriers that support XMP metadata (PDFs, audio, video), the same fields should be written into the XMP packet using a registered namespace. The reference implementation in CogNovaMX uses `https://schemas.cognovamx.com/mx/1.0/` with the prefix `mx`, so a tagged PDF carries XMP properties such as `mx:CanonicalUri`, `mx:Summary`, `mx:ConformsTo`. The Gathering may wish to propose a vendor-neutral namespace once the field set is ratified.
 
 ---
 

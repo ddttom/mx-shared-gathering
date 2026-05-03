@@ -13,6 +13,7 @@ author:
   - fullname: Tom Cranstoun
     organization: CogNovaMX
     email: info@cognovamx.com
+canonicalUri: https://raw.githubusercontent.com/ddttom/mx-shared-gathering/main/draft-contract-fingerprinting.md
 ---
 
 # MX Contract Fingerprinting and Signing note
@@ -53,7 +54,7 @@ This note defines three conformance levels (modelled on the [WCAG 2.1](https://w
 
 ### 2.2 Draft status
 
-This note is a draft authored by Tom Cranstoun and offered to The Gathering for review. It is not a ratified standard. Reference implementations exist in JavaScript and Rust under the `cog-spec` v1.0 codebase; their kebab-case field names (`x-mx-contract-fields`, `x-mx-metadata-fields`) will be aligned with the camelCase forms in this note in a future revision.
+This note is a draft authored by Tom Cranstoun and offered to The Gathering for review. It is not a ratified standard. Reference implementations exist in JavaScript and Rust under the `cog-spec` v1.0 codebase; those implementations carry the kebab-case forms (`x-mx-contract-fields`, `x-mx-metadata-fields`), while the camelCase forms in this note are the canonical names.
 
 ---
 
@@ -259,7 +260,7 @@ Implementations MAY combine, rename, or extend phases. The MUST is that a signer
 
 ## 7. Open questions
 
-The following are flagged for community discussion before this draft is offered for ratification:
+The following remain open for community discussion:
 
 1. **Key management** — should this note reference a default PKI model, or stay agnostic?
 2. **Multi-signer** — when multiple parties sign the same cog, is each signature scoped to the same `contractFields` or may each declare its own scope?

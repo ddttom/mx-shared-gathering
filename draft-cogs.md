@@ -12,6 +12,7 @@ author:
   - fullname: Tom Cranstoun
     organization: CogNovaMX
     email: info@cognovamx.com
+canonicalUri: https://raw.githubusercontent.com/ddttom/mx-shared-gathering/main/draft-cogs.md
 ---
 
 # MX Cogs note
@@ -35,7 +36,7 @@ This note specifies:
 - The cog file format (`.cog.md`).
 - The magic-header HTML comment used for byte-zero self-identification.
 - The `cogHeader` frontmatter field that mirrors the magic-header comment for YAML-only consumers.
-- The cog structural fields (`partOf`, `buildsOn`, `requires`, `refersTo`, plus the cog-specific extensions for blocks, execute contracts, includes, deliverables, classification, and identifiers — many of which currently live in vendor extensions until ratified into the standard tier).
+- The cog structural fields (`partOf`, `buildsOn`, `requires`, `refersTo`, plus the cog-specific extensions for blocks, execute contracts, includes, deliverables, classification, and identifiers — some of which are carried in vendor-extension space and may be promoted into the standard tier by The Gathering).
 
 **Out of scope:**
 
@@ -239,7 +240,7 @@ mx:
 
 ### 6.5 Identifier and classification fields
 
-The following fields classify a cog within its registry. They currently live in vendor-extension space (`x-mx-*`) until ratified into the standard cog tier; the field names without prefix are reserved here and SHOULD be implemented under the `x-<vendor>-` convention until then.
+The following fields classify a cog within its registry. They live in vendor-extension space (`x-mx-*`); the field names without prefix are reserved here and SHOULD be implemented under the `x-<vendor>-` convention. The Gathering may promote any of them into the standard cog tier.
 
 | Field | Type | Zone | Purpose |
 |-------|------|:----:|---------|
@@ -249,7 +250,7 @@ The following fields classify a cog within its registry. They currently live in 
 
 ### 6.6 Composition and content-shape fields
 
-The following fields describe the cog's body content and how it composes with other cogs. They likewise live in vendor-extension space until ratified.
+The following fields describe the cog's body content and how it composes with other cogs. They likewise live in vendor-extension space.
 
 | Field | Type | Zone | Purpose |
 |-------|------|:----:|---------|

@@ -12,6 +12,7 @@ author:
   - fullname: Tom Cranstoun
     organization: CogNovaMX
     email: info@cognovamx.com
+canonicalUri: https://raw.githubusercontent.com/ddttom/mx-shared-gathering/main/draft-field-pattern.md
 ---
 
 # MX Field Definition Pattern note
@@ -26,15 +27,15 @@ author:
 
 ## 1. Abstract
 
-This is the **primary note** of the MX draft set. Every other note in the set proposes one or more frontmatter fields, and every one of those fields is defined under the pattern this note specifies. Readers new to the suite should read this note first; sister notes assume its rules and do not restate them.
+This is the **primary note** of the MX draft set. Every other note in the set defines one or more frontmatter fields, and every one of those fields is described under the pattern this note specifies. Readers new to the suite should read this note first; sister notes assume its rules and do not restate them.
 
-Every MX draft note proposes one or more frontmatter fields. Today each note repeats the same structural choices in slightly different prose: a heading, a property table, a definition, an example, and (sometimes) extra rules. The minor variations make automated extraction harder than it needs to be, and they make a reviewer ask "is this field defined the same way as the last one?" every time.
+Without a shared pattern, each note would express the same structural choices in slightly different prose: a heading, a property table, a definition, an example, and (sometimes) extra rules. Even minor variations make automated extraction harder than it needs to be, and they make a reviewer ask "is this field defined the same way as the last one?" every time.
 
-This note proposes a single, vetted **pattern** for defining a frontmatter field inside any MX draft. Once the community ratifies the pattern, future drafts add new fields by following the template — author once, machine-read everywhere.
+This note specifies a single, vetted **pattern** for defining a frontmatter field inside any MX draft. Drafts add new fields by following the template — author once, machine-read everywhere.
 
-**Why field discipline matters.** Machine consumers — agents, validators, registries, signers, graph builders — cannot infer intent from prose. They need fields that are explicit, tightly typed, and constrained to a small set of legal values. The MX vocabulary is therefore expected to **grow, not shrink**: new fields are how machines come to understand what a document means. Field growth without authoring discipline produces drift, and drift compounds: every loose definition multiplies the work of every downstream consumer that has to reconcile it. The pattern in this note exists to absorb growth without producing drift, and to keep every new field tightly constrained from the moment it is proposed.
+**Why field discipline matters.** Machine consumers — agents, validators, registries, signers, graph builders — cannot infer intent from prose. They need fields that are explicit, tightly typed, and constrained to a small set of legal values. The MX vocabulary is therefore expected to **grow, not shrink**: new fields are how machines come to understand what a document means. Field growth without authoring discipline produces drift, and drift compounds: every loose definition multiplies the work of every downstream consumer that has to reconcile it. The pattern in this note exists to absorb growth without producing drift, and to keep every new field tightly constrained from the moment it is defined.
 
-The pattern itself is the proposal. **No new frontmatter fields are introduced in this note.** This note specifies *how* a field should be defined; *which* fields exist is the work of the sister notes that propose them.
+This note specifies the pattern itself. **No new frontmatter fields are introduced in this note.** It governs *how* a field is defined; *which* fields exist is the work of the sister notes that define them.
 
 ---
 
@@ -42,9 +43,9 @@ The pattern itself is the proposal. **No new frontmatter fields are introduced i
 
 The key words "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL NOT", "SHOULD", "SHOULD NOT", "RECOMMENDED", "MAY", and "OPTIONAL" in this document are to be interpreted as described in [RFC 2119](https://www.rfc-editor.org/rfc/rfc2119).
 
-This note's pattern is **normative for the entire MX draft set**. Every MX note that proposes one or more frontmatter fields MUST define each field using the structure in §4, the property-table rows in §5 (for standard fields), or the inventory-table form in §4.4 (for pass-through fields). Sister notes MUST NOT introduce alternative shapes, additional property-table rows, or supplementary section types beyond those defined here.
+This note's pattern is **normative for the entire MX draft set**. Every MX note that defines one or more frontmatter fields MUST define each field using the structure in §4, the property-table rows in §5 (for standard fields), or the inventory-table form in §4.4 (for pass-through fields). Sister notes MUST NOT introduce alternative shapes, additional property-table rows, or supplementary section types beyond those defined here.
 
-Existing field definitions that predate ratification of this pattern remain valid until the next revision of the host note; on that revision, all new and amended definitions MUST conform, and the host note SHOULD migrate any older definitions that are touched. A note that defines no fields makes no claim against this pattern and is unaffected by it.
+A note that defines no fields makes no claim against this pattern and is unaffected by it.
 
 ### 2.1 Draft status
 
@@ -97,7 +98,7 @@ A field definition is a contiguous unit inside a host note. It has four required
 
 ### 4.1 Required pieces
 
-1. **Heading.** A section heading at the level appropriate to the host note's structure (typically `### N.M`), with the field name in backticks. Example: `### 5.3 ` `` `author` ``. Headings MUST contain only the bare field name; no prose, no qualifiers, no parenthetical types.
+1. **Heading.** A section heading at the level appropriate to the host note's structure (typically `### N.M`), with the field name in backticks. Example: `### 5.3` `` `author` ``. Headings MUST contain only the bare field name; no prose, no qualifiers, no parenthetical types.
 2. **Property table.** A two-column markdown table with the rows specified in §5, in the order given.
 3. **Definition prose.** One or more paragraphs of plain prose that name what the field is, what it carries, and any constraint not expressible in the property table. Definition prose MUST come immediately after the property table. Definition prose MUST NOT restate values already given in the table.
 4. **Example.** A fenced YAML code block showing the field in use, in the carrier the host note targets (typically `mx:` block or top-level frontmatter). Examples MUST be syntactically valid YAML and MUST illustrate the field's actual shape. A definition with multiple legal shapes (e.g. `string-or-object`) MAY include multiple example blocks.
@@ -162,7 +163,7 @@ The table MUST NOT contain rows beyond these. New rows MAY be proposed only by a
 
 ## 6. Worked example
 
-The following is a complete, conforming definition of a hypothetical field `riskLevel`. It is not a real proposal; it exists only to illustrate the pattern.
+The following is a complete, conforming definition of a hypothetical field `riskLevel`. It is not a real field; it exists only to illustrate the pattern.
 
 > ### 7.4 `riskLevel`
 >
@@ -224,7 +225,7 @@ The example in §6 is illustrative, not normative. Implementations MUST NOT trea
 
 This note specifies authoring style only and introduces no new fields, no carriers, and no signing surface. It carries no direct security or privacy implications.
 
-A second-order consideration: a uniform field-definition pattern makes automated extraction tractable, which means tooling can mechanically enumerate every field a draft proposes. Authors SHOULD assume that anything written inside a property table or YAML example will be parsed by tools that treat the draft as canonical, and SHOULD NOT include sensitive sample values in examples.
+A second-order consideration: a uniform field-definition pattern makes automated extraction tractable, which means tooling can mechanically enumerate every field a draft defines. Authors SHOULD assume that anything written inside a property table or YAML example will be parsed by tools that treat the draft as canonical, and SHOULD NOT include sensitive sample values in examples.
 
 ---
 

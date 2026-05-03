@@ -12,6 +12,7 @@ author:
   - fullname: Tom Cranstoun
     organization: CogNovaMX
     email: info@cognovamx.com
+canonicalUri: https://raw.githubusercontent.com/ddttom/mx-shared-gathering/main/draft-workflow-contracts.md
 ---
 
 # MX Workflow Contracts note
