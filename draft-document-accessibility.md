@@ -1,7 +1,7 @@
 ---
 title: "MX Document Accessibility note"
 docname: draft-cranstoun-mx-document-accessibility
-date: 2026-04-28
+date: 2026-05-07
 consensus: false
 keyword:
   - mx
@@ -78,6 +78,8 @@ This is a draft note. Conformance levels and field semantics MAY change in respo
 - Procurement-side compliance language for the European Accessibility Act, the Americans with Disabilities Act, the UK Equality Act, or any other jurisdiction-specific regulation. This note describes the technical metadata; the regulatory question of which artefacts fall under which jurisdiction is owned by the publisher and their legal counsel.
 
 ### 3.3 Relationship to existing standards
+
+The accessibility-conformance vocabulary defined here (`accessibilityConformance`, `accessibilityFeature`, `accessibilityHazard`, `accessibilitySummary`) is the detailed disclosure layer for documents whose accessibility is a first-class concern. Cogs that need only a high-level quality signal — "is the cog accessibility-aware?" — declare `quality.accessibility` per [MX Provenance §6.5](draft-provenance.md), rather than the full conformance vocabulary here. The two layers are complementary: `quality.accessibility` is the summary signal; the fields in this note are the detailed claim.
 
 This note relies on:
 

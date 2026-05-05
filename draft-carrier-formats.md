@@ -1,7 +1,7 @@
 ---
 title: "MX Carrier Formats note"
 docname: draft-cranstoun-mx-carrier-formats
-date: 2026-04-27
+date: 2026-05-07
 consensus: false
 keyword:
   - mx
@@ -520,7 +520,7 @@ Discovery keywords as a comma-separated string. Equivalent to `tags` (array) in 
 <meta name="mx:tags" content="validation, metadata, utility">
 ```
 
-### 4.9 `mx:builds-on`
+### 4.9 `mx:buildsOn`
 
 | Property | Value |
 |----------|-------|
@@ -528,13 +528,13 @@ Discovery keywords as a comma-separated string. Equivalent to `tags` (array) in 
 | **Profile** | js, css |
 | **Conformance** | MAY (Level 3) |
 
-Context dependencies as a comma-separated list of cog names. Equivalent to `buildsOn` (array) in YAML. Uses kebab-case in non-YAML contexts.
+Context dependencies as a comma-separated list of cog names. Equivalent to `buildsOn` (array) in YAML. Field names use camelCase in every carrier (per NDR-02); the carrier syntax determines only how the value is encoded, not how the name is spelled.
 
 ```javascript
-/** @mx:builds-on fields, cog-unified-spec */
+/** @mx:buildsOn fields, cog-unified-spec */
 ```
 
-### 4.10 `mx:documented-in`
+### 4.10 `mx:documentedIn`
 
 | Property | Value |
 |----------|-------|
@@ -545,10 +545,10 @@ Context dependencies as a comma-separated list of cog names. Equivalent to `buil
 Path to companion documentation. Links a code file to its narrative documentation.
 
 ```javascript
-/** @mx:documented-in ../docs/validation-guide.cog.md */
+/** @mx:documentedIn ../docs/validation-guide.cog.md */
 ```
 
-### 4.11 `mx:context-provides`
+### 4.11 `mx:contextProvides`
 
 | Property | Value |
 |----------|-------|
@@ -559,7 +559,7 @@ Path to companion documentation. Links a code file to its narrative documentatio
 What context this file provides to agents. Declares the knowledge or capability an agent gains by reading this file.
 
 ```javascript
-/** @mx:context-provides Field validation rules and error message templates */
+/** @mx:contextProvides Field validation rules and error message templates */
 ```
 
 ---

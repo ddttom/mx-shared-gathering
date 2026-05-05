@@ -1,7 +1,7 @@
 ---
 title: "MX Provenance note"
 docname: draft-cranstoun-mx-provenance
-date: 2026-04-27
+date: 2026-05-07
 consensus: false
 keyword:
   - mx
@@ -108,6 +108,23 @@ mx:
 ---
 
 ## 5. Attribution fields
+
+### 5.0 Identity-field boundaries
+
+Six fields touch document identity, each marking a distinct role in the document lifecycle. Treat them as different concepts and do not conflate them:
+
+| Field | Role | Defined in |
+|-------|------|-----------|
+| `author` | Immutable creator of the document. The person or entity who first wrote it. Set once at creation and never changed. | [MX Core Metadata](draft-core-metadata.md) (Zone 1, top-level) |
+| `provenanceAuthor` | Originator of the document's content, recorded in Zone 2 attribution metadata. May differ from `author` when content was contributed by another party. | This note (§5.1) |
+| `maintainer` | Person or team responsible for ongoing maintenance of the document. The accountable steward, not necessarily the original creator. | [MX Core Metadata](draft-core-metadata.md) (Zone 2) |
+| `maintainedBy` | Person or team who performed the most recent accuracy confirmation. May differ from `maintainer` (`maintainer` is the accountable role; `maintainedBy` records who actually did the last review). | This note (§7.2) |
+| `publisher` | Entity that publishes the document and stands behind its claims. Rich struct with name, url, and contact sub-keys. | This note (§5.5) |
+| `provenancePublisher` | Flat entity-name string declaring who published. The simpler form for cogs that do not need the rich `publisher` struct. | This note (§5.2) |
+
+When a document declares more than one of these, each carries its own role and the others are not redundant. Validators MUST NOT collapse them. Authors of the canonical reading-order documentation SHOULD describe the role each field plays rather than treating them as interchangeable synonyms.
+
+---
 
 ### 5.1 `provenanceAuthor`
 
@@ -317,24 +334,33 @@ mx:
 
 ---
 
-### 6.5 The quality triad: `accessibility`, `semantic`, `convergence`
+### 6.5 `quality`
 
-The quality triad is three optional MAY-level fields that together describe document quality across complementary dimensions. Each field MAY be a string (compliance level or summary) or an object with structured assessment data.
+| Property | Value |
+|----------|-------|
+| **Type** | object |
+| **Zone** | 2 (mx:) |
+| **Conformance** | MAY (Level 3) |
 
-| Field | Dimension | Aligns with |
-|-------|-----------|-------------|
-| `accessibility` | How well content serves users with disabilities | [WCAG 2.1](https://www.w3.org/TR/WCAG21/), Pa11y |
-| `semantic` | How well content uses semantic HTML and structured data | [Schema.org](https://schema.org/) JSON-LD, microdata |
-| `convergence` | How well content aligns human and machine experiences | MX dual-experience principle |
+The `quality` object groups three sub-keys that together describe document quality across complementary dimensions. Each sub-key MAY be a string (compliance level or summary) or an object with structured assessment data.
+
+| Sub-key | Dimension | Aligns with |
+|---------|-----------|-------------|
+| `quality.accessibility` | How well content serves users with disabilities | [WCAG 2.1](https://www.w3.org/TR/WCAG21/), Pa11y |
+| `quality.semantic` | How well content uses semantic HTML and structured data | [Schema.org](https://schema.org/) JSON-LD, microdata |
+| `quality.convergence` | How well content aligns human and machine experiences | MX dual-experience principle |
 
 ```yaml
 mx:
-  accessibility: "WCAG 2.1 AA"
-  semantic: "Schema.org JSON-LD"
-  convergence: high
+  quality:
+    accessibility: "WCAG 2.1 AA"
+    semantic: "Schema.org JSON-LD"
+    convergence: high
 ```
 
-Common values for `convergence` when expressed as a string: `low`, `medium`, `high`.
+Common values for `quality.convergence` when expressed as a string: `low`, `medium`, `high`.
+
+The grouping into one parent object reflects that the three dimensions are complementary facets of a shared quality theme; readers and validators can probe `quality` once and iterate the sub-keys rather than checking three top-level fields. The detailed accessibility-conformance vocabulary (`accessibilityConformance`, `accessibilityFeature`, `accessibilityHazard`, `accessibilitySummary`) defined in the [MX Document Accessibility note](draft-document-accessibility.md) lives in a separate disclosure layer; `quality.accessibility` is the high-level signal, the document-accessibility fields are the detailed conformance claim.
 
 ---
 
@@ -376,18 +402,7 @@ mx:
 
 ### 7.3 `expires`
 
-| Property | Value |
-|----------|-------|
-| **Type** | string |
-| **Zone** | 2 (mx:) |
-| **Conformance** | MAY (Level 3) |
-
-Expiry date for time-sensitive content. Content SHOULD be reviewed or archived after this date. Agents encountering expired content SHOULD flag it for review rather than treating it as authoritative. Distinct from `cacheability` (how long to cache a fetch) — `expires` indicates when the content itself is no longer current.
-
-```yaml
-mx:
-  expires: 2026-12-31
-```
+`expires` is defined in the [MX Core Metadata note](draft-core-metadata.md) as the ISO-8601 date after which the document's content is no longer expected to be authoritative. It is a foundation-layer field; this provenance note refers to it but does not redefine it. Time-sensitive content (pricing PDFs, service-level agreements, compliance reports, regulatory text) MAY declare `expires` alongside the maintenance fields here so a single review window covers both maintenance and validity.
 
 ---
 
@@ -495,9 +510,7 @@ mx:
 | `accuracyCommitment` | quality | — | — | MAY |
 | `correctionSla` | quality | — | — | MAY |
 | `mxCompliance` | quality | — | — | MAY |
-| `accessibility` | quality | — | — | MAY |
-| `semantic` | quality | — | — | MAY |
-| `convergence` | quality | — | — | MAY |
+| `quality` | quality | — | — | MAY |
 | `maintainedDate` | maintenance | — | SHOULD | — |
 | `maintainedBy` | maintenance | — | — | MAY |
 | `expires` | maintenance | — | — | MAY |

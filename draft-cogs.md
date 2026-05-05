@@ -36,7 +36,7 @@ This note specifies:
 - The cog file format (`.cog.md`).
 - The magic-header HTML comment used for byte-zero self-identification.
 - The `cogHeader` frontmatter field that mirrors the magic-header comment for YAML-only consumers.
-- The cog structural fields (`partOf`, `buildsOn`, `requires`, `refersTo`, plus the cog-specific extensions for blocks, execute contracts, includes, deliverables, classification, and identifiers — some of which are carried in vendor-extension space and may be promoted into the standard tier by The Gathering).
+- The cog structural fields (`partOf`, `buildsOn`, `dependencies`, `refersTo`, plus the cog-specific extensions for blocks, execute contracts, includes, deliverables, classification, and identifiers — some of which are carried in vendor-extension space and may be promoted into the standard tier by The Gathering).
 
 **Out of scope:**
 
@@ -63,7 +63,7 @@ This note defines three conformance levels for cog documents (modelled on the [W
 |-------|------|-----------------|
 | Level 1 | **MX Cog Core** | The document is a `.cog.md` file. `partOf` declared. |
 | Level 2 | **MX Cog Standard** | Adds `buildsOn` (or an empty array) and either a magic-header comment or a `cogHeader` field. |
-| Level 3 | **MX Cog Complete** | Adds explicit `requires`, `refersTo`, plus the relevant extensions (block declarations, execute contract, deliverables, identifiers) for the cog's role. |
+| Level 3 | **MX Cog Complete** | Adds explicit `dependencies`, `refersTo`, plus the relevant extensions (block declarations, execute contract, deliverables, identifiers) for the cog's role. |
 
 A cog claiming conformance at a given level MUST satisfy all requirements at that level and all lower levels.
 
@@ -199,26 +199,36 @@ mx:
 ```
 
 - `buildsOn` forms the cog knowledge graph. The referenced cogs provide context but are not required for this cog to function.
-- Distinct from `requires` (hard dependency) and `refersTo` (informational link).
+- Distinct from `dependencies` (hard dependency) and `refersTo` (informational link).
 
-### 6.3 `requires`
+### 6.3 `dependencies`
 
 | Property | Value |
 |----------|-------|
-| **Type** | array |
+| **Type** | array of objects |
 | **Zone** | 2 (mx:) |
 | **Conformance** | MAY (Level 3) |
 
-**Definition:** Hard dependencies. Array of cog names that MUST exist for this cog to function.
+**Definition:** Hard dependencies. An array of objects, each describing one thing this cog depends upon. Each entry has at minimum a `name` sub-key; optional sub-keys are `version` (a version constraint such as a SemVer range), `reason` (a one-sentence explanation of why the dependency is needed), and `kind` (one of `cog` | `runtime` | `package` | `external`; defaults to `cog`).
 
 **Example:**
 
 ```yaml
 mx:
-  requires: [node-runtime, markdownlint-cli2]
+  dependencies:
+    - name: schema
+      kind: cog
+      reason: Validator depends on the schema cog's contract.
+    - name: node
+      kind: runtime
+      version: '>=18'
+    - name: markdownlint-cli2
+      kind: package
 ```
 
-- A cog MUST NOT be considered functional if any of its `requires` entries are missing.
+- A cog MUST NOT be considered functional if any of its `dependencies` entries are missing or unresolvable for their declared `kind`.
+- The recommended `kind` is `cog`. Runtime, package, and external deps SHOULD usually live in their proper carrier (`package.json`, the cog's runbook, an external manifest); the non-cog kinds in this field are escape hatches for cases where inline declaration is genuinely the right home.
+- A cog declaring no dependencies MAY omit this field or declare an empty array (`dependencies: []`); both are conformant.
 - Distinct from `buildsOn` (soft context) and `refersTo` (informational link).
 
 ### 6.4 `refersTo`
@@ -368,7 +378,7 @@ mx:
 | `partOf` | MUST | — | — |
 | `buildsOn` | — | SHOULD | — |
 | `cogHeader` *or* magic-header comment | — | SHOULD (when circulating) | — |
-| `requires` | — | — | MAY |
+| `dependencies` | — | — | MAY |
 | `refersTo` | — | — | MAY |
 | `cogId`, `cogType`, `category` | — | — | MAY |
 | `blocks`, `includes`, `execute`, `policy`, `deliverable` | — | — | MAY |
