@@ -1,7 +1,7 @@
 ---
 title: "MX Cogs note"
 docname: draft-cranstoun-mx-cogs
-date: 2026-04-27
+date: 2026-05-06
 consensus: false
 keyword:
   - mx
@@ -245,8 +245,40 @@ The following fields classify a cog within its registry. They live in vendor-ext
 | Field | Type | Zone | Purpose |
 |-------|------|:----:|---------|
 | `cogId` | string | 2 | Unique cog identifier within the registry. Typically derived from the filename without `.cog.md`. MUST be unique within its `partOf` namespace. |
-| `cogType` | string | 2 | Cog classification. Common values: `info` (reference / documentation), `action` (carries an execute contract), `routing` (agent navigation), `certificate-of-genuineness` (publisher-provenanced credential), `community-owned-governance-standard` (cog whose definition is owned and stewarded by an open community, with no single vendor authority, serving as a published governance reference for that community). |
+| `cogType` | string | 2 | Cog classification. Common values: `info` (reference / documentation), `action` (carries an execute contract; further classified by `actionType` per §6.5.2), `routing` (agent navigation), `certificate-of-genuineness` (publisher-provenanced credential), `cogs` (community-owned governance standard; see §6.5.1). |
 | `category` | string | 2 | Registry grouping (e.g. `mx-core`, `mx-tool`, `mx-content`). Coarser than `cogType`. |
+
+#### 6.5.1 The `cogs` classification (community-owned governance standard)
+
+A `cogs` cog (initialism: Community Owned Governance Standard) is a cog whose definition is owned and stewarded by an open community rather than a single vendor or author. The classification denotes the governance model, not the file format — every `cogs` cog is still a normal `.cog.md` file with the same frontmatter shape as any other cog. What differs is who can change the cog's definition and through what process.
+
+A cog declaring `cogType: cogs` MUST also identify the community that governs its definition. The MX community uses <https://tg.community> as the convening venue for The Gathering's cog stewardship. Other communities MAY use this classification for their own governance arrangements, identifying the governing body in the cog's `partOf`, `publisher`, or `provenanceOrigin` field as appropriate.
+
+The `cogs` classification is intended for cogs that act as community-ratified reference definitions — field dictionaries, terminology registers, governance policies, conformance rubrics — where vendor capture would defeat the purpose. A `cogs` cog has no implied license; the cog's own `license` field still applies.
+
+#### 6.5.2 `actionType` (action cog discriminator)
+
+| Field | Type | Zone | Profile | Conformance |
+|-------|------|:----:|---------|-------------|
+| `actionType` | string | 2 | cog (action) | SHOULD (Level 3) for cogs declaring `execute`; MUST NOT appear otherwise |
+
+**Definition:** Discriminator for action cogs that names the cognitive class of the action so a consumer (human or agent) knows what kind of execution is involved without inspecting the body. Three values:
+
+- **`scripted`** — the cog body carries an embedded executable artefact (a fenced code block annotated `@embedded:<id>` per the cog specification). A runtime extracts the artefact by id and runs it directly. Deterministic; the same inputs produce the same outputs.
+- **`sop`** — the cog body carries no embedded executable artefact. The `execute.actions[].usage` value is descriptive prose intended for a language-model runtime to read and perform the steps. The runtime is the language model itself.
+- **`hybrid`** — the cog carries both an embedded executable artefact AND descriptive `usage` prose. The script handles the deterministic portion; the prose carries the judgement-dependent portion a language model performs.
+
+A cog declaring `execute` SHOULD declare `actionType` so consumers can resolve the runtime requirement (interpreter, language model, or both) before extracting any artefact. A cog without `execute` MUST NOT declare `actionType`.
+
+```yaml
+mx:
+  cogType: action
+  actionType: scripted
+  execute:
+    actions:
+      - name: run
+        description: Execute the embedded script
+```
 
 ### 6.6 Composition and content-shape fields
 
