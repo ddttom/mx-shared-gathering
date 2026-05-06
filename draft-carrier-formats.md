@@ -144,7 +144,7 @@ HTML documents carry MX metadata using `<meta>` tags in the document `<head>`. T
 
 ```html
 <head>
-  <meta name="description" content="Brief summary for search and AI agents">
+  <meta name="description" content="Brief summary for search engines and machines">
   <meta name="author" content="Tom Cranstoun">
   <meta name="mx:status" content="active">
   <meta name="mx:content-type" content="guide">

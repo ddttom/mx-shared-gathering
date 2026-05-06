@@ -92,7 +92,7 @@ MX metadata in YAML frontmatter is organised into two zones. **Zone 1** (top-lev
 ```yaml
 ---
 title: "Document Title"
-description: "Brief summary for search and AI agents"
+description: "Brief summary for search engines and machines"
 author: "Author Name"
 created: 2026-04-02
 modified: 2026-04-16
@@ -151,7 +151,7 @@ If both `title` in frontmatter and an H1 heading exist in the document body, aut
 | **Zone** | 1 (top-level) |
 | **Conformance** | MUST (Level 1) |
 
-One-line summary. Used by search engines, AI agents, and registry listings. The value SHOULD NOT exceed 160 characters and MUST be a single sentence or phrase summarising the document's purpose.
+One-line summary. Used by search engines, machines of every class, and registry listings. The value SHOULD NOT exceed 160 characters and MUST be a single sentence or phrase summarising the document's purpose.
 
 ```yaml
 description: "Single source of truth for every YAML frontmatter field."
