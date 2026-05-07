@@ -28,7 +28,7 @@ canonicalUri: https://raw.githubusercontent.com/ddttom/mx-shared-gathering/main/
 
 This note defines the namespace policy for the Machine Experience (MX) framework. It specifies how vendors extend the MX vocabulary without polluting the standard namespace, how field names adapt across syntactic contexts, and how new extension fields are registered.
 
-The namespace policy establishes three levels: standard fields (no prefix, owned by The Gathering), public extensions (`x-mx-`, owned by CogNovaMX), and private extensions (`x-mx-p-`, owned by CogNovaMX, values obfuscated). The prefix itself is the policy: an implementation can determine governance from the field name alone, without external lookup.
+The namespace policy establishes three levels: standard fields (no prefix, owned by The Gathering), public extensions (`x-mx-`, the public extension namespace operated by CogNovaMX during the seed phase; vendor sub-namespaces of the form `x-mx-{vendor}-*` are reserved for individual vendors), and private extensions (`x-mx-p-`, opaque-value extensions). The prefix itself is the policy: an implementation can determine governance from the field name alone, without external lookup.
 
 ---
 
@@ -113,8 +113,8 @@ MX metadata fields are organised into three namespace levels. Each level has a d
 | Level | Prefix | Owner | Governance | Visibility |
 |-------|--------|-------|------------|------------|
 | Standard | *(none)* | The Gathering | Community-governed. Changes require Gathering approval. | Universal — all implementations use these fields. |
-| Public extension | `x-mx-` | CogNovaMX | Vendor-governed. CogNovaMX decides. | Visible in published cogs. Implementation extension, not the open standard. |
-| Private extension | `x-mx-p-` | CogNovaMX | Vendor-governed. CogNovaMX decides. | Obfuscated. Only `$MX_HOME` registry holders can decode values. |
+| Public extension | `x-mx-` | Public namespace, operated by CogNovaMX during the seed phase. Vendor sub-namespaces `x-mx-{vendor}-*` are reserved for individual vendors and allocated on request. | Vendor-governed within each sub-namespace. | Visible in published cogs. Implementation extension, not the open standard. |
+| Private extension | `x-mx-p-` | Vendor-internal namespace. CogNovaMX during the seed phase; vendor sub-namespaces `x-mx-p-{vendor}-*` allocated as the public namespace is. | Vendor-governed. | Obfuscated. Only registry holders can decode values. |
 
 ### 6.2 Standard fields (no prefix)
 
@@ -140,16 +140,24 @@ mx:
 
 ### 6.3 Public extension fields (`x-mx-`)
 
-Public extension fields use the `x-mx-` prefix. They are owned by CogNovaMX and follow the HTTP extension header convention (`x-` = extension, `mx-` = CogNovaMX's namespace).
+Public extension fields use the `x-mx-` prefix. The namespace is the public extension space for the MX vocabulary; CogNovaMX operates it during the seed phase. Vendor sub-namespaces of the form `x-mx-{vendor}-*` are reserved for individual vendors and allocated on request — for example, a vendor named "Acme" would publish fields as `x-mx-acme-deploy-target`. Within a vendor sub-namespace the vendor governs the field set.
 
 Public extension fields MUST use the `x-mx-` prefix. They MUST use kebab-case for the field name portion (unlike standard fields which use camelCase in YAML). They are visible in published cogs and public outputs; they are implementation-specific features, not part of the open standard.
 
-**Example:**
+**Example (CogNovaMX, the seed-phase operator):**
 
 ```yaml
 mx:
   x-mx-mount-type: personal
   x-mx-mount-swappable: true
+```
+
+**Example (vendor sub-namespace):**
+
+```yaml
+mx:
+  x-mx-acme-deploy-target: production
+  x-mx-acme-cluster-id: cluster-east-1
 ```
 
 ### 6.4 Private extension fields (`x-mx-p-`)
@@ -182,7 +190,9 @@ This ordering ensures that `x-mx-p-` is not misidentified as `x-mx-` followed by
 
 The same MX field appears in syntactically different contexts — YAML frontmatter, HTML meta tags, JavaScript documentation comments, CSS comments, shell scripts, XMP metadata, sidecar files, and SQL comments. Each context has its own naming convention. Implementations MUST apply the conversion consistently so that a field's identity is preserved across carriers.
 
-### 7.1 Naming and conversion rules
+### 7.1 Naming and conversion rules (Informative summary)
+
+The table below summarises the per-carrier conventions. The **normative form** of each conversion — the binding rule a verifier checks — lives in the [MX Carrier Formats note](./draft-carrier-formats.md), which is the single source of truth for carrier-specific syntax. This summary is informative; if a row here disagrees with the carrier-formats note, the carrier-formats note wins.
 
 | Context | Convention | Conversion from YAML camelCase | Example field | Example syntax |
 |---------|-----------|--------------------------------|---------------|----------------|
@@ -194,6 +204,8 @@ The same MX field appears in syntactically different contexts — YAML frontmatt
 | XMP | `mx:` namespace prefix, case preserved | prepend `mx:` | `mx:status` | `<mx:status>active</mx:status>` |
 | Sidecar | camelCase in YAML | none — preserve camelCase | `contentType` | `contentType: guide` |
 | SQL | camelCase in `-- @mx` block | none — preserve camelCase | `contentType` | `-- @mx contentType: guide` |
+
+For HTML in particular: the four MUST-at-Level-2 fields from MX Core Metadata §7a (`canonicalUri`, `summary`, `conformsTo`, `trainingDataPolicy`) MUST be present in HTML carriers as the kebab-case `mx:` `<meta>` tags `mx:canonical-uri`, `mx:summary`, `mx:conforms-to`, `mx:training-data-policy`. The carrier-formats note defines the binding form and worked examples.
 
 ### 7.2 Extension field naming in non-YAML contexts
 
@@ -324,6 +336,38 @@ An extension field MAY be promoted into the core MX vocabulary through the follo
 3. If accepted, the field's prefix is removed, and it becomes a core field with camelCase naming.
 4. The old `x-mx-` prefixed version SHOULD be maintained as an alias for one major version cycle.
 
+### 10.4 Field deprecation and retirement (Normative)
+
+A field — standard or extension — that turns out to be a bad idea, that fails to find adoption, or that is replaced by a better-named or better-shaped equivalent follows the announce → deprecate → retire lifecycle. The lifecycle is normative for fields owned by The Gathering; vendor sub-namespaces SHOULD adopt it but MAY follow their own retirement policy provided the policy is documented and the same one-major-version alias guarantee is offered.
+
+**Stage 1 — Announce.** The owner publishes notice that the field will be deprecated. The notice MUST name:
+
+- The field being deprecated.
+- The replacement field, if any (or the rationale for retirement without replacement).
+- The major version at which the field will be marked deprecated.
+- The major version at which the field will be retired (typically one major version after deprecation).
+
+The notice is a draft note, an entry in the field dictionary's deprecation log, or both. From the announcement onwards the canonical documentation for the field MUST link to the announcement.
+
+**Stage 2 — Deprecate.** At the announced major version, the field is marked deprecated:
+
+- The field's canonical documentation gains a `Deprecated:` banner naming the replacement.
+- New documents SHOULD declare the replacement field; existing documents continue to validate.
+- Tools SHOULD emit a one-line warning when they encounter the deprecated field, naming the replacement.
+- The replacement field MUST treat the deprecated field as an alias and copy the value across when migrating documents.
+
+A field MUST remain in the deprecated state for at least one major version cycle. This window is the migration runway: tooling, registries, downstream consumers, and authored documents have time to switch.
+
+**Stage 3 — Retire.** At the announced retirement version, the field is removed:
+
+- The field is removed from the canonical field dictionary and from the conformance summary tables.
+- Validators MAY treat the retired field as a conformance failure (warning at minimum, error at the validator's discretion).
+- The deprecation log keeps the field's entry permanently as historical record, with the retirement version annotated.
+
+**Reverse of promotion.** A field that was promoted from extension space into the core vocabulary (§10.3) follows the same announce → deprecate → retire path if it is later retired. The `x-mx-`-prefixed alias maintained during promotion is itself retired in the same lifecycle event.
+
+**Aliases as a migration tool.** When a field is renamed (the active case throughout the MX 1.0 ratification cycle — `author` → `originator`, `maintainer` / `ownership` → `stewardship`), the old name is treated as a deprecated alias of the new name from the deprecation announcement onward. The one-major-version alias guarantee gives every author and tool a mechanical migration path: update the field name at any point in the migration window, and validators on either side of the change will accept the document.
+
 ---
 
 ## 11. Conformance summary
@@ -361,6 +405,76 @@ An extension field MAY be promoted into the core MX vocabulary through the follo
 - [Schema.org Style Guide](https://schema.org/docs/styleguide.html) — Vocabulary naming conventions
 - [Dublin Core DCMI Namespace](https://www.dublincore.org/specifications/dublin-core/dcmi-namespace/) — namespace governance model
 - [WCAG 2.1](https://www.w3.org/TR/WCAG21/) — Web Content Accessibility Guidelines (conformance level model)
+
+---
+
+## 14. Common authoring mistakes (Informative)
+
+Five shapes a fresh author often produces, each with the fix.
+
+**Mistake 1: prefixing a standard field.**
+
+```yaml
+# WRONG — status is a standard field; no prefix
+mx:
+  x-mx-status: active
+```
+
+Standard fields (§6.2) MUST never carry the `x-mx-` prefix. Drop the prefix:
+
+```yaml
+# RIGHT
+mx:
+  status: active
+```
+
+**Mistake 2: camelCase on an extension field.**
+
+```yaml
+# WRONG — extension fields use kebab-case in YAML, not camelCase
+mx:
+  x-mx-deployTarget: production
+```
+
+Extension fields (§6.3, §10.2) use kebab-case for the suffix:
+
+```yaml
+# RIGHT
+mx:
+  x-mx-deploy-target: production
+```
+
+**Mistake 3: claiming a vendor sub-namespace without permission.**
+
+```yaml
+# WRONG — `acme` sub-namespace not allocated to this author
+mx:
+  x-mx-acme-cluster-id: "prod-1"
+```
+
+The vendor sub-namespace pattern `x-mx-{vendor}-*` (§6.3) is reserved. Only use a vendor's sub-namespace if the namespace has been allocated to that vendor. For one-off fields outside an allocated sub-namespace, the seed-phase `x-mx-` namespace operated by CogNovaMX is the default until a sub-namespace is allocated.
+
+**Mistake 4: trying to decode an `x-mx-p-` value.**
+
+```yaml
+# WRONG — implementations without the registry MUST NOT attempt to interpret
+mx:
+  x-mx-p-client-tier: "a3f2c8"
+  # ... and downstream code does:
+  # if (clientTier === "a3f2c8") { ... }
+```
+
+Private extension values (§9) are opaque. Implementations without access to the decode registry MUST pass the value through unchanged and MUST NOT branch on its content. The opaque token is meaningful only to a registry-equipped consumer.
+
+**Mistake 5: introducing `x-mx-` for something the standard already covers.**
+
+```yaml
+# WRONG — modified is already a standard field
+mx:
+  x-mx-last-changed: 2026-05-07
+```
+
+Before declaring an `x-mx-` extension, check the standard vocabulary in MX Core Metadata §5–6. The intent here is captured by `modified` (Zone 1, §5.5). Use the standard field; the extension namespace is for genuinely new vocabulary, not synonyms of existing fields.
 
 ---
 

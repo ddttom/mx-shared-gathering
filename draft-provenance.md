@@ -549,4 +549,62 @@ mx:
 
 ---
 
+## 13. Minimum-viable provenance block (Informative)
+
+A worked example an author can copy and adapt. The block sits in Zone 2 (the `mx:` object) of any document's frontmatter and extends the MX Core Metadata floor (governed by the [MX Core Metadata note](./draft-core-metadata.md)).
+
+```yaml
+mx:
+  provenanceAuthor: "Tom Cranstoun"
+  provenancePublisher:
+    name: "Digital Domain Technologies Ltd"
+    brand: "CogNovaMX"
+    contact: "info@cognovamx.com"
+  provenanceOrigin: "human-led, AI-assisted"
+  reviewCycle: "quarterly"
+  maintainedDate: 2026-05-07
+```
+
+This block declares: who wrote the original (`provenanceAuthor`), who publishes it under what brand (`provenancePublisher`), the human-machine balance of its authorship (`provenanceOrigin`), the review cadence (`reviewCycle`), and when it was last maintained (`maintainedDate`). Five fields, complete enough to verify provenance for most documents.
+
+For higher trust requirements add `accuracyCommitment` and `correctionSla` from §6 (the quality triad); for full traceability add the decision-record references (`adr`, `ndr`, `bdr`) from §8; for migrated documents add `movedFrom` and `movedDate` from §9.
+
+---
+
+## 14. Common authoring mistakes (Informative)
+
+Three shapes a fresh author often produces, each with the fix.
+
+**Mistake 1: confusing identity with stewardship.**
+
+```yaml
+# WRONG — provenanceAuthor names the original creator, not the current maintainer
+mx:
+  provenanceAuthor: "Maxine"   # Maxine is the current maintainer, not the originator
+```
+
+`provenanceAuthor` is immutable identity, closely related to the `originator` field in MX Core Metadata §5.3. For ongoing maintenance, use `maintainedBy` (§7) or the `stewardship.steward` sub-key from MX Core Metadata §6.6.
+
+**Mistake 2: claiming `provenanceOrigin: human-only` after AI-assisted authorship.**
+
+```yaml
+# WRONG — the document was edited with AI assistance
+mx:
+  provenanceOrigin: "human-only"
+```
+
+Declaring the human-machine balance honestly is part of what makes provenance verifiable. If an AI tool contributed to drafting, editing, summarising, or fact-checking the document, the value is not `human-only`. Use `human-led, AI-assisted` (or one of the other values defined in §5).
+
+**Mistake 3: declaring `expires` without a review plan.**
+
+```yaml
+# WRONG — expires says "this document goes stale on a date" but reviewCycle is missing
+mx:
+  expires: 2026-12-31
+```
+
+`expires` (§7) marks an authoritative-content cutoff. A document that declares `expires` SHOULD also declare `reviewCycle` so that an author or steward knows when to re-validate the content before the cutoff. Otherwise the expiry date is arbitrary.
+
+---
+
 *End of MX Provenance note draft.*

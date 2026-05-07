@@ -29,9 +29,13 @@ canonicalUri: https://raw.githubusercontent.com/ddttom/mx-shared-gathering/main/
 
 This note defines the core machine-readable document-metadata vocabulary for the Machine Experience (MX) framework. It specifies the foundational fields that every MX-aware document — whether a markdown file, an HTML page, a YAML sidecar, or any other text-bearing artefact — must, should, or may declare.
 
-The core vocabulary is organised into three groups: **Zone 1 identity fields** (top-level document identity), **Zone 2 operational fields** (governance, classification, and distribution metadata under the `mx:` namespace), and **pass-through fields** (YAML keys whose semantics MX borrows from established external vocabularies — Dublin Core, Schema.org, BCP 47, SPDX — without redefinition).
+The core vocabulary is organised into three groups: **Zone 1 identity fields** (top-level document identity), **Zone 2 operational fields** (governance, classification, and distribution metadata under the `mx:` namespace), and **externally-aligned fields** (YAML keys whose semantics are owned by, or modelled after, established external vocabularies — Dublin Core, Schema.org, BCP 47, SPDX, RFC 3986). The relationship between MX and each external standard is recorded explicitly per field; see §7.
 
 The cog file format is **not** described here. Cogs are an optional layer on top of MX, covered by the MX Cogs note in the same draft set. A document can carry MX metadata without ever being a cog.
+
+**Accessibility (Normative).** An MX-compliant document MUST itself be accessible. For HTML, EPUB, and other web-style carriers, the artefact MUST conform to [WCAG 2.1](https://www.w3.org/TR/WCAG21/) Level AA. For PDF, the artefact MUST be tagged for accessibility with at least the conformance level cited in the MX Document Accessibility note. For markdown and other plain-text carriers, the structural conventions covered by the MX Document Accessibility note (heading hierarchy, alt text on images, descriptive link text, plain-language summaries) apply. MX adds machine-readable governance on top of standards-conformant content; it does not replace or relax the underlying accessibility requirement.
+
+**Provenance.** Authorship, stewardship, derivation, and review history are governed by the [MX Provenance note](./draft-provenance.md). That note extends this floor with the attribution and trust fields that make a document's origin verifiable. It is part of the recommended reading order for any author writing for an MX-aware audience.
 
 ---
 
@@ -39,7 +43,7 @@ The cog file format is **not** described here. Cogs are an optional layer on top
 
 The key words "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL NOT", "SHOULD", "SHOULD NOT", "RECOMMENDED", "MAY", and "OPTIONAL" in this document are to be interpreted as described in [RFC 2119](https://www.rfc-editor.org/rfc/rfc2119).
 
-Field definitions in this note conform to the **MX Field Definition Pattern note** (the primary note of this draft set). That pattern governs the structural template for every field — heading, property table, definition prose, example — and the inventory-table form used for the pass-through fields in §7. This note adopts the pattern's authoring rules and does not restate them.
+Field definitions in this note conform to the **MX Field Definition Pattern note** (the primary note of this draft set). That pattern governs the structural template for every field — heading, property table, definition prose, example — and the inventory-table form used for the externally-aligned fields in §7. This note adopts the pattern's authoring rules and does not restate them.
 
 ### 2.1 Conformance levels
 
@@ -63,7 +67,7 @@ This note is a draft authored by Tom Cranstoun and offered to The Gathering for 
 
 - **Zone 1 identity fields** — top-level document identity (title, description, author, dates, version)
 - **Zone 2 core operational fields** — classification, governance, and distribution metadata
-- **Pass-through fields** — fields where MX provides a YAML key but defers the value semantics to a published external vocabulary
+- **Externally-aligned fields** — fields where MX provides a YAML key whose value semantics are owned by, or modelled after, an established external vocabulary (§7)
 - **The conformance level framework** — Level 1/2/3 definitions
 
 ### 3.2 Out of scope
@@ -85,7 +89,7 @@ All field names in this note use camelCase, follow spelling-neutral forms (e.g. 
 
 ## 4. The two-zone frontmatter model
 
-MX metadata in YAML frontmatter is organised into two zones. **Zone 1** (top-level) carries document identity fields. **Zone 2** (under the `mx:` object) carries MX-operational fields. A **pass-through field** is a YAML key MX provides whose value semantics belong to an established external vocabulary; pass-through fields are listed in §6 and otherwise behave as Zone 1 or Zone 2 depending on the field.
+MX metadata in YAML frontmatter is organised into two zones. **Zone 1** (top-level) carries document identity fields. **Zone 2** (under the `mx:` object) carries MX-operational fields. **Externally-aligned fields** are YAML keys whose value semantics are owned by, or modelled after, an established external vocabulary; the inventory and the alignment relationships are in §7, and the fields otherwise behave as Zone 1 or Zone 2 depending on which zone the field declaration places them in.
 
 **Zone 1 example:**
 
@@ -159,7 +163,7 @@ description: "Single source of truth for every YAML frontmatter field."
 
 ---
 
-### 5.3 `author`
+### 5.3 `originator`
 
 | Property | Value |
 |----------|-------|
@@ -167,15 +171,17 @@ description: "Single source of truth for every YAML frontmatter field."
 | **Zone** | 1 (top-level) |
 | **Conformance** | MUST (Level 1) |
 
-Creator of the document. Person name or collaborative attribution.
+Creator of the document. Person name or collaborative attribution. Identity, not stewardship — names who first wrote the document, not who currently looks after it.
 
 ```yaml
-author: "Tom Cranstoun"
+originator: "Tom Cranstoun"
 ```
 
-- The `author` field is immutable after creation. Implementations MUST NOT change this value after the document is first committed.
+- The `originator` field is immutable after creation. Implementations MUST NOT change this value after the document is first committed.
 - For collaborative work, all contributors SHOULD be listed.
-- `author` is distinct from `maintainer` (§6.6). The author is the original creator; the maintainer handles ongoing updates.
+- `originator` is distinct from the `stewardship` object (§6.6). The originator is the original creator (immutable, Zone 1); stewardship covers ongoing maintenance, contact, and ownership (mutable, Zone 2).
+
+**Alias.** Documents written before this rename used the field name `author`. Implementations MUST treat a top-level `author` field as an alias of `originator` and SHOULD copy the value across when migrating. The `author` alias is supported for one major version after this note ratifies, then retires per the field-deprecation lifecycle in the MX Extensions note §10.4.
 
 ---
 
@@ -280,17 +286,31 @@ validatesAgainst:
 | **Conformance** | SHOULD (Level 2) |
 | **Valid values** | draft, active, published, deprecated, archived, unknown, proposed, accepted, rejected, superseded, pending, review, approved, planning, open, closed, sent, canonical |
 
-Lifecycle state. Different document contexts use different subsets of the valid values:
-
-- **Standard lifecycle:** `draft`, `active`, `published`, `deprecated`, `archived`, `unknown`.
-- **Decision records:** `proposed`, `accepted`, `rejected`, `superseded`.
-- **Workflows:** `pending`, `review`, `approved`, `planning`, `open`, `closed`, `sent`.
-- **Special:** `canonical` (an authoritative reference document).
+Lifecycle state. The valid values span three lifecycles — document, decision-record, and workflow — and the value's meaning depends on the document's `contentType` (§6.8). The matrix in §6.1.1 governs which values are valid for which content types; an out-of-matrix value is a conformance failure.
 
 ```yaml
 mx:
   status: active
 ```
+
+#### 6.1.1 Valid `status` by `contentType` (Normative)
+
+A document MUST declare a `status` value drawn from the row matching its `contentType`. The matrix below is normative; a `status` value that does not appear in the row for the document's declared `contentType` is a conformance failure.
+
+| `contentType`            | Valid `status` values                                                |
+|--------------------------|----------------------------------------------------------------------|
+| `info-doc`, `manuscript`, `guide`, `reference`, `report`, `field-dictionary`, `standards-alignment` | draft, active, published, archived, canonical, unknown |
+| `specification`, `cog`, `cogs`              | draft, active, canonical, deprecated, archived, unknown              |
+| `decision-record`, `adr`                    | proposed, accepted, rejected, superseded                             |
+| `workflow`, `task`, `ticket`                | pending, review, approved, planning, open, closed, sent              |
+| `identity`                                  | active, archived, unknown                                            |
+
+Notes on the matrix:
+
+- A document whose `contentType` does not appear in the matrix MAY use any value in the document lifecycle row (`draft`, `active`, `published`, `archived`, `canonical`, `unknown`) as a default; sister notes adding new content types SHOULD extend the matrix in lockstep.
+- `unknown` is a conformance-safe placeholder for documents whose lifecycle is genuinely undetermined; tools SHOULD warn when it persists past initial authorship.
+- `canonical` denotes an authoritative reference document — the present-tense source of truth for its subject. Distinct from `published` (a release point) and `active` (currently maintained).
+- A document that legitimately spans lifecycles (rare — for example, a decision-record blog post) MUST pick a single `contentType` and draw its `status` from that lifecycle's row.
 
 ---
 
@@ -333,17 +353,54 @@ mx:
 
 | Property | Value |
 |----------|-------|
-| **Type** | string |
+| **Type** | string-or-object |
 | **Zone** | 2 (mx:) |
 | **Conformance** | MAY (Level 3) |
-| **Valid values** | specification, reference, guide, operational manual, dispatcher, configuration |
 
-Why this document exists. Distinct from `contentType` (which classifies what a document is, not why it exists).
+Why this document exists. Distinct from `contentType` (§6.8), which classifies what a document is, not why it exists. The field accepts two shapes:
+
+- **String form** — a single value drawn from the controlled high-level vocabulary below. Sufficient for most documents.
+- **Object form** — `{ kind: <controlled value>, subPurpose: "<free-form>" }` — for documents whose purpose has a recognisable major axis but a specific genre that the controlled vocabulary does not name (a position paper, a press release, a regulatory filing, a contract, a case study).
+
+The controlled high-level vocabulary (used as the bare string value or as the `kind` sub-key in the object form):
+
+| Value | Definition |
+|-------|-----------|
+| `specification` | Defines a contract, schema, or normative rule that other artefacts implement. |
+| `reference` | A lookup resource: catalogue, dictionary, registry, atlas. Read by index, not cover-to-cover. |
+| `guide` | Walks a reader through an unfamiliar process or domain. Pedagogical. |
+| `operational` | Operational instructions for an actor (human or machine) to execute. Includes runbooks, SOPs, manuals. |
+| `narrative` | Argument-bearing prose. Includes position papers, blog posts, essays, manifestos, press releases, opinion pieces. |
+| `record` | Captures a state, event, or decision for the historical record. Includes minutes, decision records, audit logs, reports. |
+
+A document declaring `purpose` SHOULD pick the value whose definition fits best; when the genre is recognisable but specific, the object form names it via `subPurpose`.
+
+**Examples:**
 
 ```yaml
+# String form — most documents
 mx:
   purpose: reference
 ```
+
+```yaml
+# Object form — narrative, named genre
+mx:
+  purpose:
+    kind: narrative
+    subPurpose: "position paper"
+```
+
+```yaml
+# Object form — record, named genre
+mx:
+  purpose:
+    kind: record
+    subPurpose: "regulatory filing"
+```
+
+- The legacy values `operational manual`, `dispatcher`, and `configuration` (from earlier drafts of this note) are no longer in the controlled vocabulary. Implementations MUST treat `operational manual` as an alias of `operational`; `dispatcher` and `configuration` SHOULD be migrated to the closest fit (typically `operational` with a `subPurpose`) and the alias supported for one major version.
+- `subPurpose` is free-form and lower-case-with-spaces. Tools SHOULD index `subPurpose` values for discoverability but MUST NOT treat them as a controlled vocabulary.
 
 ---
 
@@ -364,49 +421,53 @@ mx:
 
 ---
 
-### 6.6 `maintainer`
+### 6.6 `stewardship`
 
 | Property | Value |
 |----------|-------|
-| **Type** | string |
+| **Type** | object |
 | **Zone** | 2 (mx:) |
 | **Conformance** | MAY (Level 3) |
 
-Person or team responsible for maintaining this document. Distinct from `author` — the maintainer handles ongoing updates while the author is the immutable creator. This field is mutable and MAY change as stewardship transfers. When omitted, the `author` is assumed to also be the maintainer.
+Mutable stewardship details. A single object that captures ongoing responsibility for the document — who maintains it, who answers questions about it, which legal entity owns it, what brand it is published under. Distinct from `originator` (§5.3), which is the immutable original creator and lives at the top level.
+
+**Sub-keys** (all optional; declare the ones the document needs):
+
+| Sub-key | Type | Definition |
+|---------|------|-----------|
+| `steward` | string | Person or team currently responsible for ongoing updates and corrections. May change as stewardship transfers. |
+| `accountableContact` | string | Mailto, URL, or organisation reference that an outside reader uses when something is wrong with the document. The single point of contact for follow-up. |
+| `legalEntity` | string | The legal owner of the document and its underlying rights. Typically a registered company or trading entity. |
+| `brand` | string | Public-facing trading name or imprint under which the document is published. May differ from `legalEntity`. |
 
 ```yaml
 mx:
-  maintainer: "Maxine"
+  stewardship:
+    steward: "Maxine + Tom"
+    accountableContact: "info@cognovamx.com"
+    legalEntity: "Digital Domain Technologies Ltd"
+    brand: "CogNovaMX"
 ```
+
+- A document SHOULD declare at least one sub-key when `stewardship` is present; an empty object is permitted but unusual.
+- When `steward` is omitted, the `originator` is assumed to also be the steward.
+- Implementations that publish metadata publicly SHOULD consider whether `accountableContact` values are appropriate for public exposure.
+
+**Aliases.** Documents written before this consolidation used `maintainer` (string) and `ownership` (string-or-object). Implementations MUST treat them as aliases:
+
+| Legacy field | Maps to |
+|--------------|---------|
+| `mx.maintainer: "<name>"` | `mx.stewardship.steward: "<name>"` |
+| `mx.ownership: "<name>"` (string form) | `mx.stewardship.legalEntity: "<name>"` |
+| `mx.ownership.owner` | `mx.stewardship.legalEntity` |
+| `mx.ownership.delegate` | `mx.stewardship.steward` |
+| `mx.ownership.contact` | `mx.stewardship.accountableContact` |
+
+The legacy fields are supported for one major version after this note ratifies, then retire per the field-deprecation lifecycle in the MX Extensions note §10.4. The polymorphic string-or-object shape of `ownership` is retired entirely; the explicit object on `stewardship` replaces it.
 
 ---
 
-### 6.7 `ownership`
-
-| Property | Value |
-|----------|-------|
-| **Type** | string-or-object |
-| **Zone** | 2 (mx:) |
-| **Conformance** | MAY (Level 3) |
-
-Ownership details. Can be a string (owner name) or an object with `owner`, `delegate`, and `contact` sub-fields.
-
-```yaml
-mx:
-  ownership: "Tom Cranstoun"
-```
-
-```yaml
-mx:
-  ownership:
-    owner: "Tom Cranstoun"
-    delegate: "Maxine"
-    contact: "tom@example.com"
-```
-
----
-
-### 6.8 `domain`
+### 6.7 `domain`
 
 | Property | Value |
 |----------|-------|
@@ -423,7 +484,7 @@ mx:
 
 ---
 
-### 6.9 `contentType`
+### 6.8 `contentType`
 
 | Property | Value |
 |----------|-------|
@@ -440,7 +501,7 @@ mx:
 
 ---
 
-### 6.10 `segment`
+### 6.9 `segment`
 
 | Property | Value |
 |----------|-------|
@@ -458,7 +519,7 @@ mx:
 
 ---
 
-### 6.11 `cacheability`
+### 6.10 `cacheability`
 
 | Property | Value |
 |----------|-------|
@@ -485,7 +546,7 @@ mx:
 
 ---
 
-### 6.12 `readingLevel`
+### 6.11 `readingLevel`
 
 | Property | Value |
 |----------|-------|
@@ -503,7 +564,7 @@ mx:
 
 ---
 
-### 6.13 `runbook`
+### 6.12 `runbook`
 
 | Property | Value |
 |----------|-------|
@@ -520,7 +581,7 @@ mx:
 
 ---
 
-### 6.14 `confidential`
+### 6.13 `confidential`
 
 | Property | Value |
 |----------|-------|
@@ -538,7 +599,7 @@ mx:
 
 ---
 
-### 6.15 `inherits`
+### 6.14 `inherits`
 
 | Property | Value |
 |----------|-------|
@@ -555,7 +616,7 @@ mx:
 
 ---
 
-### 6.16 `ld`
+### 6.15 `ld`
 
 | Property | Value |
 |----------|-------|
@@ -575,7 +636,7 @@ mx:
 
 ---
 
-### 6.17 `hold`
+### 6.16 `hold`
 
 | Property | Value |
 |----------|-------|
@@ -595,7 +656,7 @@ mx:
 
 ---
 
-### 6.18 `holdReason`
+### 6.17 `holdReason`
 
 | Property | Value |
 |----------|-------|
@@ -615,46 +676,50 @@ mx:
 
 ---
 
-## 7. Pass-through fields
+## 7. External alignments
 
-A **pass-through field** is a YAML key MX provides whose value semantics belong to an established external vocabulary. MX does not redefine the value's meaning. The key exists so authors don't have to switch syntax mid-frontmatter to use the external vocabulary; tooling treats the field as the aligned external field.
+Some MX fields carry values whose semantics are owned, in whole or in part, by an external standard. The `Owns semantics` column in the inventory below records the relationship:
 
-The pattern is:
-
-1. The external vocabulary owns the value semantics.
-2. MX names a YAML key (camelCase, in keeping with the rest of the vocabulary).
-3. Canon entries declare the alignment via `alignsWith:` so that converters and validators can route the value to the external standard's schema.
+- **`external`** — the external vocabulary fully owns the value's meaning. MX provides the YAML key as a convenience so authors don't have to switch syntax mid-frontmatter; tooling treats the field as the aligned external field. (Older drafts called this "pass-through".)
+- **`mx`** — MX names both the field and the value semantics, but models them after a recognised external standard so existing tools can interoperate. The field name is MX's; the alignment is informational.
+- **`aligned`** — MX names the field and its abstract semantics, with a normative requirement that the value be expressible in the cited external vocabulary. The field is MX's; the value's structure must agree with the standard.
 
 ### 7.1 Inventory
 
-| Field | Aligns with | Value | Conformance |
-|-------|-------------|-------|:-----------:|
-| `date` | Dublin Core `dc:date`, Schema.org `Date` | ISO 8601 date for a generic reference event distinct from `created` / `modified`. | MAY |
-| `duration` | Schema.org `duration` | ISO 8601 duration (e.g. `PT1H30M`). For time-based content. | MAY |
-| `format` | Dublin Core `dc:format`, Schema.org `encodingFormat` | Media type or file format string. | MAY |
-| `rights` | Dublin Core `dc:rights`, Schema.org `license` | Free-form rights statement when an SPDX identifier does not fit. | MAY |
-| `displayName` | FOAF `displayName`, Schema.org `alternateName` | Citation form when it differs from `title`. | MAY |
-| `usage` | Schema.org `usageInfo` | Guidance on how the document is meant to be consumed. | MAY |
+| Field | Aligns with | Owns semantics | Definition | Conformance |
+|-------|-------------|:--------------:|-----------|:-----------:|
+| `date` | Dublin Core `dc:date`, Schema.org `Date` | external | ISO 8601 date for a generic reference event distinct from `created` / `modified`. | MAY |
+| `duration` | Schema.org `duration` | external | ISO 8601 duration (e.g. `PT1H30M`). For time-based content. | MAY |
+| `format` | Dublin Core `dc:format`, Schema.org `encodingFormat` | external | Media type or file format string. | MAY |
+| `rights` | Dublin Core `dc:rights`, Schema.org `license` | external | Free-form rights statement when an SPDX identifier does not fit. | MAY |
+| `displayName` | FOAF `displayName`, Schema.org `alternateName` | external | Citation form when it differs from `title`. | MAY |
+| `usage` | Schema.org `usageInfo` | external | Guidance on how the document is meant to be consumed. | MAY |
+| `proofOfAuthorship` | W3C Verifiable Credentials, Signed Exchanges | mx | Cryptographic claim that the named author wrote this. | MAY |
+| `integritySignature` | RFC 9421 HTTP Message Signatures, Subresource Integrity | mx | Hash or signature over the artefact's content. | MAY |
+| `provenancePedigree` | W3C PROV-O, C2PA Content Credentials | mx | Derivation chain back to the source. | MAY |
+| `canonicalUri` | RFC 3986, Schema.org `mainEntityOfPage`, Dublin Core `identifier` | aligned | Canonical location of this document, expressed as a URI (see §7a.1). | MUST (Level 2) |
+| `conformsTo` | Dublin Core `conformsTo` | aligned | Standards this document declares conformance to (see §7a.4). | MUST (Level 2) |
 
-### 7.2 Externally-aligned fields (genuineness family)
+### 7.2 Adding a new externally-aligned field
 
-The following MX-defined fields carry semantics MX itself names but model after established standards. They are not strict pass-through (the field name is MX's), but they are alignment-anchored and tooling SHOULD interoperate with the cited standards:
-
-| Field | Aligns with | Purpose |
-|-------|-------------|---------|
-| `proofOfAuthorship` | W3C Verifiable Credentials, Signed Exchanges | Cryptographic claim that the named author wrote this. |
-| `integritySignature` | RFC 9421 HTTP Message Signatures, Subresource Integrity | Hash or signature over the artefact's content. |
-| `provenancePedigree` | W3C PROV-O, C2PA Content Credentials | Derivation chain back to the source. |
-
-### 7.3 Adding a new pass-through field
-
-A new pass-through field SHOULD be proposed only when an established external vocabulary cleanly covers the value semantics and there is value in surfacing the key in MX frontmatter. The proposal MUST:
+A new field in this inventory SHOULD be proposed only when there is value in surfacing the key in MX frontmatter and the alignment relationship is clear. The proposal MUST:
 
 - Cite the external standard precisely (URL plus the specific field/property name).
-- Declare the alignment in canon via `alignsWith:`.
-- NOT redefine the value's meaning. MX's role is to carry the key, not to govern its semantics.
+- Declare which `Owns semantics` value applies (`external`, `mx`, or `aligned`).
+- Declare the alignment in canon via `alignsWith:` so converters and validators can route the value to the external standard's schema.
+- For `external` semantics: NOT redefine the value's meaning. MX's role is to carry the key.
+- For `mx` and `aligned` semantics: name the alignment explicitly so a future deviation is documented at the proposal stage rather than discovered at integration.
 
-If the external standard does not cleanly cover the value, the field is not a pass-through and belongs in the proper Zone 1 / Zone 2 section instead, with full MX semantics.
+### 7.3 Tiebreaker — when external semantics almost fit (Normative)
+
+A recurring authoring question: an external standard's field nearly captures the value MX needs, but not exactly. The rule:
+
+- **Exact fit** — declare the field with `Owns semantics: external` and defer entirely. MX MUST NOT redefine the value's meaning.
+- **Close fit, no deviation needed** — declare the field with `Owns semantics: aligned`. MX names the abstract semantics; values must be expressible in the external vocabulary. No re-interpretation.
+- **Close fit, deviation needed** — declare the field with `Owns semantics: mx` and document the deviation in the field's definition. The proposal MUST name the specific point at which MX departs from the external standard, the reason for the deviation, and the migration path if the external standard later closes the gap.
+- **No fit** — the field is not externally aligned. Define it in §5 (Zone 1) or §6 (Zone 2) with full MX semantics; do not list it in this inventory.
+
+MX MUST NOT silently override an external standard's semantics. A deviation is documented at the proposal stage or it is not a deviation — it is a bug.
 
 ---
 
@@ -671,6 +736,8 @@ This section covers document discovery, version chains, lifecycle dates, machine
 | `supersededBy` | 2 | string | URL of the later document that replaces this one. The inverse of `supersedes`. | Dublin Core `isReplacedBy` |
 
 `canonicalUri` carries the carrier's authoritative location at every tier; the URI scheme tells the receiver how to interpret it. A cog that lives only on disk SHOULD use a `file://` URI naming the carrier. A cog served from a network volume or internal corporate application SHOULD use the URI reachable inside the relevant network (`smb://`, `nfs://`, or an internal `https://`). When a cog is hosted in a publicly reachable source repository or website, the value MUST be that public URI: without it, an agent holding a copy cannot find the authoritative version.
+
+**Agreement with HTML's `<link rel="canonical">` (Normative).** For HTML carriers, the URL declared by the page's `<link rel="canonical">` element and the value of the `mx:canonical-uri` `<meta>` tag (the kebab-case HTML rendering of `mx.canonicalUri` per the MX Carrier Formats note) MUST agree. Verifiers MAY treat either form as authoritative. A page that declares both with disagreeing URLs is a conformance failure: tools cannot reconcile two contradictory canonical claims and SHOULD flag the page as ambiguous rather than guess. When only one form is present, that form is authoritative.
 
 ### 7a.2 Lifecycle dates
 
@@ -726,7 +793,7 @@ For carriers that support XMP metadata (PDFs, audio, video), the same fields sho
 |-------|:-:|:-:|:-:|:-:|
 | `title` | 1 | MUST | — | — |
 | `description` | 1 | MUST | — | — |
-| `author` | 1 | MUST | — | — |
+| `originator` | 1 | MUST | — | — |
 | `created` | 1 | MUST | — | — |
 | `modified` | 1 | MUST | — | — |
 | `version` | 1 | — | SHOULD | — |
@@ -739,8 +806,7 @@ For carriers that support XMP metadata (PDFs, audio, video), the same fields sho
 | `audience` | 2 | — | — | MAY |
 | `purpose` | 2 | — | — | MAY |
 | `license` | 2 | — | — | MAY |
-| `maintainer` | 2 | — | — | MAY |
-| `ownership` | 2 | — | — | MAY |
+| `stewardship` | 2 | — | — | MAY |
 | `domain` | 2 | — | — | MAY |
 | `segment` | 2 | — | — | MAY |
 | `cacheability` | 2 | — | — | MAY |
@@ -748,15 +814,20 @@ For carriers that support XMP metadata (PDFs, audio, video), the same fields sho
 | `confidential` | 2 | — | — | MAY |
 | `inherits` | 2 | — | — | MAY |
 | `ld` | 2 | — | — | MAY |
-| Pass-through (§7) | varies | — | — | MAY |
+| External alignments (§7) | varies | — | — | MAY |
+| `canonicalUri` | 2 | — | MUST | — |
+| `summary` | 2 | — | MUST | — |
+| `conformsTo` | 2 | — | MUST | — |
+| `trainingDataPolicy` | 2 | — | MUST | — |
+| Legacy aliases: `author` → `originator`; `maintainer` → `stewardship.steward`; `ownership` → `stewardship.legalEntity` (and sub-keys per §6.6). Supported for one major version after this note ratifies. | | | | |
 
 ---
 
 ## 9. Security and privacy considerations
 
 - The `confidential` field controls whether a document is excluded from public outputs. Implementations that generate public artefacts MUST respect this field.
-- The `author` field is immutable and establishes provenance. Implementations MUST NOT allow modification of this field after initial creation.
-- The `ownership` field MAY contain contact information. Implementations that publish metadata publicly SHOULD consider whether `ownership.contact` values are appropriate for public exposure.
+- The `originator` field is immutable and establishes provenance. Implementations MUST NOT allow modification of this field after initial creation. The legacy `author` alias inherits the same immutability.
+- The `stewardship.accountableContact` sub-key (§6.6) is typically a public contact address. Implementations that publish metadata publicly SHOULD verify the value is appropriate for public exposure (an organisational mailbox or generic role address rather than a personal one) before rendering it.
 
 ---
 
@@ -773,6 +844,155 @@ For carriers that support XMP metadata (PDFs, audio, video), the same fields sho
 - [Schema.org Style Guide](https://schema.org/docs/styleguide.html) — Vocabulary naming conventions
 - [Dublin Core DCMI Namespace](https://www.dublincore.org/specifications/dublin-core/dcmi-namespace/) — Namespace governance model
 - [WCAG 2.1](https://www.w3.org/TR/WCAG21/) — Web Content Accessibility Guidelines (conformance level model)
+
+---
+
+## 11. Author quickstart (Informative)
+
+Three minimum-viable frontmatter blocks an author can copy and adapt.
+
+### 11.1 Minimum-viable Level 1 — a blog post
+
+The smallest valid Level 1 frontmatter. Identifies and attributes; does not classify lifecycle.
+
+```yaml
+---
+title: "How we hit Level 2 in a fortnight"
+description: "What it took to retrofit MX core metadata onto an existing site."
+originator: "Tom Cranstoun"
+created: 2026-04-15
+modified: 2026-05-07
+---
+```
+
+### 11.2 Minimum-viable Level 2 — a production document
+
+Level 2 adds lifecycle, classification, the four MUST-at-Level-2 web fields, and stewardship.
+
+```yaml
+---
+title: "How we hit Level 2 in a fortnight"
+description: "What it took to retrofit MX core metadata onto an existing site."
+originator: "Tom Cranstoun"
+created: 2026-04-15
+modified: 2026-05-07
+version: "1.0"
+mx:
+  status: published
+  contentType: info-doc
+  runbook: "Read top to bottom; the table in section 3 carries the punch list."
+  canonicalUri: https://mx.allabout.network/blog/level-2-in-a-fortnight
+  summary: "A retrofit playbook from a real adoption: which fields landed first, which failed, and why."
+  conformsTo: [https://mx.allabout.network/cog.html]
+  trainingDataPolicy: "Permitted with attribution."
+  stewardship:
+    steward: "Tom Cranstoun"
+    accountableContact: "info@cognovamx.com"
+---
+```
+
+### 11.3 Minimum-viable Level 3 — a fully-described reference
+
+Level 3 adds the discretionary classification fields. The example is a field-dictionary entry in a registry.
+
+```yaml
+---
+title: "MX Core field — originator"
+description: "Specification entry for the originator field in MX Core."
+originator: "Tom Cranstoun"
+created: 2026-05-07
+modified: 2026-05-07
+version: "1.0"
+schema: ./schemas/mx-field-entry.v1.yaml
+mx:
+  status: canonical
+  contentType: field-dictionary
+  runbook: "The field-dictionary entry for originator. See §5.3 of the MX Core Metadata note for the full definition."
+  canonicalUri: https://mx.allabout.network/fields/originator
+  summary: "Immutable Zone 1 field naming the document's original creator."
+  conformsTo: [https://mx.allabout.network/cog.html]
+  trainingDataPolicy: "Permitted with attribution."
+  tags: [mx-core, field, identity]
+  audience: [humans, machines]
+  purpose:
+    kind: reference
+    subPurpose: "field dictionary entry"
+  license: MIT
+  domain: "machine-experience"
+  cacheability: long-lived
+  readingLevel: intermediate
+  stewardship:
+    steward: "Tom Cranstoun"
+    accountableContact: "info@cognovamx.com"
+    legalEntity: "Digital Domain Technologies Ltd"
+    brand: "CogNovaMX"
+---
+```
+
+---
+
+## 12. Common authoring mistakes (Informative)
+
+Five shapes a fresh author often produces, each with the fix.
+
+**Mistake 1: keeping `author` after rename.**
+
+```yaml
+# WRONG — author is a deprecated alias
+author: "Tom Cranstoun"
+```
+
+The canonical Zone 1 identity field is `originator` (§5.3). `author` remains as a one-major-version alias, but new documents SHOULD declare `originator` directly.
+
+**Mistake 2: using `ownership` as a string.**
+
+```yaml
+# WRONG — string-or-object polymorph is retired
+mx:
+  ownership: "Tom Cranstoun"
+```
+
+The polymorphic shape is gone. Use the `stewardship` object with explicit sub-keys (§6.6):
+
+```yaml
+# RIGHT
+mx:
+  stewardship:
+    legalEntity: "Tom Cranstoun"
+```
+
+**Mistake 3: out-of-matrix `status`.**
+
+```yaml
+# WRONG — `closed` is not a valid status for a blog post
+mx:
+  contentType: info-doc
+  status: closed
+```
+
+`closed` is workflow lifecycle (§6.1.1). For an info-doc, draw from the document lifecycle row: `draft`, `active`, `published`, `archived`, `canonical`, `unknown`.
+
+**Mistake 4: silent override of an external standard.**
+
+```yaml
+# WRONG — `format` is externally-aligned (Owns semantics: external); MX does not redefine its values
+mx:
+  format: "long-form"   # Not a valid Schema.org / Dublin Core format value
+```
+
+Externally-aligned fields with `Owns semantics: external` (§7.1) defer entirely to the external vocabulary. `format` expects a media type or recognised file format identifier. If a value the external standard does not accept is genuinely needed, the field is the wrong field — see §7.3 (Tiebreaker).
+
+**Mistake 5: claiming Level 2 without the four MUST web fields.**
+
+```yaml
+# WRONG — Level 2 requires canonicalUri, summary, conformsTo, trainingDataPolicy
+mx:
+  status: published
+  contentType: info-doc
+  runbook: "..."
+```
+
+A document at Level 2 MUST declare `canonicalUri`, `summary`, `conformsTo`, and `trainingDataPolicy` (§7a.6). Without them, the document is at Level 1, not Level 2 — declaring `status: published` is not the conformance signal.
 
 ---
 

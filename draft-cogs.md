@@ -55,17 +55,29 @@ The key words "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL NOT", "SHOULD", "S
 
 Field definitions in this note conform to the **MX Field Definition Pattern note** (the primary note of this draft set). That pattern governs the structural template for every field — heading, property table, definition prose, example — and is binding on this note. This note adopts the pattern's authoring rules and does not restate them.
 
-### 2.1 Conformance levels
+### 2.1 Conformance tiers
 
-This note defines three conformance levels for cog documents (modelled on the [WCAG 2.1](https://www.w3.org/TR/WCAG21/) Level A/AA/AAA pattern). Each level assumes the document already satisfies the matching MX Core level for document identity.
+This note defines three conformance tiers for cog documents (modelled on the [WCAG 2.1](https://www.w3.org/TR/WCAG21/) Level A/AA/AAA pattern). The tiers are deliberately labelled **A / B / C** rather than Level 1/2/3 to avoid collision with the MX Core ladder defined in the MX Core Metadata note §2.1, which also uses Level 1/2/3 to grade the document-identity floor. Each cog tier assumes the document already satisfies the matching MX Core level for document identity; the two ladders apply simultaneously.
 
-| Level | Name | Cog requirement |
-|-------|------|-----------------|
-| Level 1 | **MX Cog Core** | The document is a `.cog.md` file. `partOf` declared. |
-| Level 2 | **MX Cog Standard** | Adds `buildsOn` (or an empty array) and either a magic-header comment or a `cogHeader` field. |
-| Level 3 | **MX Cog Complete** | Adds explicit `dependencies`, `refersTo`, plus the relevant extensions (block declarations, execute contract, deliverables, identifiers) for the cog's role. |
+| Tier | Cog requirement |
+|------|-----------------|
+| **Tier A** | The document is a `.cog.md` file. `partOf` declared. |
+| **Tier B** | Adds `buildsOn` (or an empty array) and either a magic-header comment or a `cogHeader` field. |
+| **Tier C** | Adds explicit `dependencies`, `refersTo`, plus the relevant extensions (block declarations, execute contract, deliverables, identifiers) for the cog's role. |
 
-A cog claiming conformance at a given level MUST satisfy all requirements at that level and all lower levels.
+A cog claiming conformance at a given tier MUST satisfy all requirements at that tier and all lower tiers.
+
+#### 2.1.1 Reconciliation with the MX Core ladder
+
+A cog is graded by **two** ladders at once: the MX Core Metadata note's Level 1/2/3 ladder (the document-identity floor that applies to every MX document) and this note's Tier A/B/C ladder (the cog-layer fields). A complete claim names both — for example, *"this cog is MX Core Level 3 + Cog Tier C"*. The combinations have the following meanings:
+
+| MX Core | Cog Tier | What this cog is |
+|---------|----------|------------------|
+| Level 1 | Tier A | Minimal cog: identifies as `.cog.md` and carries the MUST identity fields. |
+| Level 2 | Tier B | Discoverable: the magic-header / `cogHeader` lets unfamiliar consumers self-orient, and the SHOULD identity fields are present. |
+| Level 3 | Tier C | Fully wired: dependencies, refers-to, classification, and all applicable identity fields are declared. |
+
+Lower-numbered MX Core levels can pair with higher cog tiers, and vice versa, but a Tier C cog at MX Core Level 1 is unusual — most fully-wired cogs also carry the Level 2 or Level 3 identity floor.
 
 ### 2.2 Draft status
 
@@ -112,7 +124,7 @@ A cog MAY declare `cogHeader` instead of, or in addition to, the magic-header co
 |----------|-------|
 | **Type** | object |
 | **Zone** | 1 (top-level) |
-| **Conformance** | MAY (Level 3); MUST be present if neither this field nor a magic-header comment is declared on a cog circulating outside a closed system (Level 2 SHOULD-or-magic-header rule). |
+| **Conformance** | MAY (Tier C); MUST be present if neither this field nor a magic-header comment is declared on a cog circulating outside a closed system (Tier B SHOULD-or-magic-header rule). |
 | **Default** | *(none)* |
 
 **Definition:** Object carrying the same information as the cog magic-header comment. Sub-keys:
@@ -170,7 +182,7 @@ The following fields define a cog's place in a registry, its dependencies, and i
 |----------|-------|
 | **Type** | string |
 | **Zone** | 2 (mx:) |
-| **Conformance** | MUST (Level 1) for cogs |
+| **Conformance** | MUST (Tier A) for cogs |
 
 **Definition:** Parent collection, suite, or initiative the cog belongs to. Names a registry namespace, a series, or a parent artefact.
 
@@ -187,7 +199,7 @@ mx:
 |----------|-------|
 | **Type** | array |
 | **Zone** | 2 (mx:) |
-| **Conformance** | SHOULD (Level 2) for cogs |
+| **Conformance** | SHOULD (Tier B) for cogs |
 
 **Definition:** Context graph. Array of cog names this document builds upon. Soft dependency — provides context, not a hard requirement.
 
@@ -207,7 +219,7 @@ mx:
 |----------|-------|
 | **Type** | array of objects |
 | **Zone** | 2 (mx:) |
-| **Conformance** | MAY (Level 3) |
+| **Conformance** | MAY (Tier C) |
 
 **Definition:** Hard dependencies. An array of objects, each describing one thing this cog depends upon. Each entry has at minimum a `name` sub-key; optional sub-keys are `version` (a version constraint such as a SemVer range), `reason` (a one-sentence explanation of why the dependency is needed), and `kind` (one of `cog` | `runtime` | `package` | `external`; defaults to `cog`).
 
@@ -237,7 +249,7 @@ mx:
 |----------|-------|
 | **Type** | array |
 | **Zone** | 2 (mx:) |
-| **Conformance** | MAY (Level 3) |
+| **Conformance** | MAY (Tier C) |
 
 **Definition:** Related cogs or external resources. Informational links, not dependencies.
 
@@ -255,7 +267,7 @@ The following fields classify a cog within its registry. They live in vendor-ext
 | Field | Type | Zone | Purpose |
 |-------|------|:----:|---------|
 | `cogId` | string | 2 | Unique cog identifier within the registry. Typically derived from the filename without `.cog.md`. MUST be unique within its `partOf` namespace. |
-| `cogType` | string | 2 | Cog classification. Common values: `info` (reference / documentation), `action` (carries an execute contract; further classified by `actionType` per §6.5.2), `routing` (agent navigation), `certificate-of-genuineness` (publisher-provenanced credential), `cogs` (community-owned governance standard; see §6.5.1). |
+| `cogType` | string | 2 | Cog classification. Common values: `info` (reference / documentation), `action.scripted` / `action.sop` / `action.hybrid` (carries an execute contract; the discriminator after the dot names the cognitive class — see §6.5.2; `action` paired with a separate `actionType` field is an equivalent alias), `routing` (agent navigation), `certificate-of-genuineness` (publisher-provenanced credential), `cogs` (community-owned governance standard; see §6.5.1). |
 | `category` | string | 2 | Registry grouping (e.g. `mx-core`, `mx-tool`, `mx-content`). Coarser than `cogType`. |
 
 #### 6.5.1 The `cogs` classification (community-owned governance standard)
@@ -266,19 +278,40 @@ A cog declaring `cogType: cogs` MUST also identify the community that governs it
 
 The `cogs` classification is intended for cogs that act as community-ratified reference definitions — field dictionaries, terminology registers, governance policies, conformance rubrics — where vendor capture would defeat the purpose. A `cogs` cog has no implied license; the cog's own `license` field still applies.
 
-#### 6.5.2 `actionType` (action cog discriminator)
+#### 6.5.2 Action cog discriminator (`cogType: action.<kind>` and `actionType`)
 
-| Field | Type | Zone | Profile | Conformance |
-|-------|------|:----:|---------|-------------|
-| `actionType` | string | 2 | cog (action) | SHOULD (Level 3) for cogs declaring `execute`; MUST NOT appear otherwise |
+An action cog MUST declare its cognitive class so a consumer (human or agent) knows what kind of execution is involved without inspecting the body. Two forms are permitted, both expressing the same meaning:
 
-**Definition:** Discriminator for action cogs that names the cognitive class of the action so a consumer (human or agent) knows what kind of execution is involved without inspecting the body. Three values:
+- **Dotted form (canonical):** `cogType: action.scripted`, `cogType: action.sop`, or `cogType: action.hybrid`. The discriminator lives entirely in the `cogType` value. A consumer parses one field.
+- **Deconstructed form (alias):** `cogType: action` with a separate `actionType: scripted | sop | hybrid` field. Equivalent semantically; permitted for tools or vendors that prefer the parallel-field shape.
+
+A cog MUST NOT declare both forms with disagreeing values. When both are present they MUST agree (e.g. `cogType: action.scripted` with `actionType: scripted` is valid; `cogType: action.scripted` with `actionType: sop` is a conformance failure).
+
+The three discriminator values:
 
 - **`scripted`** — the cog body carries an embedded executable artefact (a fenced code block annotated `@embedded:<id>` per the cog specification). A runtime extracts the artefact by id and runs it directly. Deterministic; the same inputs produce the same outputs.
 - **`sop`** — the cog body carries no embedded executable artefact. The `execute.actions[].usage` value is descriptive prose intended for a language-model runtime to read and perform the steps. The runtime is the language model itself.
 - **`hybrid`** — the cog carries both an embedded executable artefact AND descriptive `usage` prose. The script handles the deterministic portion; the prose carries the judgement-dependent portion a language model performs.
 
-A cog declaring `execute` SHOULD declare `actionType` so consumers can resolve the runtime requirement (interpreter, language model, or both) before extracting any artefact. A cog without `execute` MUST NOT declare `actionType`.
+| Field | Type | Zone | Profile | Conformance |
+|-------|------|:----:|---------|-------------|
+| `cogType` | string | 2 | cog (action) | MUST be of the form `action.<kind>` for action cogs (or `action` when paired with `actionType`) |
+| `actionType` | string | 2 | cog (action) | OPTIONAL alias of the dotted form; SHOULD NOT appear when the dotted form is used; MUST NOT appear on cogs without `execute` |
+
+A cog declaring `execute` MUST declare the discriminator (in either form) so consumers can resolve the runtime requirement (interpreter, language model, or both) before extracting any artefact. A cog without `execute` MUST NOT declare the discriminator in either form.
+
+**Example (dotted form, canonical):**
+
+```yaml
+mx:
+  cogType: action.scripted
+  execute:
+    actions:
+      - name: run
+        description: Execute the embedded script
+```
+
+**Example (deconstructed form, alias):**
 
 ```yaml
 mx:
@@ -313,7 +346,7 @@ The following fields apply to cogs that declare an `execute` block or a procedur
 | **Type** | object |
 | **Zone** | 2 (mx:) |
 | **Profile** | cog |
-| **Conformance** | SHOULD (Level 3) for cogs that emit a structured output; MAY otherwise |
+| **Conformance** | SHOULD (Tier C) for cogs that emit a structured output; MAY otherwise |
 
 **Definition:** Output contract. Declares the typed shape a successful execution of this cog produces, so consumers can reason about (and validate) the output without first running the cog. Distinct from `deliverable` (§6.6), which names what the cog yields in human terms; `produces` declares a machine-checkable shape.
 
@@ -348,7 +381,7 @@ mx:
 | **Type** | string |
 | **Zone** | 2 (mx:) |
 | **Profile** | cog |
-| **Conformance** | SHOULD (Level 3) when `troubleshooting` is declared; MAY otherwise |
+| **Conformance** | SHOULD (Tier C) when `troubleshooting` is declared; MAY otherwise |
 
 **Definition:** Catch-all remedy. Names the runtime-resolvable remedy a runtime SHOULD invoke when a failure arises that does not match any entry in `troubleshooting`. Resolves through the same registry used for `troubleshooting[].remedy` and obeys the same dotted-name syntax (lowercase, two or more dot-separated segments).
 
@@ -373,7 +406,7 @@ mx:
 
 ## 7. Conformance summary
 
-| Field | Level 1 (MUST) | Level 2 (SHOULD) | Level 3 (MAY) |
+| Field | Tier A (MUST) | Tier B (SHOULD) | Tier C (MAY) |
 |-------|:-:|:-:|:-:|
 | `partOf` | MUST | — | — |
 | `buildsOn` | — | SHOULD | — |
@@ -384,14 +417,17 @@ mx:
 | `blocks`, `includes`, `execute`, `policy`, `deliverable` | — | — | MAY |
 | `produces`, `defaultRemedy` | — | — | MAY (SHOULD when the cog declares an `execute` block or a procedure-declaring field) |
 
-A cog at Level 1 is registry-locatable. At Level 2 it is identifiable to unfamiliar consumers and provides its context graph. At Level 3 it is fully described — dependencies, classifications, body content shape, and any execution contract.
+A cog at Tier A is registry-locatable. At Tier B it is identifiable to unfamiliar consumers and provides its context graph. At Tier C it is fully described — dependencies, classifications, body content shape, and any execution contract.
 
 ---
 
 ## 8. Security and privacy considerations
 
 - URLs declared in `cogHeader.runtime` may leak deployment topology. A cog declaring an internal runtime URL is exposing that URL to any reader of the cog. Operators concerned with topology privacy SHOULD either publish a public runtime URL or omit the field.
-- A `cogHeader.spec` URL pointing at an attacker-controlled host is a phishing vector for runtimes that auto-fetch the spec. Runtimes SHOULD validate the spec URL against a trusted registry or operator-allowlist before fetching.
+- A `cogHeader.spec` or `cogHeader.runtime` URL pointing at an attacker-controlled host is a phishing vector for runtimes that auto-fetch from those URLs. The protections are normative:
+  - Runtimes **MUST** validate the `cogHeader.spec` and `cogHeader.runtime` URLs against an operator-controlled allowlist or a trusted registry before any fetch.
+  - Runtimes **SHOULD NOT** auto-fetch unknown spec or runtime URLs. A first sight of an unrecognised URL warrants operator confirmation, not automatic resolution.
+  - Runtimes **MAY** refuse to process cogs whose declared spec URL is unrecognised or unreachable, returning an explicit identification failure rather than guessing a fallback.
 - The magic-header comment and `cogHeader` field are NOT authenticated — anyone who can write the cog can lie about which spec it claims to follow. Authentication, if required, is the responsibility of an external signing or witness mechanism, not this note.
 - Cogs declaring `execute` contracts give agents a runnable surface. Operators MUST treat `execute.command` and `execute.actions[]` values as untrusted input and apply the same sandboxing, allowlisting, and audit measures they apply to any user-supplied command.
 - A signed cog only attests provenance and integrity, never the truth of the content. Even when a cog's signature verifies cleanly, downstream consumers MUST NOT treat the values as factually correct — the signature confirms only that the cog genuinely came from the named signer and has not been altered. Editorial truth-curation is a different problem and out of scope for the cog format. User-facing language SHOULD say *attested*, not *verified*, to avoid implying a truth claim no signer makes.
@@ -406,7 +442,145 @@ A cog at Level 1 is registry-locatable. At Level 2 it is identifiable to unfamil
 
 ### 9.2 Informative references
 
-- [WCAG 2.1](https://www.w3.org/TR/WCAG21/) — conformance level model that inspired the Level 1/2/3 framework in §2.1
+- [WCAG 2.1](https://www.w3.org/TR/WCAG21/) — conformance level model that inspired the Tier A/B/C framework in §2.1
+
+---
+
+## 10. Author quickstart (Informative)
+
+Two minimum-viable cogs an author can copy and adapt — one of each type.
+
+### 10.1 Minimum-viable info-cog (Tier A)
+
+The smallest valid info-cog. Identity floor is MX Core Level 1; cog layer is Tier A. Saved as `auth-design-notes.cog.md`:
+
+```markdown
+<!-- cog v1 spec=https://mx.allabout.network/cog.html -->
+---
+title: "Auth design notes"
+description: "Working notes on the authentication redesign."
+created: 2026-05-01
+modified: 2026-05-07
+author: "Tom Cranstoun"
+mx:
+  partOf: mx-internal
+  cogType: info
+---
+
+# Auth design notes
+
+(Body content goes here.)
+```
+
+This cog declares the four MUST-at-Level-1 identity fields (`title`, `created`, `modified`, `author`), the one MUST-at-Tier-A cog field (`partOf`), and an info-cog `cogType`. Any consumer that recognises the magic-header line at byte zero immediately knows it has a cog in front of it.
+
+### 10.2 Minimum-viable action-cog (Tier C)
+
+The smallest valid scripted action-cog. Identity floor is MX Core Level 2; cog layer is Tier C. Saved as `run-audit.cog.md`:
+
+````markdown
+<!-- cog v1 spec=https://mx.allabout.network/cog.html runtime=https://mx.allabout.network/cog-runtime.html -->
+---
+title: "Run audit"
+description: "Run the audit pipeline against a target site."
+created: 2026-05-01
+modified: 2026-05-07
+author: "Tom Cranstoun"
+cogHeader:
+  version: v1
+  spec: https://mx.allabout.network/cog.html
+  runtime: https://mx.allabout.network/cog-runtime.html
+mx:
+  partOf: mx-tools
+  buildsOn: [audit-runtime]
+  dependencies:
+    - name: audit-runtime
+      kind: cog
+  cogType: action.scripted
+  execute:
+    runtime: bash
+    actions:
+      - name: run
+        description: Run the audit pipeline
+---
+
+# Run audit
+
+```bash
+@embedded:run
+echo "running audit"
+```
+````
+
+This cog satisfies Tier C: `partOf`, `buildsOn`, a `cogHeader` block (and a magic-header), `dependencies` declared, the canonical dotted `cogType`, and an `execute` contract with a named action whose embedded artefact is identifiable to a runtime.
+
+---
+
+## 11. Consumer checklist (Informative)
+
+The order a consuming tool SHOULD process a cog file:
+
+1. **Read byte zero.** If the first non-whitespace token is an HTML comment beginning with `<!-- cog`, parse the magic-header line for `version`, `spec`, `runtime`, `runtime-doc` tokens.
+2. **Parse YAML frontmatter.** Read identity (Zone 1) and operational (`mx:`) fields. If a `cogHeader` field is present, verify it agrees with the magic-header per §5.2.
+3. **Validate the spec URL.** If `cogHeader.spec` is not on the operator's allowlist or trusted registry, refuse to process the cog or escalate to operator confirmation (§8).
+4. **Resolve `partOf`.** Locate the cog within its parent registry. A cog whose `partOf` cannot be resolved is identifiable but not navigable.
+5. **Walk `buildsOn`.** Load the named context cogs into the graph. Missing `buildsOn` entries are warnings, not failures.
+6. **Walk `dependencies`.** Hard-resolve each entry per its declared `kind`. A missing `dependencies` entry is a hard failure (§6.3).
+7. **Branch on `cogType`.**
+    - `info` / `routing` / `cogs` / `certificate-of-genuineness` — process as a documentation or governance artefact; do not look for `execute`.
+    - `action.<kind>` (or `action` with a separate `actionType`) — process as an executable cog; resolve the runtime requirement before extracting any artefact.
+8. **For action cogs, validate `execute`.** Confirm the runtime is permitted in the consumer's environment. For `scripted` and `hybrid` cogs, locate the `@embedded:<id>` artefact named in `execute.actions[].name`.
+9. **For action cogs that declare `produces`,** prepare to validate the output against the declared shape after execution. A shape mismatch is an unmodelled failure and triggers `defaultRemedy` (§6.7.2).
+
+---
+
+## 12. Common authoring mistakes (Informative)
+
+Three shapes a fresh author often produces, each with the fix.
+
+**Mistake 1: discriminator forms disagree.**
+
+```yaml
+# WRONG — dotted form and deconstructed alias contradict each other
+mx:
+  cogType: action.scripted
+  actionType: sop
+```
+
+The two forms MUST agree (§6.5.2). Pick one form; if both are present, set `actionType` to the suffix of `cogType` or remove it entirely. The dotted form alone is sufficient.
+
+**Mistake 2: `actionType` on an info-cog.**
+
+```yaml
+# WRONG — actionType MUST NOT appear without an execute block
+mx:
+  cogType: info
+  actionType: sop
+```
+
+`actionType` is the discriminator for action cogs only (§6.5.2). On a cog without `execute`, remove the field.
+
+**Mistake 3: claiming Tier B without an identifier.**
+
+```yaml
+# WRONG — Tier B requires either a cogHeader OR a magic-header
+mx:
+  partOf: mx-tools
+  buildsOn: [other-cog]
+```
+
+The Tier B SHOULD-or-magic-header rule (§2.1, §5.1) requires at least one of: a magic-header HTML comment at byte zero, or a `cogHeader` field in the frontmatter. A cog circulating outside a closed system MUST carry one.
+
+**Mistake 4: cog structural fields at the top level.**
+
+```yaml
+# WRONG — partOf and dependencies belong under mx:, not at the top level
+title: "Run audit"
+partOf: mx-tools
+dependencies: [...]
+```
+
+All cog structural fields live in Zone 2 (§6) unless explicitly noted as top-level (`cogHeader`, `contractFields`, `metadataFields`). Move the misplaced fields under the `mx:` object.
 
 ---
 

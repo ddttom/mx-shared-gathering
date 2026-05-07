@@ -152,24 +152,69 @@ These three fields together form the *minimum signed surface*. The fingerprint a
 
 A signer SHOULD perform these checks during a pre-signature review pass (§6.4) before producing a fingerprint. A signer that emits signatures over cogs missing any of the three is not conforming.
 
-### 4.4 Default-excluded metadata fields
+### 4.4 Computing the contract scope
 
-When a schema does not explicitly declare which top-level keys are part of the contract, implementations SHOULD treat the following as `metadataFields` by default — that is, exclude them from the fingerprint:
+Implementations resolve the contract scope (which top-level keys are signed) in the following precedence order:
 
-- `modified`
-- `version`
-- `created`
-- `author`
-- `updateInstructions`
+1. **Explicit `contractFields` array on the cog.** When the cog declares `contractFields`, that array is authoritative. The companion `metadataFields` array names the explicit exclusions. The two arrays MUST be disjoint (§4.1, §4.2).
 
-These values change with editorial activity that does not alter the contract surface. Excluding them by default lets a cog be re-edited (timestamp bumped, version incremented) without invalidating its signature.
+2. **Schema-derived projection.** When the cog does not declare `contractFields` but does declare `schema:`, implementations MUST resolve the schema and compute the contract scope from per-property annotations:
 
-The default can be overridden via a schema declaration:
+   - A schema property carrying `x-mx-contract: true` is a contract field; its top-level key (or its dotted path for nested keys) is included in the projection.
+   - A schema property carrying `x-mx-contract: false` is metadata; the key is excluded.
+   - A schema property with no annotation falls through to step 3.
 
-- `x-mx-contractFields` (positive list) — when present, only the named keys are part of the contract; everything else is metadata.
-- `x-mx-metadataFields` (negative list) — when present, the named keys are excluded; everything else is contract.
+   When schema-derivation is in effect, the cog SHOULD NOT also declare `contractFields` — declaring both is permitted (the explicit array still wins) but the schema annotations are then redundant.
 
-If both are declared, the positive list (`x-mx-contractFields`) takes priority.
+3. **Default classification.** When neither an explicit array nor a schema annotation resolves a key, the following defaults apply:
+
+| Top-level key | Default classification | Rationale |
+|---------------|------------------------|-----------|
+| `modified` | metadata | Updated whenever the document content changes; not a contract claim. |
+| `created` | metadata | Editorial provenance, not contract surface. |
+| `originator` (alias `author`) | metadata | Identity field; provenance signature covers authorship separately. |
+| `updateInstructions` | metadata | Operational guidance for stewards; not contract surface. |
+| `version` | **contract** | Bumping a version is a substantive editorial act. A signature that survives version bumps lets the same signed bytes be republished as v1, v2, v3 without invalidation; that is undesirable. Re-versioning a signed cog re-invalidates the signature; re-signing is required. |
+| (anything else) | implementation-defined | Verifiers MAY default unlisted keys to either category but MUST document their choice and apply it consistently. |
+
+**Schema-derivation example.** A schema declared as:
+
+```yaml
+$id: ./schemas/invoice-approval.v1.yaml
+type: object
+properties:
+  title:
+    type: string
+    x-mx-contract: true
+  schema:
+    type: string
+    x-mx-contract: true
+  thresholds:
+    type: object
+    x-mx-contract: true
+  modified:
+    type: string
+    x-mx-contract: false
+  tags:
+    type: array
+    x-mx-contract: false
+```
+
+…allows the cog to omit `contractFields`/`metadataFields` entirely. The validator computes the projection from the schema annotations and produces a fingerprint covering `title`, `schema`, `thresholds`. An author writes the schema once; the contract surface is automatically projected from it.
+
+### 4.5 Pre-signature contract declaration (Normative)
+
+An unsigned cog MAY declare `contractFields` and `metadataFields` even though no signature is being applied. The declaration is a **unilateral commitment** — a statement of what the author would sign over if signing were applied — and serves as a useful authorial signal: it tells future readers (human and machine) which keys are intended to be contract surface and which are intended to be metadata.
+
+When an unsigned cog carries the two arrays, verifiers MUST treat the declarations as **informational**:
+
+- A verifier MUST NOT treat the absence of a signature as a conformance failure when `contractFields` is declared on its own. Signing is optional (§1).
+- A verifier MAY compute the would-be fingerprint over the declared `contractFields` and surface it as a "pre-signature digest" — a fixed, citeable hash that lets the unsigned cog be referenced by content without depending on later signing activity.
+- A verifier SHOULD record that the declarations are unsigned so a downstream consumer cannot mistake them for an attestation.
+
+The §4.1, §4.2, and §4.3 normative requirements (disjoint arrays; mandatory `title` / `validatesAgainst` / `schema`; well-formed entries) apply to the declarations whether or not a signature is present. The §6.1 signer-conformance and §6.2 verifier-conformance rules attach to the signature itself; they do not preclude the declarations from existing on an unsigned cog.
+
+Authors using schema-derivation (§4.4 step 2) need not duplicate the projection as an explicit `contractFields` array on the cog itself; the schema annotations are the declaration. The same informational treatment applies to a verifier that resolves the contract surface from the schema on an unsigned cog.
 
 ---
 
@@ -237,9 +282,10 @@ A verifier:
 - MUST refuse a signed cog whose `contractFields` and `metadataFields` overlap.
 - MUST refuse a signed cog whose declared `contractFields` cannot be reconstructed from the frontmatter (missing keys would change the projection).
 - MUST refuse a signed cog missing any of the §4.3 mandatory fields, or whose `validatesAgainst` entries cannot be resolved or fail validation at verification time.
-- SHOULD warn when frontmatter contains top-level keys not listed in either array.
-- SHOULD log the resolved `contractFields` set alongside any verification result for transparency.
-- MUST NOT silently substitute a default scope when the cog declares neither array.
+- MUST resolve the contract scope using the precedence in §4.4 (explicit array → schema-derived projection → defaults). A verifier presented with a schema-derived projection MUST resolve the schema and apply the `x-mx-contract` annotations exactly as the signer would have done.
+- SHOULD warn when frontmatter contains top-level keys not listed in either array and not resolvable from the schema.
+- SHOULD log the resolved contract set alongside any verification result for transparency, naming the source (explicit array, schema-derived, or default classification).
+- MUST NOT silently substitute a fallback scope when the cog declares neither array AND has no `schema:` reference. In that case, verification falls back to the defaults in §4.4 step 3 and the verifier MUST surface that the projection was defaulted.
 
 ### 6.3 Recommended pre-signature review pipeline (Informative)
 
@@ -265,8 +311,9 @@ The following remain open for community discussion:
 1. **Key management** — should this note reference a default PKI model, or stay agnostic?
 2. **Multi-signer** — when multiple parties sign the same cog, is each signature scoped to the same `contractFields` or may each declare its own scope?
 3. **Revocation** — how does a verifier discover that a previously valid signature has been revoked? CRL, OCSP, on-chain registry, an MX registry?
-4. **Schema-derived contract** — should `contractFields` be derivable automatically from a cog's `schema` reference, or remain explicit?
-5. **Canonical YAML alternative** — §5 chooses canonical JSON for portability. Should an opt-in canonical-YAML form be standardised for cogs that wish to sign over their authored representation directly?
+4. **Canonical YAML alternative** — §5 chooses canonical JSON for portability. Should an opt-in canonical-YAML form be standardised for cogs that wish to sign over their authored representation directly?
+
+(The earlier open question on schema-derived contract is closed by §4.4: the contract is derivable from a `schema:` reference whose properties carry `x-mx-contract` annotations, and the explicit `contractFields` array is the override.)
 
 ---
 
@@ -308,6 +355,170 @@ Implementations and downstream consumers SHOULD be precise in user-facing langua
 - [COSE RFC 9052](https://datatracker.ietf.org/doc/html/rfc9052) — CBOR Object Signing and Encryption
 - [C2PA Content Credentials](https://c2pa.org/) — provenance signing model
 - [WCAG 2.1](https://www.w3.org/TR/WCAG21/) — conformance level model that inspired the Level 1/2/3 framework in §2.1
+
+---
+
+## 11. Minimum-viable signed cog (Informative)
+
+A complete worked example: schema, cog, projection, fingerprint. An author can copy and adapt this shape for their own contract.
+
+### 11.1 The schema (annotation-driven)
+
+Saved as `./schemas/invoice-approval.v1.yaml`:
+
+```yaml
+$id: https://example.org/schemas/invoice-approval.v1.yaml
+type: object
+properties:
+  title:
+    type: string
+    x-mx-contract: true
+  thresholds:
+    type: object
+    x-mx-contract: true
+    properties:
+      autoApproveBelow:
+        type: number
+  approvers:
+    type: array
+    x-mx-contract: true
+  modified:
+    type: string
+    x-mx-contract: false
+  tags:
+    type: array
+    x-mx-contract: false
+```
+
+### 11.2 The cog (no explicit `contractFields` — schema-derived)
+
+Saved as `approve-invoices.cog.md`:
+
+```yaml
+---
+title: "Approve invoices below 1000"
+originator: "Tom Cranstoun"
+created: 2026-05-01
+modified: 2026-05-07
+version: "1.0"
+schema: ./schemas/invoice-approval.v1.yaml
+validatesAgainst:
+  - cog.meta.v1
+  - invoice-approval.v1
+thresholds:
+  autoApproveBelow: 1000
+approvers:
+  - finance-lead
+  - cfo
+mx:
+  status: published
+  contentType: cog
+  canonicalUri: https://example.org/cogs/approve-invoices.v1
+  summary: "Approve invoices under 1000 automatically; escalate above."
+  conformsTo: [https://mx.allabout.network/cog.html]
+  trainingDataPolicy: "Permitted with attribution."
+---
+```
+
+### 11.3 The resolved projection (computed by signer and verifier)
+
+The signer resolves the schema, applies the `x-mx-contract` annotations, and projects the cog's frontmatter to:
+
+```json
+{
+  "approvers": ["finance-lead", "cfo"],
+  "schema": "./schemas/invoice-approval.v1.yaml",
+  "thresholds": {"autoApproveBelow": 1000},
+  "title": "Approve invoices below 1000",
+  "version": "1.0"
+}
+```
+
+(Keys sorted lexicographically. `version` is included via the §4.4 default — bumping it requires re-signing.)
+
+### 11.4 The fingerprint
+
+`SHA-256` of the canonical JSON serialisation above. Carry this in any signing envelope (JWS, COSE, VC Data Integrity, or a sidecar `*.sig` file).
+
+---
+
+## 12. Verifier checklist (Informative)
+
+The order a verifier SHOULD process a signed cog:
+
+1. **Read the cog and any signature envelope.** If the envelope is detached, locate the corresponding cog file.
+2. **Resolve the contract scope** per §4.4 precedence:
+    - Explicit `contractFields` on the cog (authoritative when present).
+    - Otherwise, resolve `schema:` and apply `x-mx-contract` annotations.
+    - Otherwise, apply defaults in §4.4 step 3.
+   Surface the resolved scope and its source in any verification log.
+3. **Check §4.3 mandatory fields.** `title`, `validatesAgainst`, `schema` MUST all be present and well-formed.
+4. **Run every validator named in `validatesAgainst`.** All MUST pass at verification time. A validator that no longer resolves is a verification failure.
+5. **Compute the projection.** Build the canonical JSON object containing only the contract-scope keys, sorted lexicographically, with values canonicalised per §5.3.
+6. **Hash the projection with SHA-256.** Compare to the fingerprint the signature was applied over.
+7. **Verify the signature** using the appropriate envelope's verification algorithm (JWS, COSE, VC, etc.).
+8. **Report.** Use the precise word **attested** for a successful verification. Do not say *verified* — that implies a truth claim no signer makes (§9).
+9. **Fail closed.** Any verification failure (validator, fingerprint mismatch, signature failure) MUST surface as an explicit failure. Verifiers MUST NOT downgrade a failed verification to a warning.
+
+---
+
+## 13. Common authoring mistakes (Informative)
+
+Five shapes a fresh author often produces, each with the fix.
+
+**Mistake 1: signing without `validatesAgainst`.**
+
+```yaml
+# WRONG — §4.3 mandatory: a signed cog MUST declare validatesAgainst
+title: "Approve invoices below 1000"
+schema: ./schemas/invoice-approval.v1.yaml
+contractFields: [title, schema, thresholds]
+```
+
+A signer MUST refuse to sign this cog. Add a non-empty `validatesAgainst` array; every entry MUST resolve to a registered validator and MUST pass at sign time.
+
+**Mistake 2: overlapping arrays.**
+
+```yaml
+# WRONG — `tags` appears in both
+contractFields: [title, schema, tags]
+metadataFields: [created, modified, tags]
+```
+
+The two arrays MUST be disjoint (§4.1, §4.2). Move `tags` to one or the other and remove it from the other.
+
+**Mistake 3: bumping version expecting the signature to survive.**
+
+```yaml
+# Original (signed)
+version: "1.0"
+
+# Edited (signature now invalid)
+version: "1.1"
+```
+
+`version` is in the default contract scope (§4.4). Bumping it changes the projection and invalidates the signature. The intended workflow is: edit content → bump version → re-sign. Never expect a single signature to survive a version bump.
+
+**Mistake 4: schema-derivation with no annotations.**
+
+```yaml
+# Schema with no x-mx-contract annotations
+$id: ./schemas/foo.v1.yaml
+type: object
+properties:
+  title: { type: string }
+  thresholds: { type: object }
+```
+
+Schema-derivation (§4.4 step 2) needs explicit `x-mx-contract: true` or `false` annotations on each property the author intends to classify. A schema with no annotations falls through entirely to step 3 (defaults) — the schema is not actually doing any work.
+
+**Mistake 5: claiming the signature *verifies* the values.**
+
+```text
+✓ Cog verified — values are correct.
+```
+
+The signature attests provenance and integrity, not truth (§9). The cog came from the named signer unaltered; whether `autoApproveBelow: 1000` is the right policy is not something a signature can answer. User-facing language SHOULD say **attested**, not *verified*.
 
 ---
 

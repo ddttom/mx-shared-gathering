@@ -136,26 +136,61 @@ Extension fields appear inside the `mx:` object alongside standard operational f
 | **Carrier mechanism** | `<meta name="mx:*">` tags in `<head>`, `data-mx-*` attributes on elements |
 | **Field naming** | kebab-case with `mx:` prefix |
 | **Conformance** | MUST (Level 2) for HTML documents claiming MX conformance |
-| **Required fields** | `description` (standard HTML meta) + `author` (standard HTML meta) + at least one `<meta name="mx:*">` tag |
+| **Required fields** | `description` (standard HTML meta) + `author` (standard HTML meta) + the four MUST-at-Level-2 mx: meta tags listed below |
 
 HTML documents carry MX metadata using `<meta>` tags in the document `<head>`. The `mx:` prefix in the `name` attribute distinguishes MX metadata from standard HTML meta tags.
 
-**Example:**
+#### 3.2.1 Naming and conversion (Normative)
+
+The conversion from a YAML field name to its HTML carrier form is binding:
+
+1. Convert the camelCase YAML name to kebab-case.
+2. Prepend `mx:` to the kebab-case form.
+3. Place the value in a `<meta name="…" content="…">` tag inside the document's `<head>`.
+
+For example, `mx.canonicalUri: https://example.org/x` becomes `<meta name="mx:canonical-uri" content="https://example.org/x">`. This conversion is the same in both directions: a verifier reading an HTML carrier converts `mx:canonical-uri` back to `canonicalUri` to compare with frontmatter equivalents.
+
+The MX Extensions note §7.1 provides the same table as an informative summary; this subsection is the binding form. If a row in that summary disagrees with this subsection, this subsection wins.
+
+#### 3.2.2 Required mx: meta tags at Level 2 (Normative)
+
+An HTML document claiming MX Standard (Level 2) MUST declare the four MUST-at-Level-2 fields from MX Core Metadata note §7a as `mx:` meta tags. Each tag MUST be present in `<head>`; absence of any one places the document at Level 1, not Level 2.
+
+| YAML field | HTML meta tag | Value semantics (cross-reference) |
+|------------|---------------|-------------------------------------|
+| `mx.canonicalUri` | `<meta name="mx:canonical-uri" content="…">` | URI of the canonical version of this document. MUST agree with `<link rel="canonical">` if both are present (MX Core Metadata §7a.1). |
+| `mx.summary` | `<meta name="mx:summary" content="…">` | One-to-two-sentence machine-summary; lets agents decide relevance without reading the body. |
+| `mx.conformsTo` | `<meta name="mx:conforms-to" content="…">` | Comma-separated list of standards URIs the document conforms to (`mx.conformsTo` is an array; serialise as comma-separated string). |
+| `mx.trainingDataPolicy` | `<meta name="mx:training-data-policy" content="…">` | Whether the document may be included in AI training corpora. |
+
+**Worked example (Normative):**
 
 ```html
 <head>
-  <meta name="description" content="Brief summary for search engines and machines">
+  <title>Auth design notes</title>
+  <link rel="canonical" href="https://example.org/blog/auth-design">
+  <meta name="description" content="Working notes on the authentication redesign.">
   <meta name="author" content="Tom Cranstoun">
-  <meta name="mx:status" content="active">
-  <meta name="mx:content-type" content="guide">
-  <meta name="mx:tags" content="metadata, example">
+
+  <!-- The four MUST-at-Level-2 mx: tags -->
+  <meta name="mx:canonical-uri" content="https://example.org/blog/auth-design">
+  <meta name="mx:summary" content="Working notes on the authentication redesign — what we kept, what we replaced, why.">
+  <meta name="mx:conforms-to" content="https://mx.allabout.network/cog.html">
+  <meta name="mx:training-data-policy" content="Permitted with attribution.">
+
+  <!-- Other operational fields -->
+  <meta name="mx:status" content="published">
+  <meta name="mx:content-type" content="info-doc">
 </head>
 ```
+
+#### 3.2.3 Other rules
 
 - Standard HTML meta tags (`description`, `author`) MUST use their native HTML names without the `mx:` prefix.
 - MX-specific fields MUST use the `mx:` prefix in the `name` attribute.
 - Array values MUST be serialised as comma-separated strings.
 - `data-mx-*` attributes MAY be used on body elements for element-level MX metadata.
+- The values of `<link rel="canonical">` and `<meta name="mx:canonical-uri">` MUST agree when both are present, per MX Core Metadata §7a.1; verifiers MAY treat either as authoritative.
 
 ---
 
@@ -380,6 +415,25 @@ CREATE TABLE contacts (
 - Inline SQL metadata blocks MUST start with `-- @mx` and end with `-- @mx:end`.
 - Each field line within the block MUST be prefixed with `--`.
 - Field names use camelCase.
+
+---
+
+### 3.10 Field-form precedence (Normative)
+
+A single MX field can appear in more than one form on the same artefact: a markdown file with a YAML frontmatter; an HTML page with both YAML frontmatter and `<meta name="mx:*">` tags; a tagged PDF carrying YAML in its document and the same fields in an XMP packet; a cog carrying both a magic-header HTML comment and a `cogHeader` frontmatter object. When multiple forms declare the same field, implementations MUST resolve them using the precedence below:
+
+1. **YAML frontmatter** is highest precedence. When a field is declared in YAML frontmatter, the YAML value is authoritative for that field on that artefact.
+2. **Carrier-specific embedded form** is next. This includes XMP for media (§3.5), the magic-header HTML comment for cogs (MX Cogs note §4), and any other format-native packet whose declarations are intended as authoritative within that carrier.
+3. **HTML `<meta>` tags** and equivalent declarative tags (JSDoc `@mx:`, CSS `@mx:` comment, SQL `-- @mx`) are next. Their values are authoritative when no higher form declares the same field on the same artefact.
+4. **Inferred values** (defaulted by the validator, computed from other fields, derived from external context) are lowest. A higher form always wins over an inferred value.
+
+When a field is declared in two or more forms on the same artefact, the values MUST agree. Disagreement is a conformance failure: tools cannot reconcile two contradictory authoritative declarations and SHOULD surface the conflict rather than silently picking one. The most common collision in practice is `<link rel="canonical">` versus `<meta name="mx:canonical-uri">` on the same HTML page (see §3.2.2 and MX Core Metadata §7a.1) — those two MUST agree.
+
+**Author's checklist when more than one form is in play:**
+
+- Pick the highest-precedence form available for the carrier (YAML if the carrier supports it; otherwise the carrier-specific embedded form; otherwise `<meta>` tags).
+- If a second form is declared (perhaps because tooling needed both), copy the value from the higher-precedence form rather than drafting it independently. Drift between forms is a conformance failure waiting to happen.
+- Verifiers SHOULD report the resolved precedence path so a downstream consumer can audit which form they relied on.
 
 ---
 
