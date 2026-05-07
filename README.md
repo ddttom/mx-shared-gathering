@@ -1,8 +1,10 @@
 # MX Drafts for The Gathering
 
+**Make anything you publish — a video, a podcast, a PDF, an image, a web page — readable by machines.** That is what MX is for. The drafts in this repo are the open-standard specifications that define how.
+
 Public home for the MX metadata draft notes. These are draft notes authored by Tom Cranstoun and offered to [The Gathering](https://tg.community) community for review via [Stream](https://stream.tg.community). They are not ratified standards.
 
-All drafts are written in plain markdown with kramdown-rfc YAML frontmatter. They cannot use MX metadata to describe themselves, since they are the documents specifying it.
+All drafts are written in plain markdown with kramdown-rfc YAML frontmatter. They cannot use MX metadata to describe themselves, since they are the standards specifying it.
 
 ## The drafts
 
