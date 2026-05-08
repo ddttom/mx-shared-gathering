@@ -295,11 +295,12 @@ subject:
   hashAlgorithm: sha-256
   mediaType: text/html
 predicate:
-  vocabulary: https://www.w3.org/TR/WCAG22/
-  vocabularyVersion: "2.2"
+  vocabulary: https://example.org/vocabularies/wcag-2.2-mx.v0.1
+  vocabularyVersion: "0.1"
   claim: wcagConformance
   parameters:
     level: AA
+    wcagVersion: "2.2"
 evidence:
   method: automatedScan
   report: https://example.com/.well-known/mx/evidence/2026-05-08-home-wcag22-aa.json
