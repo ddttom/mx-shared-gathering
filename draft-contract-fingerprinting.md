@@ -1,7 +1,7 @@
 ---
 title: "MX Contract Fingerprinting and Signing note"
 docname: draft-cranstoun-mx-contract-fingerprinting
-date: 2026-04-27
+date: 2026-05-08
 consensus: false
 keyword:
   - mx
@@ -20,7 +20,7 @@ canonicalUri: https://raw.githubusercontent.com/ddttom/mx-shared-gathering/main/
 
 **Version:** 1.0
 **Status:** Draft by Tom Cranstoun, offered to The Gathering for review
-**Date:** 27 April 2026
+**Date:** 8 May 2026
 **Author:** Tom Cranstoun
 **License:** MIT
 
@@ -65,6 +65,8 @@ This note is a draft authored by Tom Cranstoun and offered to The Gathering for 
 - The two fields `contractFields` and `metadataFields` (definitions in §4).
 - The deterministic fingerprint algorithm (§5).
 - Conformance rules and verifier expectations (§6).
+
+The fingerprint algorithm in §5 is generic over any structured object. Although §4 specifies it for cog frontmatter, sister notes that need to sign other MX payloads adopt §5 unchanged; §5.4 makes that adoption pattern explicit. Verifiers built against this note can therefore verify any MX signature uniformly without per-payload variants.
 
 ### 3.2 Out of scope
 
@@ -261,6 +263,25 @@ The projection is:
 (Keys sorted lexicographically: `schema`, `title`, `x-mx-thresholds`.)
 
 The fingerprint is `SHA-256` of these bytes.
+
+### 5.4 Application to non-cog payloads
+
+The §5.2 canonicalisation algorithm (project, sort, canonicalise values, serialise as canonical JSON, SHA-256) is generic. It applies unchanged to any structured object an MX sister note specifies for signing, not only to cog frontmatter. A note adopting §5 for a non-cog payload SHOULD declare so explicitly so that signers and verifiers know which canonicalisation to apply.
+
+For non-cog payloads, the §5.2 step 1 "project" step is replaced by an inclusion rule defined by the adopting note. Two patterns recur:
+
+- **Whole-payload canonicalisation.** The adopting note specifies that the entire payload object is canonicalised, with a single named field (typically the signature carrier itself) excluded so that the signature is computed over a payload that does not contain its own signature. The MX Compliance Claims note follows this pattern: the entire claim object is canonicalised excluding the `signature` field.
+- **Field-list canonicalisation.** The adopting note specifies a fixed list of payload fields to include, analogous to `contractFields` for cogs. This pattern is appropriate where the payload carries fields the adopting note classifies as metadata that should not affect the signature.
+
+Whichever pattern the adopting note chooses, the adopting note MUST be precise about: the inclusion rule, whether unlisted keys are included or excluded, and how the rule interacts with future schema evolution. The §5.2 canonicalisation steps themselves do not vary across adopters; only the projection rule is note-specific.
+
+A sister note that adopts §5 inherits the conformance properties of the algorithm: deterministic, portable, recoverable from the canonical bytes alone. Verifiers that implement §5 once can therefore verify cog signatures and non-cog signatures uniformly, given the per-note projection rule as input.
+
+Current adopters:
+
+- **MX Compliance Claims note** — specifies whole-payload canonicalisation for compliance claim signatures, with the `signature` field excluded.
+
+A sister note proposing a new adoption SHOULD coordinate with this note's authors so that the adoption pattern is recorded in the list above and any incompatibility surfaces early.
 
 ---
 
