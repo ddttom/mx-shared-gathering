@@ -323,6 +323,56 @@ mx:
         description: Execute the embedded script
 ```
 
+#### 6.5.3 `cogUrn` — universal identifier
+
+A cog SHOULD declare a `cogUrn` field carrying its universal identifier as a URN-shaped string of the form `cog:<publisher-namespace>:<local-id>`. Unlike `cogId` (§6.5), which is reserved in vendor-extension space for a registry-local short identifier, `cogUrn` is a standard-tier field intended for use by every party outside the publisher's own systems: registries, clients, verifiers, and downstream agents.
+
+The `<publisher-namespace>` is a stable namespace the publisher controls, typically derived from the publisher's DID (for example `web:example.com` for `did:web:example.com`). The `<local-id>` is a publisher-chosen identifier unique within that namespace; [ULID](https://github.com/ulid/spec) values are RECOMMENDED for `<local-id>` because they are time-sortable and collision-resistant without coordination.
+
+| Field | Type | Zone | Profile | Conformance |
+|-------|------|:----:|---------|-------------|
+| `cogUrn` | string | 2 | cog (any) | SHOULD; URN-shaped `cog:<publisher-namespace>:<local-id>`; permanent across versions of the same logical record |
+
+The `cogUrn` is set when the cog is created. It is permanent: a cog never changes its `cogUrn`. New versions of the same logical record (a corrected record, an amended clause) share the `cogUrn` and differ in `schemaVersion` (§6.5.4). The namespace prefix ensures global uniqueness without a central authority; two publishers controlling distinct domains cannot collide.
+
+A publisher that loses control of its namespace is a recoverable situation as long as the original DID document remains resolvable; permanent loss is a worst-case that the trust layer handles per the MX Attestation Records and Verification note, with liability resting on the publisher.
+
+**Example:**
+
+```yaml
+mx:
+  cogUrn: cog:web:example.com:01JC8X7K2N4P5Q6R7S8T9V0W1Y
+```
+
+`cogUrn` and `cogId` (§6.5) are independent identifiers and MAY both be present on the same cog. `cogUrn` is the universal long-form identifier; `cogId` is a vendor-extension short-form identifier scoped to a registry's namespace.
+
+#### 6.5.4 `schemaVersion` — cog-schema version
+
+A cog SHOULD declare a `schemaVersion` field carrying the semver of the cog schema this record conforms to. `schemaVersion` is a standard-tier field, distinct from `cogHeader.version` (§5.1) which declares the cog-spec version a file conforms to.
+
+| Field | Type | Zone | Profile | Conformance |
+|-------|------|:----:|---------|-------------|
+| `schemaVersion` | string | 2 | cog (any) | SHOULD; semver (`MAJOR.MINOR.PATCH` or `MAJOR.MINOR`) |
+
+The Gathering versions cog schemas using semver:
+
+- **Patch** (1.0.0 → 1.0.1): editorial corrections to the schema, no field changes. Existing cogs remain valid.
+- **Minor** (1.0.0 → 1.1.0): new optional fields added. Existing cogs remain valid. Clients that understand the previous minor version parse the newer cogs and ignore the unfamiliar fields.
+- **Major** (1.0.0 → 2.0.0): breaking changes, including field removals, semantics changes, or required-field additions. Existing cogs remain readable but require version-aware clients.
+
+Registries MUST serve cogs at whatever `schemaVersion` they were published under. A v1.0 cog is served as v1.0 indefinitely. Registries MUST NOT migrate cogs to newer schema versions; the publisher MAY publish a new version of the same `cogUrn` under a newer `schemaVersion` if they choose, but the old version remains queryable.
+
+Clients SHOULD accept any minor version within the major version they support. Clients encountering a major version they do not support SHOULD report this to the caller rather than attempt partial parsing.
+
+**Example:**
+
+```yaml
+mx:
+  schemaVersion: 1.0
+```
+
+The Gathering publishes a schema-evolution policy as part of the cog-schema documentation. The policy commits to: no breaking changes within a major version; a minimum window between major versions so the ecosystem can adapt; both the current and previous major versions remaining supported for a published transition period.
+
 ### 6.6 Composition and content-shape fields
 
 The following fields describe the cog's body content and how it composes with other cogs. They likewise live in vendor-extension space.
@@ -411,6 +461,8 @@ mx:
 | `partOf` | MUST | — | — |
 | `buildsOn` | — | SHOULD | — |
 | `cogHeader` *or* magic-header comment | — | SHOULD (when circulating) | — |
+| `cogUrn` | — | SHOULD | — |
+| `schemaVersion` | — | SHOULD | — |
 | `dependencies` | — | — | MAY |
 | `refersTo` | — | — | MAY |
 | `cogId`, `cogType`, `category` | — | — | MAY |

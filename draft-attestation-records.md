@@ -99,18 +99,18 @@ A trust layer does not verify attestations. It produces them on submission and s
 
 ### 4.2 Attestation record fields
 
-An attestation record is itself a cog. It declares `contentType: attestation` in its `mx:` frontmatter (per the **MX Core Metadata note**) and `version` per the same note; this note specifies the attestation-specific top-level fields below.
+An attestation record is itself a cog. It declares `contentType: attestation` in its `mx:` frontmatter (per the **MX Core Metadata note**). It carries `cogUrn` (the universal identifier of the attestation record itself, in the trust layer's namespace) and `schemaVersion` per the **MX Cogs note** §6.5.3 and §6.5.4. This note specifies the attestation-specific top-level fields below.
 
 | Field | Semantics |
 |-------|-----------|
-| `attests` | Reference to the cog being attested: the cog's ID and the digest of its JCS-canonicalised bytes. |
+| `attests` | Reference to the cog being attested. Object with `cogUrn` (the attested cog's universal identifier) and `digest` (the SHA-256 of the attested cog's JCS-canonicalised bytes). Batch-root attestations replace `cogUrn`/`digest` with `merkleRoot`, `leafCount`, and `hashFunction`; see §4.6. |
 | `issuedBy` | DID of the trust-layer operator (the registry instance that produced the attestation). |
 | `issuedAt` | [RFC 3339](https://datatracker.ietf.org/doc/html/rfc3339) timestamp of attestation. |
 | `mechanism` | One of `individual` or `merkleBatch`; see §4.6 for batching. |
-| `signature` | When `mechanism: individual`: signature over the attested digest, with algorithm identifier and key reference (DID URL). |
-| `batch` | When `mechanism: merkleBatch`: Merkle root hash, inclusion proof, and a reference to the batch-root attestation (see §4.6). |
+| `signature` | When `mechanism: individual` (and for batch-root attestations under `merkleBatch`): signature over the attested digest, with algorithm identifier and key reference (DID URL). |
+| `batch` | When the record is a per-cog leaf under `merkleBatch`: a `rootAttestation` reference, a `leafIndex`, and an inclusion `proof` array (see §4.6). |
 
-The attestation references the cog. The cog does not reference the attestation. This direction matters: a cog can exist without any attestation, and multiple independent attestations of the same cog by different trust layers can coexist without any of them being privileged inside the cog itself.
+The attestation references the cog by `cogUrn` and digest. The cog does not reference the attestation. This direction matters: a cog can exist without any attestation, and multiple independent attestations of the same cog by different trust layers can coexist without any of them being privileged inside the cog itself.
 
 ### 4.3 Production
 
