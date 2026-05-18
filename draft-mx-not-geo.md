@@ -2,7 +2,7 @@
 # cog v1 spec=https://mx.allabout.network/cog.html runtime=https://mx.allabout.network/cog-runtime.html
 title: "MX scope note: machine-readable documents beyond web optimisation"
 docname: draft-cranstoun-mx-not-geo
-date: 2026-05-06
+date: 2026-05-18
 consensus: false
 keyword:
   - mx
@@ -11,7 +11,7 @@ keyword:
   - metadata
   - machine-readability
   - provenance
-  - reginald
+  - registry
   - standalone
 author:
   - fullname: Tom Cranstoun
@@ -22,9 +22,9 @@ canonicalUri: https://raw.githubusercontent.com/ddttom/mx-shared-gathering/main/
 
 # MX scope note: machine-readable documents beyond web optimisation
 
-**Version:** 1.0
+**Version:** 1.1
 **Status:** Draft by Tom Cranstoun, offered to The Gathering for review
-**Date:** 6 May 2026
+**Date:** 18 May 2026
 **Author:** Tom Cranstoun
 **License:** MIT
 
@@ -84,23 +84,23 @@ The correct response to an unknowable pathway is not to optimise for one pathway
 
 ---
 
-## 6. The Reginald registry
+## 6. The registry layer
 
-Reginald (Registry for Genuine Information, Notarised Authentication, and Legitimate Documentation) is the infrastructure layer that makes MX governance scalable at internet scope.
+MX defines a registry-contract layer that makes file-borne governance scalable at internet scope. The standard defines the contract; multiple registry operators are expected to run conforming implementations.
 
-MX specifies that documents should carry provenance, freshness, and canonical location. Reginald is the system that verifies documents meet that specification, makes them discoverable, and answers a machine's questions about them via a queryable API.
+MX specifies that documents should carry provenance, freshness, and canonical location. A conforming registry is the system that verifies documents meet that specification, makes them discoverable, and answers a machine's questions about them via a queryable API.
 
-Reginald operates as:
+A conforming registry typically operates as one or more of:
 
-- A public DNS-like infrastructure any agent can query without permission or payment
+- A public, DNS-like service any agent can query without permission or payment
 - A SaaS service for publishers registering their document corpus
 - A private deployment for enterprise document estates
 
-Reginald understands both MX YAML frontmatter and JSON-LD (Schema.org). It indexes full document metadata. An agent querying Reginald receives: what the document is, who published it, when it was last signed, what version it is, and what it supersedes.
+A conforming registry understands both MX YAML frontmatter and JSON-LD (Schema.org). It indexes full document metadata. An agent querying the registry receives: what the document is, who published it, when it was last signed, what version it is, and what it supersedes.
 
-The distinction from GEO markup is architectural. GEO is passive — it adds tags to a page and depends on a crawler's behaviour. Reginald is active — it provides a queryable interface an agent explicitly consults. The agent does not hope that metadata was noticed; it asks a registry and receives a verified answer.
+The distinction from GEO markup is architectural. GEO is passive - it adds tags to a page and depends on a crawler's behaviour. A registry is active - it provides a queryable interface an agent explicitly consults. The agent does not hope that metadata was noticed; it asks a registry and receives a verified answer.
 
-Reginald attests one thing: this is the content the named publisher signed, unaltered. It makes no claim about whether the content is true, current in its subject matter, or sound in its reasoning. Editorial responsibility remains with the publisher.
+A conforming registry attests one thing: this is the content the named publisher signed, unaltered. It makes no claim about whether the content is true, current in its subject matter, or sound in its reasoning. Editorial responsibility remains with the publisher.
 
 ---
 
@@ -110,13 +110,13 @@ This note covers the following MX scope questions:
 
 - What MX does (machine-readable documents across all formats and access pathways)
 - What MX does not do (guarantee LLM citation, influence transformer token processing, promise specific machine behaviours)
-- How Reginald complements MX governance (discovery, trust, currency)
+- How a conforming registry complements MX governance (discovery, trust, currency)
 - The standalone machine readability principle (a document must be interpretable in isolation)
 
 This note does not cover:
 
 - MX field definitions (see the MX Core Metadata note and related draft set)
-- Reginald's technical specification (a separate note covers the registry protocol)
+- The registry-contract specification (a separate note covers the registry protocol)
 - Implementation guidance for specific document formats (see Carrier Formats note)
 
 ---
@@ -127,7 +127,7 @@ This note does not cover:
 
 - "MX keeps content readable across every system that accesses it."
 - "A document with full MX governance can be read, trusted, and located by any machine — in isolation."
-- "Reginald provides explicit metadata that any agent can query directly."
+- "A conforming registry provides explicit metadata that any agent can query directly."
 - "Explicit structure reduces the need for inference, improving extraction reliability."
 - "MX builds coverage across an unknowable landscape of machines and formats."
 

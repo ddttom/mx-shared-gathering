@@ -2,7 +2,7 @@
 # cog v1 spec=https://mx.allabout.network/cog.html runtime=https://mx.allabout.network/cog-runtime.html
 title: "MX scope note: file-borne provenance beyond memory-pool architectures"
 docname: draft-cranstoun-mx-not-memory-pool
-date: 2026-05-07
+date: 2026-05-18
 consensus: false
 keyword:
   - mx
@@ -11,7 +11,7 @@ keyword:
   - knowledge-base
   - obsidian
   - provenance
-  - reginald
+  - registry
   - extraction
   - standalone
 author:
@@ -23,9 +23,9 @@ canonicalUri: https://raw.githubusercontent.com/ddttom/mx-shared-gathering/main/
 
 # MX scope note: file-borne provenance beyond memory-pool architectures
 
-**Version:** 1.0
+**Version:** 1.1
 **Status:** Draft by Tom Cranstoun, offered to The Gathering for review
-**Date:** 7 May 2026
+**Date:** 18 May 2026
 **Author:** Tom Cranstoun
 **License:** MIT
 
@@ -71,7 +71,7 @@ MX governance ensures the file itself carries enough metadata to answer the ques
 2. Who published it? (author, organisation, originator)
 3. Has it been altered? (cryptographic signature, integrity attestation)
 4. Is it current? (version, modified date, supersedes / supersededBy)
-5. Where is the authoritative copy? (canonicalUri, Reginald registry entry)
+5. Where is the authoritative copy? (canonicalUri, registry entry)
 
 When these are present, an agent meeting the file in the wild reads them directly rather than inferring them from prose context. Inference is the failure mode the memory-pool architecture is itself trying to avoid; MX prevents that failure mode from re-appearing the moment a file crosses the pool's boundary.
 
@@ -108,15 +108,15 @@ This is the structural argument for MX in the memory-pool context: the pool's va
 
 ---
 
-## 7. The Reginald registry
+## 7. The registry layer
 
-Reginald (Registry for Genuine Information, Notarised Authentication, and Legitimate Documentation) is the infrastructure layer that makes MX governance verifiable at internet scope.
+MX defines a registry-contract layer that makes file-borne provenance verifiable at internet scope. The standard defines the contract; multiple registry operators are expected to run conforming implementations.
 
-Reginald operates as a queryable registry that any agent can consult, without permission or payment, to verify a document's provenance and currency. An agent encountering a file in the wild — extracted from a memory pool, attached to an email, embedded in a training dataset — can pass the file's canonical identifier to Reginald and receive a verified answer: this is the content the named publisher signed, unaltered, this is the current version, this is the master location.
+A conforming registry is a queryable service that any agent can consult to verify a document's provenance and currency. An agent encountering a file in the wild - extracted from a memory pool, attached to an email, embedded in a training dataset - can pass the file's canonical identifier to a conforming registry and receive a verified answer: this is the content the named publisher signed, unaltered, this is the current version, this is the master location.
 
-The complementarity to memory-pool architectures is direct. Inside the pool, an LLM curates structured knowledge. Outside the pool, Reginald answers the questions the pool's structure would have answered if it were still accessible. The two together cover both the inside-system and outside-system cases that real-world AI deployments routinely span.
+The complementarity to memory-pool architectures is direct. Inside the pool, an LLM curates structured knowledge. Outside the pool, a conforming registry answers the questions the pool's structure would have answered if it were still accessible. The two together cover both the inside-system and outside-system cases that real-world AI deployments routinely span.
 
-Reginald attests one thing: this is the content the named publisher signed, unaltered. It makes no claim about whether the content is true, current in its subject matter, or sound in its reasoning. Editorial responsibility remains with the publisher.
+A conforming registry attests one thing: this is the content the named publisher signed, unaltered. It makes no claim about whether the content is true, current in its subject matter, or sound in its reasoning. Editorial responsibility remains with the publisher.
 
 ---
 
@@ -133,7 +133,7 @@ This note does not cover:
 
 - Specific memory-pool implementations (Karpathy's LLM-wiki, Obsidian, Notion, training-corpus designs) — these are reference points, not specifications MX defines
 - MX field definitions (see the MX Core Metadata note and related draft set)
-- Reginald's technical specification (a separate note covers the registry protocol)
+- The registry-contract specification (a separate note covers the registry protocol)
 
 ---
 
@@ -144,7 +144,7 @@ This note does not cover:
 - "MX is the metadata DNA a file carries when it leaves any pool."
 - "An MX-conformant file inside a memory pool remains interpretable after extraction; a raw file does not."
 - "Memory-pool architectures and MX are complementary, not alternatives."
-- "Reginald answers the questions a pool's index would have answered, but works on files in the wild."
+- "A conforming registry answers the questions a pool's index would have answered, but works on files in the wild."
 - "Explicit file-borne metadata reduces the inference burden on every downstream agent."
 
 ### Incorrect
