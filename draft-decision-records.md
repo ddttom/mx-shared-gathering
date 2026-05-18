@@ -193,7 +193,7 @@ mx:
   operator: did:web:example-insurance.com
   issued: 2026-05-15T10:32:17Z
   policyRef:
-    registry: https://reginald.tg.community
+    registry: https://registry.example
     cogUrn: cog:web:tg.community:eu-ai-act-art-12
     version: 1.0.0
     clause: para-1
