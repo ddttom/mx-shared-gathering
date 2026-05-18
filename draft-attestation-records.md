@@ -1,4 +1,5 @@
 ---
+# cog v1 spec=https://mx.allabout.network/cog.html runtime=https://mx.allabout.network/cog-runtime.html
 title: "MX Attestation Records and Verification note"
 docname: draft-cranstoun-mx-attestation-records
 date: 2026-05-15
@@ -79,8 +80,8 @@ This is a draft note. Conformance levels and field semantics MAY change in respo
 
 | Standard | Relationship |
 |----------|--------------|
-| [MX Contract Fingerprinting and Signing note](draft-contract-fingerprinting.md) | Defines the canonicalisation and signing model this note builds on. The attestation record carries the signature; §5 of the sister note specifies what was signed. |
-| [MX Compliance Claims note](draft-compliance-claims.md) | Adjacent: a compliance claim *is* a signed cog and MAY itself be wrapped in an attestation record by a trust layer. |
+| **MX Contract Fingerprinting and Signing note** | Defines the canonicalisation and signing model this note builds on. The attestation record carries the signature; §5 of the sister note specifies what was signed. |
+| **MX Compliance Claims note** | Adjacent: a compliance claim *is* a signed cog and MAY itself be wrapped in an attestation record by a trust layer. |
 | [RFC 3339](https://datatracker.ietf.org/doc/html/rfc3339) | Date and time format used by `issuedAt`. |
 | [W3C DID Core](https://www.w3.org/TR/did-core/) | Identifier format used by `issuedBy` and by the key reference inside `signature`. |
 | [RFC 6962](https://datatracker.ietf.org/doc/html/rfc6962) | Certificate Transparency Merkle-tree mechanics — referenced by §4.6 batching. |

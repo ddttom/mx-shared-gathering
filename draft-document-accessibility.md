@@ -1,4 +1,5 @@
 ---
+# cog v1 spec=https://mx.allabout.network/cog.html runtime=https://mx.allabout.network/cog-runtime.html
 title: "MX Document Accessibility note"
 docname: draft-cranstoun-mx-document-accessibility
 date: 2026-05-07
@@ -79,7 +80,7 @@ This is a draft note. Conformance levels and field semantics MAY change in respo
 
 ### 3.3 Relationship to existing standards
 
-The accessibility-conformance vocabulary defined here (`accessibilityConformance`, `accessibilityFeature`, `accessibilityHazard`, `accessibilitySummary`) is the detailed disclosure layer for documents whose accessibility is a first-class concern. Cogs that need only a high-level quality signal — "is the cog accessibility-aware?" — declare `quality.accessibility` per [MX Provenance §6.5](draft-provenance.md), rather than the full conformance vocabulary here. The two layers are complementary: `quality.accessibility` is the summary signal; the fields in this note are the detailed claim.
+The accessibility-conformance vocabulary defined here (`accessibilityConformance`, `accessibilityFeature`, `accessibilityHazard`, `accessibilitySummary`) is the detailed disclosure layer for documents whose accessibility is a first-class concern. Cogs that need only a high-level quality signal — "is the cog accessibility-aware?" — declare `quality.accessibility` per **MX Provenance note** §6.5, rather than the full conformance vocabulary here. The two layers are complementary: `quality.accessibility` is the summary signal; the fields in this note are the detailed claim.
 
 This note relies on:
 

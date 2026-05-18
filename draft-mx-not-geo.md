@@ -1,4 +1,5 @@
 ---
+# cog v1 spec=https://mx.allabout.network/cog.html runtime=https://mx.allabout.network/cog-runtime.html
 title: "MX scope note: machine-readable documents beyond web optimisation"
 docname: draft-cranstoun-mx-not-geo
 date: 2026-05-06

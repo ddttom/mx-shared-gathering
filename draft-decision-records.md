@@ -1,4 +1,5 @@
 ---
+# cog v1 spec=https://mx.allabout.network/cog.html runtime=https://mx.allabout.network/cog-runtime.html
 title: "MX Decision Records note"
 docname: draft-cranstoun-mx-decision-records
 date: 2026-05-17

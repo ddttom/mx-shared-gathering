@@ -1,4 +1,5 @@
 ---
+# cog v1 spec=https://mx.allabout.network/cog.html runtime=https://mx.allabout.network/cog-runtime.html
 title: "MX Provenance note"
 docname: draft-cranstoun-mx-provenance
 date: 2026-05-07
@@ -115,9 +116,9 @@ Six fields touch document identity, each marking a distinct role in the document
 
 | Field | Role | Defined in |
 |-------|------|-----------|
-| `author` | Immutable creator of the document. The person or entity who first wrote it. Set once at creation and never changed. | [MX Core Metadata](draft-core-metadata.md) (Zone 1, top-level) |
+| `author` | Immutable creator of the document. The person or entity who first wrote it. Set once at creation and never changed. | **MX Core Metadata note** (Zone 1, top-level) |
 | `provenanceAuthor` | Originator of the document's content, recorded in Zone 2 attribution metadata. May differ from `author` when content was contributed by another party. | This note (§5.1) |
-| `maintainer` | Person or team responsible for ongoing maintenance of the document. The accountable steward, not necessarily the original creator. | [MX Core Metadata](draft-core-metadata.md) (Zone 2) |
+| `maintainer` | Person or team responsible for ongoing maintenance of the document. The accountable steward, not necessarily the original creator. | **MX Core Metadata note** (Zone 2) |
 | `maintainedBy` | Person or team who performed the most recent accuracy confirmation. May differ from `maintainer` (`maintainer` is the accountable role; `maintainedBy` records who actually did the last review). | This note (§7.2) |
 | `publisher` | Entity that publishes the document and stands behind its claims. Rich struct with name, url, and contact sub-keys. | This note (§5.5) |
 | `provenancePublisher` | Flat entity-name string declaring who published. The simpler form for cogs that do not need the rich `publisher` struct. | This note (§5.2) |
@@ -360,7 +361,7 @@ mx:
 
 Common values for `quality.convergence` when expressed as a string: `low`, `medium`, `high`.
 
-The grouping into one parent object reflects that the three dimensions are complementary facets of a shared quality theme; readers and validators can probe `quality` once and iterate the sub-keys rather than checking three top-level fields. The detailed accessibility-conformance vocabulary (`accessibilityConformance`, `accessibilityFeature`, `accessibilityHazard`, `accessibilitySummary`) defined in the [MX Document Accessibility note](draft-document-accessibility.md) lives in a separate disclosure layer; `quality.accessibility` is the high-level signal, the document-accessibility fields are the detailed conformance claim.
+The grouping into one parent object reflects that the three dimensions are complementary facets of a shared quality theme; readers and validators can probe `quality` once and iterate the sub-keys rather than checking three top-level fields. The detailed accessibility-conformance vocabulary (`accessibilityConformance`, `accessibilityFeature`, `accessibilityHazard`, `accessibilitySummary`) defined in the **MX Document Accessibility note** lives in a separate disclosure layer; `quality.accessibility` is the high-level signal, the document-accessibility fields are the detailed conformance claim.
 
 ---
 
@@ -402,7 +403,18 @@ mx:
 
 ### 7.3 `expires`
 
-`expires` is defined in the [MX Core Metadata note](draft-core-metadata.md) as the ISO-8601 date after which the document's content is no longer expected to be authoritative. It is a foundation-layer field; this provenance note refers to it but does not redefine it. Time-sensitive content (pricing PDFs, service-level agreements, compliance reports, regulatory text) MAY declare `expires` alongside the maintenance fields here so a single review window covers both maintenance and validity.
+| Property | Value |
+|----------|-------|
+| **Type** | string |
+| **Zone** | 2 (mx:) |
+| **Conformance** | MAY |
+
+`expires` is defined in the **MX Core Metadata note** as the ISO-8601 date after which the document's content is no longer expected to be authoritative. It is a foundation-layer field; this provenance note refers to it but does not redefine it. Time-sensitive content (pricing PDFs, service-level agreements, compliance reports, regulatory text) MAY declare `expires` alongside the maintenance fields here so a single review window covers both maintenance and validity.
+
+```yaml
+mx:
+  expires: 2027-12-31
+```
 
 ---
 
@@ -551,7 +563,7 @@ mx:
 
 ## 13. Minimum-viable provenance block (Informative)
 
-A worked example an author can copy and adapt. The block sits in Zone 2 (the `mx:` object) of any document's frontmatter and extends the MX Core Metadata floor (governed by the [MX Core Metadata note](./draft-core-metadata.md)).
+A worked example an author can copy and adapt. The block sits in Zone 2 (the `mx:` object) of any document's frontmatter and extends the MX Core Metadata floor (governed by the **MX Core Metadata note**).
 
 ```yaml
 mx:

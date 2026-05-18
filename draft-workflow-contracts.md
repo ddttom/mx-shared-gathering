@@ -1,4 +1,5 @@
 ---
+# cog v1 spec=https://mx.allabout.network/cog.html runtime=https://mx.allabout.network/cog-runtime.html
 title: "MX Workflow Contracts note"
 docname: draft-cranstoun-mx-workflow-contracts
 date: 2026-04-27

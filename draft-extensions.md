@@ -1,4 +1,5 @@
 ---
+# cog v1 spec=https://mx.allabout.network/cog.html runtime=https://mx.allabout.network/cog-runtime.html
 title: "MX Extensions note"
 docname: draft-cranstoun-mx-extensions
 date: 2026-04-27
@@ -192,7 +193,7 @@ The same MX field appears in syntactically different contexts — YAML frontmatt
 
 ### 7.1 Naming and conversion rules (Informative summary)
 
-The table below summarises the per-carrier conventions. The **normative form** of each conversion — the binding rule a verifier checks — lives in the [MX Carrier Formats note](./draft-carrier-formats.md), which is the single source of truth for carrier-specific syntax. This summary is informative; if a row here disagrees with the carrier-formats note, the carrier-formats note wins.
+The table below summarises the per-carrier conventions. The **normative form** of each conversion — the binding rule a verifier checks — lives in the **MX Carrier Formats note**, which is the single source of truth for carrier-specific syntax. This summary is informative; if a row here disagrees with the carrier-formats note, the carrier-formats note wins.
 
 | Context | Convention | Conversion from YAML camelCase | Example field | Example syntax |
 |---------|-----------|--------------------------------|---------------|----------------|

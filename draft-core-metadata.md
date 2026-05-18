@@ -1,4 +1,5 @@
 ---
+# cog v1 spec=https://mx.allabout.network/cog.html runtime=https://mx.allabout.network/cog-runtime.html
 title: "MX Core Metadata note"
 docname: draft-cranstoun-mx-core-metadata
 date: 2026-04-27
@@ -35,7 +36,7 @@ The cog file format is **not** described here. Cogs are an optional layer on top
 
 **Accessibility (Normative).** An MX-compliant document MUST itself be accessible. For HTML, EPUB, and other web-style carriers, the artefact MUST conform to [WCAG 2.1](https://www.w3.org/TR/WCAG21/) Level AA. For PDF, the artefact MUST be tagged for accessibility with at least the conformance level cited in the MX Document Accessibility note. For markdown and other plain-text carriers, the structural conventions covered by the MX Document Accessibility note (heading hierarchy, alt text on images, descriptive link text, plain-language summaries) apply. MX adds machine-readable governance on top of standards-conformant content; it does not replace or relax the underlying accessibility requirement.
 
-**Provenance.** Authorship, stewardship, derivation, and review history are governed by the [MX Provenance note](./draft-provenance.md). That note extends this floor with the attribution and trust fields that make a document's origin verifiable. It is part of the recommended reading order for any author writing for an MX-aware audience.
+**Provenance.** Authorship, stewardship, derivation, and review history are governed by the **MX Provenance note**. That note extends this floor with the attribution and trust fields that make a document's origin verifiable. It is part of the recommended reading order for any author writing for an MX-aware audience.
 
 ---
 

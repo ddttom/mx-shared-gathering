@@ -1,4 +1,5 @@
 ---
+# cog v1 spec=https://mx.allabout.network/cog.html runtime=https://mx.allabout.network/cog-runtime.html
 title: "MX Cogs note"
 docname: draft-cranstoun-mx-cogs
 date: 2026-05-06
@@ -34,8 +35,9 @@ A document does not need to be a cog to carry MX metadata. A blog post, a sideca
 This note specifies:
 
 - The cog file format (`.cog.md`).
-- The magic-header HTML comment used for byte-zero self-identification.
-- The `cogHeader` frontmatter field that mirrors the magic-header comment for YAML-only consumers.
+- The magic-header YAML comment line carried inside the frontmatter for raw-text self-identification.
+- The HTML carrier form of the magic-header: an `mx:cog` `<meta>` tag in the document's `<head>` (§4.1).
+- The `cogHeader` frontmatter field that mirrors the magic-header comment for consumers that work on parsed data structures rather than raw text.
 - The cog structural fields (`partOf`, `buildsOn`, `dependencies`, `refersTo`, plus the cog-specific extensions for blocks, execute contracts, includes, deliverables, classification, and identifiers — some of which are carried in vendor-extension space and may be promoted into the standard tier by The Gathering).
 
 **Out of scope:**
@@ -89,34 +91,91 @@ This note is a draft authored by Tom Cranstoun and offered to The Gathering for 
 
 - **Cog** — A `.cog.md` file. The atomic unit of the cog layer: a markdown document with YAML frontmatter and optionally typed content blocks (prose, action, definition, code, html, sop, etc.) within the body.
 - **Optional layer** — A capability some MX-aware documents adopt and others do not. A document that does not adopt the cog layer is still a valid MX document.
-- **Magic-header comment** — A specially formatted HTML comment placed at byte zero of a cog file, used for unambiguous file-level recognition by consumers that have not parsed the YAML.
+- **Magic-header comment** — A specially formatted YAML comment line placed inside a cog file's YAML frontmatter (RECOMMENDED: the line immediately after the opening `---`), used for unambiguous file-level recognition by consumers scanning the frontmatter. In HTML carriers, the same identification is carried by an `mx:cog` `<meta>` tag in the document's `<head>` (§4.1).
 - **Profile** — A named set of fields applicable to a specific document type. The cog layer defines the `cog` profile.
 
 ---
 
 ## 4. The magic-header comment
 
-A cog file SHOULD identify itself as a cog at byte zero. The conventional mechanism is a magic-header HTML comment:
+A cog file SHOULD identify itself as a cog by carrying a magic-header comment inside its YAML frontmatter, written as a YAML line comment:
 
-```html
-<!-- cog v1 spec=https://example.org/cog-spec.v1.md runtime=https://example.org/cog-runtime.md -->
+```yaml
+---
+# cog v1 spec=https://example.org/cog-spec.v1.md runtime=https://example.org/cog-runtime.md
+title: "..."
 ```
 
-The comment is invisible in rendered Markdown but immediately visible to any agent reading the raw text. It serves byte-zero self-identification — a consumer that has not yet parsed YAML can still recognise the file as a cog.
+A YAML comment inside the frontmatter is visible to any agent reading the raw text and is preserved by YAML parsers as a token, so consumers that scan raw bytes and consumers that tokenise frontmatter both see the same identification line. Every YAML frontmatter parser (pandoc, gray-matter, kramdown-rfc) requires the opening `---` to be the first content in the file; the magic-header line placed immediately after that delimiter keeps the parser happy and the marker visible at the top of the file.
 
-The comment is a single line. Tokens in order:
+The line is a single YAML comment. Tokens in order, after the leading `#`:
 
 1. The literal `cog`.
 2. A version token of the form `v\d+(\.\d+)*` (`v1`, `v1.2`, `v2`, ...) — the cog spec version the document claims.
 3. Zero or more `key=value` pairs separated by spaces. Conventional keys: `spec` (URL where the spec is published), `runtime` (URL where a runtime implementation lives), `runtime-doc` (URL pointing to runtime documentation).
 
-The comment is invisible to YAML-only consumers (registries, validators, graph builders that parse frontmatter and discard comments). For those consumers, the same information must be carried in the `cogHeader` frontmatter field (§5).
+The line MAY appear at any position within the frontmatter; placement on the line immediately after the opening `---` is RECOMMENDED so the identification is the first content a reader sees.
+
+### 4.1 HTML carrier form
+
+In HTML carriers, the same identification is carried by a single `mx:cog` meta tag in the document's `<head>`:
+
+```html
+<meta name="mx:cog" content="v1 spec=https://example.org/cog-spec.v1.md runtime=https://example.org/cog-runtime.md">
+```
+
+The `name` attribute is the fixed string `mx:cog` (the `mx:` prefix is the MX namespace per the **MX Extensions note**; `cog` is the marker). The `content` attribute follows the same token grammar as the YAML comment after the leading `# cog` token: a version token (`v\d+(\.\d+)*`) followed by zero or more space-separated `key=value` pairs. The HTML meta tag MAY appear anywhere inside `<head>`; placement near the top of `<head>` is RECOMMENDED so the identification is the first content a reader sees.
+
+The YAML comment form, the HTML meta-tag form, and the `cogHeader` frontmatter field (§5) carry identical information; each is the canonical form for its carrier. A document with multiple carriers (an HTML page generated from a Markdown source, a PDF with XMP metadata mirroring its source) SHOULD carry the appropriate form in every carrier where the content circulates.
+
+### 4.2 Preserving the source YAML frontmatter in HTML
+
+An HTML carrier MAY include the source markdown's YAML frontmatter verbatim as an HTML comment, typically placed inside `<head>` immediately after the `mx:cog` meta tag (§4.1). This preserves the full structured metadata for consumers that prefer to parse the original YAML rather than reconstruct it from individual `<meta>` tags:
+
+```html
+<head>
+  <meta name="mx:cog" content="v1 spec=https://example.org/cog-spec.v1.md runtime=https://example.org/cog-runtime.md">
+  <!--
+  ---
+  # cog v1 spec=https://example.org/cog-spec.v1.md runtime=https://example.org/cog-runtime.md
+  title: "Example document"
+  description: "..."
+  author: "..."
+  created: 2026-01-01
+  modified: 2026-01-01
+  mx:
+    contentType: info-doc
+    cogUrn: cog:web:example.com:01JC8X7K2N4P5Q6R7S8T9V0W1Y
+    partOf: example-collection
+  ---
+  -->
+  ...
+</head>
+```
+
+The convention is useful when the HTML is generated from a markdown source and downstream tools (registries, validators, search indexers) prefer to consume the original YAML rather than reconstruct it field-by-field from `<meta>` tags. The HTML comment MUST contain the verbatim source frontmatter including the surrounding `---` delimiters; consumers parsing it use the same YAML grammar as for the source markdown file.
+
+This carrier form is permissive (MAY), not required. The `mx:cog` meta tag (§4.1) is the canonical cog identification for HTML carriers; this convention is an additional metadata-preservation aid for implementations that generate HTML from a markdown source.
+
+### 4.3 Consumers that operate on parsed YAML
+
+For consumers that operate purely on parsed YAML data (registries, validators, graph builders that discard comments during parsing), the same information is also available through the `cogHeader` frontmatter field (§5).
+
+### 4.4 Design rationale
+
+Each carrier form earns its place from a specific reader's vantage point. The full reasoning behind the choice is informative, not normative; this sub-section records it so future implementers do not have to re-derive it.
+
+**Why the YAML comment lives inside the frontmatter.** Pandoc, gray-matter, and kramdown-rfc all require the opening `---` of the YAML frontmatter to be the first thing in the file. Placing the magic-header as a YAML comment line inside the frontmatter preserves every parser the ecosystem depends on while still giving raw-byte scanners a marker in the first few hundred bytes of the file. The YAML lexer treats the comment as a token, so consumers that tokenise the frontmatter still see the line; consumers that scan raw bytes see it inline at the top of the file. One form serves both readerships without forcing either to compromise.
+
+**Why the HTML form is an `mx:cog` `<meta>` tag.** HTML has a native metadata mechanism (`<meta>` in `<head>`) that every HTML consumer already understands. Cog identification in HTML therefore reuses the convention rather than inventing a new container: `<meta name="mx:cog" content="...">` mirrors the existing `<meta name="mx:fieldName" content="value">` pattern that every MX-aware HTML page uses for its other operational metadata. The `mx:` prefix carries the namespace and lets a consumer filter MX metadata from non-MX metadata in a single regex. The `content` value follows the same token grammar as the YAML comment (a version token, then `key=value` pairs) so an implementation that parses one form parses both with the same lexer.
+
+**Why the preserved-YAML HTML comment is permissive and complementary.** HTML's `<meta>` tags are flat key-value pairs and do not represent nested YAML structures cleanly. A `mx:` block with sub-objects (`policyRef`, `model`, `humanInLoop`, `clauses`) requires either a flattened per-field naming convention (verbose, error-prone) or a structured value encoded into the `content` attribute (parsing burden on every consumer). For HTML generated from a Markdown source, the simpler answer is to keep the original YAML available verbatim in an HTML comment alongside the per-field `<meta>` tags. Tools that prefer the structured source read the comment; tools that need only specific fields read the meta tags; the two views are consistent because both are derived from the same source. The convention is MAY rather than MUST because not every HTML carrier has a Markdown source to preserve.
 
 ---
 
 ## 5. `cogHeader` — the frontmatter equivalent
 
-A cog MAY declare `cogHeader` instead of, or in addition to, the magic-header comment. Both forms carry the same information; either suffices for cog identification. Implementations SHOULD prefer `cogHeader` for programmatic consumption and the magic-header comment for byte-zero file recognition.
+A cog MAY declare `cogHeader` instead of, or in addition to, the magic-header comment. Both forms carry the same information; either suffices for cog identification. Implementations SHOULD prefer `cogHeader` for programmatic consumption (registries, validators) and the magic-header comment for raw-text file recognition by agents that have not yet parsed YAML.
 
 ### 5.1 `cogHeader`
 
@@ -167,7 +226,7 @@ A key present in only one form is permitted; a key present in both with mismatch
 Implementations SHOULD:
 
 - Prefer `cogHeader` for programmatic consumption — it is queryable, robust to comment-stripping parsers, and addressable by registry tooling.
-- Prefer the magic-header comment for byte-zero self-identification — it is visible to agents that have not yet parsed YAML.
+- Prefer the magic-header comment for raw-text self-identification — it sits at the top of the frontmatter and is visible to agents that scan bytes before parsing YAML structurally.
 - Emit both forms when generating cogs intended for circulation, so consumers of either kind can recognise the file without round-trip parsing.
 
 ---
@@ -507,8 +566,8 @@ Two minimum-viable cogs an author can copy and adapt — one of each type.
 The smallest valid info-cog. Identity floor is MX Core Level 1; cog layer is Tier A. Saved as `auth-design-notes.cog.md`:
 
 ```markdown
-<!-- cog v1 spec=https://mx.allabout.network/cog.html -->
 ---
+# cog v1 spec=https://example.org/cog-spec.v1.md runtime=https://example.org/cog-runtime.md
 title: "Auth design notes"
 description: "Working notes on the authentication redesign."
 created: 2026-05-01
@@ -524,15 +583,15 @@ mx:
 (Body content goes here.)
 ```
 
-This cog declares the four MUST-at-Level-1 identity fields (`title`, `created`, `modified`, `author`), the one MUST-at-Tier-A cog field (`partOf`), and an info-cog `cogType`. Any consumer that recognises the magic-header line at byte zero immediately knows it has a cog in front of it.
+This cog declares the four MUST-at-Level-1 identity fields (`title`, `created`, `modified`, `author`), the one MUST-at-Tier-A cog field (`partOf`), and an info-cog `cogType`. The magic-header YAML comment on the line immediately after the opening `---` identifies the document as a cog to any reader that scans the frontmatter.
 
 ### 10.2 Minimum-viable action-cog (Tier C)
 
 The smallest valid scripted action-cog. Identity floor is MX Core Level 2; cog layer is Tier C. Saved as `run-audit.cog.md`:
 
 ````markdown
-<!-- cog v1 spec=https://mx.allabout.network/cog.html runtime=https://mx.allabout.network/cog-runtime.html -->
 ---
+# cog v1 spec=https://example.org/cog-spec.v1.md runtime=https://example.org/cog-runtime.md
 title: "Run audit"
 description: "Run the audit pipeline against a target site."
 created: 2026-05-01
@@ -540,8 +599,8 @@ modified: 2026-05-07
 author: "Tom Cranstoun"
 cogHeader:
   version: v1
-  spec: https://mx.allabout.network/cog.html
-  runtime: https://mx.allabout.network/cog-runtime.html
+  spec: https://example.org/cog-spec.v1.md
+  runtime: https://example.org/cog-runtime.md
 mx:
   partOf: mx-tools
   buildsOn: [audit-runtime]
@@ -564,7 +623,7 @@ echo "running audit"
 ```
 ````
 
-This cog satisfies Tier C: `partOf`, `buildsOn`, a `cogHeader` block (and a magic-header), `dependencies` declared, the canonical dotted `cogType`, and an `execute` contract with a named action whose embedded artefact is identifiable to a runtime.
+This cog satisfies Tier C: `partOf`, `buildsOn`, a `cogHeader` block (and a magic-header comment line on the first line of the frontmatter), `dependencies` declared, the canonical dotted `cogType`, and an `execute` contract with a named action whose embedded artefact is identifiable to a runtime.
 
 ---
 
@@ -572,7 +631,7 @@ This cog satisfies Tier C: `partOf`, `buildsOn`, a `cogHeader` block (and a magi
 
 The order a consuming tool SHOULD process a cog file:
 
-1. **Read byte zero.** If the first non-whitespace token is an HTML comment beginning with `<!-- cog`, parse the magic-header line for `version`, `spec`, `runtime`, `runtime-doc` tokens.
+1. **Scan the frontmatter for the magic-header line.** Inside the YAML frontmatter (the block between the opening `---` and the closing `---`), look for a YAML comment line of the form `# cog <version> <key=value> ...`. Parse the version token and any `spec=`, `runtime=`, `runtime-doc=` tokens.
 2. **Parse YAML frontmatter.** Read identity (Zone 1) and operational (`mx:`) fields. If a `cogHeader` field is present, verify it agrees with the magic-header per §5.2.
 3. **Validate the spec URL.** If `cogHeader.spec` is not on the operator's allowlist or trusted registry, refuse to process the cog or escalate to operator confirmation (§8).
 4. **Resolve `partOf`.** Locate the cog within its parent registry. A cog whose `partOf` cannot be resolved is identifiable but not navigable.
@@ -621,7 +680,7 @@ mx:
   buildsOn: [other-cog]
 ```
 
-The Tier B SHOULD-or-magic-header rule (§2.1, §5.1) requires at least one of: a magic-header HTML comment at byte zero, or a `cogHeader` field in the frontmatter. A cog circulating outside a closed system MUST carry one.
+The Tier B SHOULD-or-magic-header rule (§2.1, §5.1) requires at least one of: a magic-header YAML comment line inside the frontmatter, or a `cogHeader` field in the frontmatter. A cog circulating outside a closed system MUST carry one.
 
 **Mistake 4: cog structural fields at the top level.**
 

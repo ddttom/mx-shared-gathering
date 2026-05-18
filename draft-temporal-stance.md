@@ -1,4 +1,5 @@
 ---
+# cog v1 spec=https://mx.allabout.network/cog.html runtime=https://mx.allabout.network/cog-runtime.html
 title: "MX Temporal Stance note"
 docname: draft-cranstoun-mx-temporal-stance
 date: 2026-05-07
@@ -80,8 +81,8 @@ This note relies on:
 
 It builds on:
 
-- The [MX Core Metadata note](./draft-core-metadata.md) for the Zone 2 (`mx:` object) frontmatter model and the `created` / `modified` / `version` lifecycle fields.
-- The [MX Provenance note](./draft-provenance.md) for `expires` and `reviewCycle`, which declare lifecycle endpoints distinct from temporal stance.
+- The **MX Core Metadata note** for the Zone 2 (`mx:` object) frontmatter model and the `created` / `modified` / `version` lifecycle fields.
+- The **MX Provenance note** for `expires` and `reviewCycle`, which declare lifecycle endpoints distinct from temporal stance.
 
 This note adds vocabulary; it does not duplicate or override either dependency.
 
@@ -268,9 +269,9 @@ This note proposes no new IANA registrations.
 
 ### 8.2 Informative
 
-- [MX Core Metadata note](./draft-core-metadata.md) — Zone 2 frontmatter model and the `version` lifecycle this note builds on.
-- [MX Provenance note](./draft-provenance.md) — `expires` and `reviewCycle` fields, distinct from temporal stance.
-- [MX Contract Fingerprinting and Signing note](./draft-contract-fingerprinting.md) — signing model that excludes `temporalComputedFields` values from the contract surface.
+- **MX Core Metadata note** — Zone 2 frontmatter model and the `version` lifecycle this note builds on.
+- **MX Provenance note** — `expires` and `reviewCycle` fields, distinct from temporal stance.
+- **MX Contract Fingerprinting and Signing note** — signing model that excludes `temporalComputedFields` values from the contract surface.
 
 ---
 

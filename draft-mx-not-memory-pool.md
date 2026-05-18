@@ -1,4 +1,5 @@
 ---
+# cog v1 spec=https://mx.allabout.network/cog.html runtime=https://mx.allabout.network/cog-runtime.html
 title: "MX scope note: file-borne provenance beyond memory-pool architectures"
 docname: draft-cranstoun-mx-not-memory-pool
 date: 2026-05-07

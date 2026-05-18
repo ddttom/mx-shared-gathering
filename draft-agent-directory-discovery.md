@@ -1,4 +1,5 @@
 ---
+# cog v1 spec=https://mx.allabout.network/cog.html runtime=https://mx.allabout.network/cog-runtime.html
 title: "MX Agent Directory Discovery note"
 docname: draft-cranstoun-mx-agent-directory-discovery
 date: 2026-04-28
