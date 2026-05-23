@@ -444,6 +444,20 @@ The following fields describe the cog's body content and how it composes with ot
 | `policy` | string-or-object | 2 | Content-handling rules for agents. Inheritable from a parent uber-doc. |
 | `deliverable` | string-or-array | 2 | What this cog produces or delivers — a report, a validated artefact, a published page. For action cogs, describes what running the actions yields; for info cogs, describes the knowledge or artefact the cog represents. |
 
+#### 6.6.1 Named sub-sections within the prose block
+
+A single prose block MAY carry more than one named zone. A **sub-section** is a contiguous span of prose inside the document body enclosed by two HTML comments of the form `<!-- begin: <id> -->` and `<!-- end: <id> -->`. The `<id>` is a stable, kebab-case identifier. The markers are HTML comments so they survive markdown round-trips and render invisibly in any HTML view of the document.
+
+The prose block remains the single implicit block of the cog. Sub-sections are an addressing convention within that block, not separate blocks; the `blocks` array does not list them.
+
+Sub-sections are addressable by id. Readers and renderers MAY include, exclude, or extract a named sub-section. The canonical motivating case is a renderer that produces two derived artefacts from one source — for example, a covering letter plus a formal briefing in one markdown file, where one derived artefact strips the covering-letter sub-section and the other keeps it. Prose outside any marker pair is the default zone and is always included.
+
+Conformance requirements:
+
+- Sub-sections MUST NOT nest. A marker pair MUST close before the next pair opens. Nested ids constitute a malformed document.
+- Each `<id>` MUST appear in at most one marker pair per document. Repeated ids constitute a malformed document.
+- A reader that does not implement sub-section addressing MUST treat the markers as ordinary HTML comments and render the contained prose as part of the body.
+
 ### 6.7 Action contract fields
 
 The following fields apply to cogs that declare an `execute` block or a procedure-declaring field. They make two questions a consumer always asks of an action cog answerable from frontmatter alone: *what shape does a successful output take* (`produces`), and *what should the runtime do when a failure arises that I have not catalogued* (`defaultRemedy` paired with `troubleshooting`). Both fields reside in Zone 2 (the `mx:` object).
