@@ -1,7 +1,7 @@
 ---
 title: "MX Field Definition Pattern note"
 docname: draft-cranstoun-mx-field-pattern
-date: 2026-04-27
+date: 2026-05-23
 consensus: false
 keyword:
   - mx

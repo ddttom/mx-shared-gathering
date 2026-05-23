@@ -2,7 +2,7 @@
 # cog v1 spec=https://mx.allabout.network/cog.html runtime=https://mx.allabout.network/cog-runtime.html
 title: "MX Core Metadata note"
 docname: draft-cranstoun-mx-core-metadata
-date: 2026-04-27
+date: 2026-05-23
 consensus: false
 keyword:
   - mx
@@ -608,7 +608,7 @@ mx:
 | **Zone** | 2 (mx:) |
 | **Conformance** | MAY (Level 3) |
 
-Path to the file this document extends. The inheriting file adds MX metadata on top of the target's content. The target can be any file type (`.md`, `.cog.md`, `.html`, `.json`, `.yaml`, etc.). The inheriting file extends the target; it does not replace it. The path MAY be relative or absolute. For folder-level field inheritance, an `inheritable` field on the parent folder's metadata (out of scope for this note) is the preferred mechanism.
+Path to the file this document extends. The inheriting file adds MX metadata on top of the target's content. The target can be any file type (`.md`, `.html`, `.json`, `.yaml`, etc.). The inheriting file extends the target; it does not replace it. The path MAY be relative or absolute. For folder-level field inheritance, an `inheritable` field on the parent folder's metadata (out of scope for this note) is the preferred mechanism.
 
 ```yaml
 mx:

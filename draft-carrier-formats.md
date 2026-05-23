@@ -2,7 +2,7 @@
 # cog v1 spec=https://mx.allabout.network/cog.html runtime=https://mx.allabout.network/cog-runtime.html
 title: "MX Carrier Formats note"
 docname: draft-cranstoun-mx-carrier-formats
-date: 2026-05-07
+date: 2026-05-23
 consensus: false
 keyword:
   - mx
@@ -96,11 +96,11 @@ This note is a draft authored by Tom Cranstoun and offered to The Gathering for 
 
 This section defines how each supported file format carries MX metadata.
 
-### 3.1 `.cog.md` — YAML frontmatter
+### 3.1 Markdown — YAML frontmatter
 
 | Property | Value |
 |----------|-------|
-| **File types** | `.cog.md`, `.md`, `.mx.yaml.md` |
+| **File types** | `.md`, `.mx.yaml.md` |
 | **Carrier mechanism** | YAML frontmatter between `---` delimiters |
 | **Field naming** | camelCase (operational fields under `mx:` object) |
 | **Conformance** | MUST (Level 1) for all markdown-based MX documents |
@@ -129,11 +129,11 @@ Extension fields appear inside the `mx:` object alongside standard operational f
 
 ---
 
-### 3.2 `.cog.html` — HTML meta tags
+### 3.2 HTML — `<meta>` tags
 
 | Property | Value |
 |----------|-------|
-| **File types** | `.cog.html`, `.html` |
+| **File types** | `.html` |
 | **Carrier mechanism** | `<meta name="mx:*">` tags in `<head>`, `data-mx-*` attributes on elements |
 | **Field naming** | kebab-case with `mx:` prefix |
 | **Conformance** | MUST (Level 2) for HTML documents claiming MX conformance |
@@ -195,11 +195,11 @@ An HTML document claiming MX Standard (Level 2) MUST declare the four MUST-at-Le
 
 ---
 
-### 3.3 `.cog.js` — JSDoc comments
+### 3.3 JavaScript — JSDoc comments
 
 | Property | Value |
 |----------|-------|
-| **File types** | `.cog.js`, `.js` |
+| **File types** | `.js`, `.mjs`, `.ts` |
 | **Carrier mechanism** | JSDoc `/** */` block with `@mx:` tags |
 | **Field naming** | kebab-case with `@mx:` tag prefix |
 | **Conformance** | MUST (Level 2) for JavaScript documents claiming MX conformance |
@@ -227,11 +227,11 @@ JavaScript files carry MX metadata in a JSDoc comment block at the top of the fi
 
 ---
 
-### 3.4 `.cog.css` — CSS comments
+### 3.4 CSS — comments
 
 | Property | Value |
 |----------|-------|
-| **File types** | `.cog.css`, `.css` |
+| **File types** | `.css` |
 | **Carrier mechanism** | CSS comment `/* */` block with `@mx:` tags |
 | **Field naming** | kebab-case with `@mx:` tag prefix |
 | **Conformance** | MUST (Level 2) for CSS documents claiming MX conformance |
@@ -256,11 +256,11 @@ The metadata comment block SHOULD appear at the top of the file, before any rule
 
 ---
 
-### 3.5 `.cog.png` / `.cog.jpg` — EXIF/XMP metadata
+### 3.5 Image — EXIF/XMP metadata
 
 | Property | Value |
 |----------|-------|
-| **File types** | `.cog.png`, `.cog.jpg`, `.png`, `.jpg`, `.webp`, `.svg` |
+| **File types** | `.png`, `.jpg`, `.webp`, `.svg` |
 | **Carrier mechanism** | EXIF/XMP metadata with `mx:` namespace |
 | **Field naming** | `mx:` namespace prefix, original case preserved |
 | **Conformance** | MAY (Level 3) |
@@ -600,7 +600,7 @@ Context dependencies as a comma-separated list of cog names. Equivalent to `buil
 Path to companion documentation. Links a code file to its narrative documentation.
 
 ```javascript
-/** @mx:documentedIn ../docs/validation-guide.cog.md */
+/** @mx:documentedIn ../docs/validation-guide.md */
 ```
 
 ### 4.11 `mx:contextProvides`
@@ -642,9 +642,9 @@ Code carriers use the native metadata mechanism of their file format. Field name
 | CSS | CSS block comments | `/* @mx:sourceRepo https://github.com/example/repo */` |
 | Shell | Shell comment block | `# sourceRepo: https://github.com/example/repo` (after shebang) |
 | SQL | SQL comment block | `-- @mx sourceRepo: https://github.com/example/repo` |
-| Any | YAML frontmatter in `.cog.*` files | `sourceRepo: https://github.com/example/repo` |
+| Any | YAML frontmatter in markdown files | `sourceRepo: https://github.com/example/repo` |
 
-A JavaScript file declaring `@mx:sourceRepo` and a `.cog.md` declaring `sourceRepo:` carry the same semantic value.
+A JavaScript file declaring `@mx:sourceRepo` and a markdown file with `sourceRepo:` in its YAML frontmatter carry the same semantic value.
 
 ### 5.3 Profile
 

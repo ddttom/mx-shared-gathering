@@ -414,7 +414,7 @@ properties:
 
 ### 11.2 The cog (no explicit `contractFields` — schema-derived)
 
-Saved as `approve-invoices.cog.md`:
+Saved as a markdown file with YAML frontmatter (e.g. `approve-invoices.md`):
 
 ```yaml
 ---

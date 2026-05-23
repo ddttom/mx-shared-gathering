@@ -2,7 +2,7 @@
 # cog v1 spec=https://mx.allabout.network/cog.html runtime=https://mx.allabout.network/cog-runtime.html
 title: "MX Extensions note"
 docname: draft-cranstoun-mx-extensions
-date: 2026-04-27
+date: 2026-05-23
 consensus: false
 keyword:
   - mx
