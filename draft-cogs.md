@@ -339,6 +339,8 @@ The `cogs` classification is intended for cogs that act as community-ratified re
 
 #### 6.5.2 Action cog discriminator (`cogType: action.<kind>` and `actionType`)
 
+The cog specification draws a sharp axis through every action cog: it MAY be **deterministic**, **inference-driven**, or **both**. The discriminator named in this subsection is how the cog declares which. A deterministic cog carries fixed instructions a runtime executes the same way every time; an inference-driven cog carries instructions a language-model runtime reads and performs using its own reasoning; a both-form cog carries each in the role each is fit for. A consumer that knows this axis up front can choose to accept, reject, or sandbox the cog without inspecting the body. A consumer that does not know it has no way to tell whether the cog will run a shell command or invite a language model to act on its behalf — two operationally very different requests.
+
 An action cog MUST declare its cognitive class so a consumer (human or agent) knows what kind of execution is involved without inspecting the body. Two forms are permitted, both expressing the same meaning:
 
 - **Dotted form (canonical):** `cogType: action.scripted`, `cogType: action.sop`, or `cogType: action.hybrid`. The discriminator lives entirely in the `cogType` value. A consumer parses one field.
@@ -710,3 +712,5 @@ All cog structural fields live in Zone 2 (§6) unless explicitly noted as top-le
 ---
 
 *End of MX Cogs note draft.*
+
+<!-- cog-spec-sync: 2026-05-31-c -->
