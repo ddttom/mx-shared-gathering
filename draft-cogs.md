@@ -235,6 +235,14 @@ Implementations SHOULD:
 
 The following fields define a cog's place in a registry, its dependencies, and its operational contract. All cog structural fields reside in Zone 2 (the `mx:` object) unless explicitly noted as top-level.
 
+### Declaring dependencies — explicit when applicable, standalone otherwise
+
+A cog that stands on another cog — by being part of it, building on it, requiring it, inheriting from it, including it, or referring to it — MUST declare the relationship in the frontmatter using the appropriate relationship field (`partOf`, `buildsOn`, `dependencies`, `refersTo`, `inherits`, plus any include-style field a profile declares). Inheritance and inclusion count as dependencies for this purpose: any field that names another cog the current cog stands on carries the rule.
+
+A **standalone cog** is one that names no other cog. It declares `dependencies: []` to make the absence explicit (the visible standalone marker) and carries no other relationship fields. The standalone case is the explicit converse of the MUST rule, not a separate category: every cog either lists what it depends on, or declares that it depends on nothing.
+
+The rule applies to dependencies the cog itself relies on. Cogs the current cog publishes about, comments on, or supersedes are not dependencies and belong in their own fields (`supersedes`, `replaces`, vendor-namespaced extensions). The relationship fields named above are the canonical declarations a runtime, a registry, or a reader reads to know what context the cog needs to make sense.
+
 ### 6.1 `partOf`
 
 | Property | Value |
@@ -299,7 +307,7 @@ mx:
 
 - A cog MUST NOT be considered functional if any of its `dependencies` entries are missing or unresolvable for their declared `kind`.
 - The recommended `kind` is `cog`. Runtime, package, and external deps SHOULD usually live in their proper carrier (`package.json`, the cog's runbook, an external manifest); the non-cog kinds in this field are escape hatches for cases where inline declaration is genuinely the right home.
-- A cog declaring no dependencies MAY omit this field or declare an empty array (`dependencies: []`); both are conformant.
+- A cog with no dependencies MUST declare `dependencies: []` to make the standalone state visible — see the *Declaring dependencies* rule at the head of §6. Omitting the field is the older form and is being retired.
 - Distinct from `buildsOn` (soft context) and `refersTo` (informational link).
 
 ### 6.4 `refersTo`
@@ -713,4 +721,4 @@ All cog structural fields live in Zone 2 (§6) unless explicitly noted as top-le
 
 *End of MX Cogs note draft.*
 
-<!-- cog-spec-sync: 2026-05-31-c -->
+<!-- cog-spec-sync: 2026-05-31-d -->
