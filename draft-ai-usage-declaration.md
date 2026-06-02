@@ -268,7 +268,7 @@ A host MUST NOT serve different declarations at the root-level and well-known lo
 - The source markdown SHOULD be served with `Content-Type: text/markdown; charset=utf-8` per [RFC 7763](https://datatracker.ietf.org/doc/html/rfc7763).
 - The JSON record SHOULD be served with `Content-Type: application/json; charset=utf-8`. The media type `application/ai-usage-declaration+json` is reserved for a future revision once implementation experience justifies registration.
 - The human-readable HTML rendering SHOULD be served with `Content-Type: text/html; charset=utf-8`.
-- A PDF rendering SHOULD be served with `Content-Type: application/pdf` and SHOULD be tagged per [ISO 14289-1](https://www.iso.org/standard/64599.html) Level 2 (`pdfuaid:Part=1`) for accessibility.
+- A PDF rendering SHOULD be served with `Content-Type: application/pdf` and SHOULD be tagged per [ISO 14289-1](https://www.iso.org/standard/64599.html) (PDF/UA-1, `pdfuaid:part=1`) for accessibility.
 
 ### 5.3 In-page discovery
 
