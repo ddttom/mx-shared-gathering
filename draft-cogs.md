@@ -721,4 +721,4 @@ All cog structural fields live in Zone 2 (§6) unless explicitly noted as top-le
 
 *End of MX Cogs note draft.*
 
-<!-- cog-spec-sync: 2026-05-31-d -->
+<!-- cog-spec-sync: 2026-06-05-a -->
