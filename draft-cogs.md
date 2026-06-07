@@ -247,18 +247,20 @@ The rule applies to dependencies the cog itself relies on. Cogs the current cog 
 
 | Property | Value |
 |----------|-------|
-| **Type** | string |
+| **Type** | array of strings (a bare string is accepted as a single-element array) |
 | **Zone** | 2 (mx:) |
 | **Conformance** | MUST (Tier A) for cogs |
 
-**Definition:** Parent collection, suite, or initiative the cog belongs to. Names a registry namespace, a series, or a parent artefact.
+**Definition:** Parent collection(s), suite(s), or initiative(s) the cog belongs to. Each value names a registry namespace, a series, or a parent artefact. Because it is an array, a cog can belong to more than one set at once - so a query for the members of any one set returns every cog that declares it, even when the cog also belongs to others.
 
 **Example:**
 
 ```yaml
 mx:
-  partOf: mx-the-gathering
+  partOf: [mx-the-gathering, mx-audit]
 ```
+
+A single membership may be written as a bare string (`partOf: mx-the-gathering`); a conforming reader treats it as a one-element array.
 
 ### 6.2 `buildsOn`
 
@@ -721,4 +723,4 @@ All cog structural fields live in Zone 2 (§6) unless explicitly noted as top-le
 
 *End of MX Cogs note draft.*
 
-<!-- cog-spec-sync: 2026-06-05-a -->
+<!-- cog-spec-sync: 2026-06-07-a -->
