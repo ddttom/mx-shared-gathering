@@ -143,8 +143,8 @@ An HTML carrier MAY include the source markdown's YAML frontmatter verbatim as a
   author: "..."
   created: 2026-01-01
   modified: 2026-01-01
+  type: info-doc
   mx:
-    contentType: info-doc
     cogUrn: cog:web:example.com:01JC8X7K2N4P5Q6R7S8T9V0W1Y
     partOf: example-collection
   ---
@@ -723,4 +723,4 @@ All cog structural fields live in Zone 2 (§6) unless explicitly noted as top-le
 
 *End of MX Cogs note draft.*
 
-<!-- cog-spec-sync: 2026-06-07-a -->
+<!-- cog-spec-sync: 2026-06-21-a -->
