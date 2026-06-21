@@ -47,7 +47,7 @@ This note specifies:
 - **Document identity field semantics.** What `title`, `description`, `author`, `created`, `modified`, and `version` mean is governed by the MX Core Metadata note. Cogs inherit these definitions; this note does not redefine them.
 - **Namespace policy.** The `x-mx-` and `x-mx-p-` prefix conventions used by some cog fields are governed by the MX Extensions note.
 
-The two-zone YAML frontmatter model is carried over from MX Core: Zone 1 (top-level) holds document identity fields; Zone 2 (under the `mx:` object) holds operational fields. Cog structural fields live in Zone 2 unless explicitly noted as top-level (`cogHeader`, `contractFields`, `metadataFields`).
+The three-zone YAML frontmatter model is carried over from MX Core: Zone 1a (top-level) holds document identity fields; Zone 1b (top-level) holds OKF-reserved surface fields (`type`, `tags`, `resource`); Zone 2 (under the `mx:` object) holds MX-operational fields. Cog structural fields live in Zone 2 unless explicitly noted as top-level (`cogHeader`, `contractFields`, `metadataFields`). An OKF consumer reading a cog file treats the entire `mx:` block as one unknown preserved key — this is the dual-conformance property that makes a cog simultaneously valid OKF and full MX.
 
 ---
 

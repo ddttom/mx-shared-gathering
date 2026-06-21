@@ -100,7 +100,7 @@ A trust layer does not verify attestations. It produces them on submission and s
 
 ### 4.2 Attestation record fields
 
-An attestation record is itself a cog. It declares `contentType: attestation` in its `mx:` frontmatter (per the **MX Core Metadata note**). It carries `cogUrn` (the universal identifier of the attestation record itself, in the trust layer's namespace) and `schemaVersion` per the **MX Cogs note** §6.5.3 and §6.5.4. This note specifies the attestation-specific top-level fields below.
+An attestation record is itself a cog. It declares `type: attestation` at the top level (Zone 1b, per the **MX Core Metadata note**). It carries `cogUrn` (the universal identifier of the attestation record itself, in the trust layer's namespace) and `schemaVersion` per the **MX Cogs note** §6.5.3 and §6.5.4. This note specifies the attestation-specific top-level fields below.
 
 | Field | Semantics |
 |-------|-----------|

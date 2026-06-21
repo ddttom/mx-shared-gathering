@@ -103,11 +103,11 @@ The record is carrier-neutral. The fields and their semantics are what constitut
 
 ### 4.2 Required fields
 
-A decision record declares `contentType: decision` in its `mx:` frontmatter. The following fields are REQUIRED for a valid decision record regardless of carrier. Field names follow `camelCase`.
+A decision record declares `type: decision` at the top level (Zone 1b). The following fields are REQUIRED for a valid decision record regardless of carrier. Field names follow `camelCase`.
 
 | Field | Type | Semantics |
 |-------|------|-----------|
-| `contentType` | string | Fixed value: `decision`. |
+| `type` | string | Fixed value: `decision`. Top-level (Zone 1b). |
 | `schemaVersion` | string | Semver of the decision-record schema this record conforms to (per **MX Cogs note** §6.5.4). |
 | `cogUrn` | string | Universal identifier in the form `cog:<operator-namespace>:<local-id>` (per **MX Cogs note** §6.5.3). |
 | `decisionId` | string | Operator's internal reference to the decision event; time-sortable. ULIDs are RECOMMENDED. Usually equals the `<local-id>` portion of `cogUrn`. |
@@ -185,8 +185,8 @@ author: did:web:example-insurance.com
 created: 2026-05-15T10:32:17Z
 modified: 2026-05-15T10:32:17Z
 
+type: decision
 mx:
-  contentType: decision
   schemaVersion: 1.0
   cogUrn: cog:web:example-insurance.com:01JC8X7K2N4P5Q6R7S8T9V0W1Y
   decisionId: claim-2026-05-15-184729

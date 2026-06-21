@@ -432,9 +432,9 @@ thresholds:
 approvers:
   - finance-lead
   - cfo
+type: cog
 mx:
   status: published
-  contentType: cog
   canonicalUri: https://example.org/cogs/approve-invoices.v1
   summary: "Approve invoices under 1000 automatically; escalate above."
   conformsTo: [https://mx.allabout.network/cog.html]

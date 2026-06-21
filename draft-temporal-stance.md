@@ -287,9 +287,9 @@ originator: "Tom Cranstoun"
 created: 2026-05-07
 modified: 2026-05-07
 version: "1.0"
+type: info-doc
 mx:
   status: published
-  contentType: info-doc
   canonicalUri: https://example.org/blog/eu-ai-act-day-one
   summary: "What the EU AI Act changes on day one for general-purpose AI providers and users."
   conformsTo: [https://mx.allabout.network/cog.html]

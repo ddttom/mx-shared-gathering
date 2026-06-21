@@ -126,9 +126,9 @@ Implementations MUST NOT add a prefix to standard fields. A field that is part o
 **Example (correct):**
 
 ```yaml
+type: guide
 mx:
   status: active
-  contentType: guide
 ```
 
 **Example (incorrect — prefix pollution):**
@@ -136,7 +136,7 @@ mx:
 ```yaml
 mx:
   x-mx-status: active     # WRONG — status is a standard field
-  mx-contentType: guide    # WRONG — contentType is a standard field
+  mx-type: guide           # WRONG — type is a Zone 1b field; no prefix, no mx: block
 ```
 
 ### 6.3 Public extension fields (`x-mx-`)
@@ -198,13 +198,14 @@ The table below summarises the per-carrier conventions. The **normative form** o
 | Context | Convention | Conversion from YAML camelCase | Example field | Example syntax |
 |---------|-----------|--------------------------------|---------------|----------------|
 | YAML | camelCase | *(canonical)* | `buildsOn` | `buildsOn: [cog-unified-spec]` |
-| HTML | kebab-case with `mx:` prefix | camelCase → kebab-case, prepend `mx:` | `mx:content-type` | `<meta name="mx:content-type" content="guide">` |
+| YAML (Zone 1b) | camelCase, top-level, no prefix | OKF-reserved field at top level | `type` | `type: guide` |
+| HTML | Zone 1b: bare kebab-case; Zone 2: kebab-case with `mx:` prefix | OKF fields: no prefix; operational: prepend `mx:` | `type` / `mx:status` | `<meta name="type" content="guide">` / `<meta name="mx:status" content="active">` |
 | JSDoc | kebab-case with `@mx:` tag | camelCase → kebab-case, prepend `@mx:` | `@mx:runtime` | `@mx:runtime node` |
 | CSS | kebab-case with `@mx:` comment | camelCase → kebab-case, prepend `@mx:` | `@mx:type` | `/* @mx:type utility */` |
-| Shell | camelCase in `# key: value` | none — preserve camelCase | `contentType` | `# contentType: guide` |
-| XMP | `mx:` namespace prefix, case preserved | prepend `mx:` | `mx:status` | `<mx:status>active</mx:status>` |
-| Sidecar | camelCase in YAML | none — preserve camelCase | `contentType` | `contentType: guide` |
-| SQL | camelCase in `-- @mx` block | none — preserve camelCase | `contentType` | `-- @mx contentType: guide` |
+| Shell | camelCase in `# key: value` | none — preserve camelCase | `type` | `# type: guide` |
+| XMP | `mx:` namespace prefix, case preserved | prepend `mx:` | `mx:type` | `<mx:type>guide</mx:type>` |
+| Sidecar | camelCase in YAML (three-zone) | Zone 1b fields at top level | `type` | `type: guide` |
+| SQL | camelCase in `-- @mx` block | none — preserve camelCase | `type` | `-- @mx type: guide` |
 
 For HTML in particular: the four MUST-at-Level-2 fields from MX Core Metadata §7a (`canonicalUri`, `summary`, `conformsTo`, `trainingDataPolicy`) MUST be present in HTML carriers as the kebab-case `mx:` `<meta>` tags `mx:canonical-uri`, `mx:summary`, `mx:conforms-to`, `mx:training-data-policy`. The carrier-formats note defines the binding form and worked examples.
 
@@ -214,9 +215,9 @@ Extension fields (`x-mx-` and `x-mx-p-`) already use kebab-case. In non-YAML con
 
 | Context | Standard field example | Extension field example |
 |---------|----------------------|------------------------|
-| YAML | `contentType: guide` | `x-mx-mount-type: personal` |
-| HTML | `<meta name="mx:content-type">` | `<meta name="mx:x-mx-mount-type">` |
-| JSDoc | `@mx:content-type guide` | `@mx:x-mx-mount-type personal` |
+| YAML | `type: guide` (Zone 1b) | `x-mx-mount-type: personal` |
+| HTML | `<meta name="type" content="guide">` | `<meta name="mx:x-mx-mount-type">` |
+| JSDoc | `@okf-type guide` | `@mx:x-mx-mount-type personal` |
 
 ---
 

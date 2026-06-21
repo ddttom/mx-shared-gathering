@@ -100,11 +100,11 @@ A policy record records the **text** and **structure** of a policy. It does not 
 
 ### 4.2 Required fields
 
-A policy record declares `contentType: policy` in its `mx:` frontmatter. The following fields are REQUIRED for a valid policy record regardless of carrier. Field names follow `camelCase`.
+A policy record declares `type: policy` at the top level (Zone 1b). The following fields are REQUIRED for a valid policy record regardless of carrier. Field names follow `camelCase`.
 
 | Field | Type | Semantics |
 |-------|------|-----------|
-| `contentType` | string | Fixed value: `policy`. |
+| `type` | string | Fixed value: `policy`. Top-level (Zone 1b). |
 | `schemaVersion` | string | Semver of the policy-record schema this record conforms to (per **MX Cogs note** §6.5.4). |
 | `cogUrn` | string | Universal identifier in the form `cog:<publisher-namespace>:<local-id>` (per **MX Cogs note** §6.5.3). For third-party renderings by The Gathering, the publisher namespace is typically `web:tg.community`. |
 | `policyId` | string | Publisher's internal reference to the policy; typically the `<local-id>` portion of `cogUrn`. Provides a short stable handle for human reference. |
@@ -155,8 +155,8 @@ author: did:web:digital-strategy.ec.europa.eu
 created: 2026-08-02
 modified: 2026-08-02
 
+type: policy
 mx:
-  contentType: policy
   schemaVersion: 1.0
   cogUrn: cog:web:tg.community:eu-ai-act-art-12
   policyId: eu-ai-act-art-12

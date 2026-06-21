@@ -62,7 +62,7 @@ This note defines three conformance levels (modelled on the [WCAG 2.1](https://w
 | Level | Name | Requirement |
 |-------|------|-------------|
 | Level 1 | **MX Core** | Universal identity fields present (`title`, `author`, `created`, `description`); the carrier syntax for the file's format is used correctly. |
-| Level 2 | **MX Standard** | Adds Level 1 plus the operational fields applicable to the format (`status`, `contentType`, `license`); for non-YAML carriers, the `mx:*` identity fields in §4 are used where applicable. |
+| Level 2 | **MX Standard** | Adds Level 1 plus `type` (Zone 1b) and the operational fields applicable to the format (`status`, `license`); for non-YAML carriers, the `mx:*` identity fields in §4 are used where applicable. |
 | Level 3 | **MX Complete** | Adds Level 2 plus the code-specific provenance fields in §5 where they apply, and any `MAY`-level identity fields. |
 
 A document claiming conformance at a given level MUST satisfy all requirements at that level and all lower levels.
@@ -105,7 +105,7 @@ This section defines how each supported file format carries MX metadata.
 | **Field naming** | camelCase (operational fields under `mx:` object) |
 | **Conformance** | MUST (Level 1) for all markdown-based MX documents |
 
-The primary carrier format. All MX-aware markdown documents carry metadata in YAML frontmatter using a two-zone model: top-level fields for document identity (title, description, author, dates, version) and the `mx:` object for MX-operational fields. Implementations MUST NOT place identity fields inside the `mx:` object, and MUST NOT place operational fields at the top level.
+The primary carrier format. All MX-aware markdown documents carry metadata in YAML frontmatter using a three-zone model: Zone 1a (top-level) for document identity (`title`, `description`, `author`, `created`, `modified`, `version`); Zone 1b (top-level) for the OKF-reserved surface (`type`, `tags`, optionally `resource`); Zone 2 (under the `mx:` object) for MX-operational fields. Implementations MUST NOT place Zone 1a or Zone 1b fields inside the `mx:` object, and MUST NOT place Zone 2 fields at the top level.
 
 **Example:**
 
@@ -117,15 +117,16 @@ author: "Author Name"
 created: 2026-04-02
 modified: 2026-04-16
 version: "1.0"
+type: guide
+tags: [metadata, example]
 
 mx:
   status: active
-  contentType: guide
-  tags: [metadata, example]
+  canonicalUri: https://example.com/docs/title
 ---
 ```
 
-Extension fields appear inside the `mx:` object alongside standard operational fields.
+Extension fields appear inside the `mx:` object alongside standard operational fields. OKF-reserved fields (`type`, `tags`, `resource`) remain at the top level.
 
 ---
 
@@ -271,8 +272,8 @@ Image files carry MX identity metadata in EXIF/XMP metadata blocks using the `mx
 
 ```xml
 <rdf:Description xmlns:mx="https://allabout.network/ns/mx/1.0">
+  <mx:type>illustration</mx:type>
   <mx:status>active</mx:status>
-  <mx:contentType>illustration</mx:contentType>
 </rdf:Description>
 ```
 
@@ -300,8 +301,8 @@ Shell scripts carry MX metadata in a comment block using `# ---` delimiters, wit
 # title: "Build and deploy"
 # description: "Builds site artefacts and deploys to Cloudflare"
 # author: "Tom Cranstoun"
+# type: script
 # status: active
-# contentType: script
 # ---
 ```
 
@@ -332,14 +333,14 @@ description: "Full-width hero image for the landing page"
 author: "Tom Cranstoun"
 created: 2026-04-02
 modified: 2026-04-16
+type: image
+tags: [hero, banner, landing]
 
 mx:
   status: active
-  contentType: image
-  tags: [hero, banner, landing]
 ```
 
-The sidecar file MUST use the two-zone model and the file name MUST match the asset file name with `.mx.yaml` appended.
+The sidecar file MUST use the three-zone model and the file name MUST match the asset file name with `.mx.yaml` appended.
 
 ---
 
@@ -362,12 +363,12 @@ description: "Central hub for Machine Experience development"
 author: "Tom Cranstoun"
 created: 2026-01-15
 modified: 2026-04-16
+type: repository
+tags: [hub, mx, repository]
 
 mx:
   status: active
-  contentType: repository
   domain: machine-experience
-  tags: [hub, mx, repository]
 ```
 
 ---
@@ -392,9 +393,9 @@ title: "Customer database schema"
 description: "Schema metadata for the customer CRM database"
 author: "Tom Cranstoun"
 
+type: database-schema
 mx:
   status: active
-  contentType: database-schema
   domain: crm
 ```
 
@@ -404,8 +405,8 @@ mx:
 -- @mx
 -- title: Customer contacts table
 -- description: Primary contact records for CRM
+-- type: database-table
 -- status: active
--- contentType: database-table
 -- @mx:end
 CREATE TABLE contacts (
     id INTEGER PRIMARY KEY,
@@ -442,7 +443,7 @@ When a field is declared in two or more forms on the same artefact, the values M
 
 The following fields provide MX identity and classification metadata in carrier formats that do not use YAML frontmatter (HTML, JavaScript, CSS, image XMP). All fields use the `mx:` namespace prefix in their respective carrier contexts.
 
-When a field has a YAML equivalent (e.g. `title`, `contentType`), the YAML form is used in YAML-bearing carriers and the `mx:*` form is used elsewhere. The two are aliases for the same semantic field.
+When a field has a YAML equivalent (e.g. `title`, `type`, `tags`), the YAML form is used in YAML-bearing carriers and the `mx:*` form is used elsewhere. The two are aliases for the same semantic field. OKF-reserved Zone 1b fields (`type`, `tags`, `resource`) use no `mx:` prefix in non-YAML carriers — they are expressed as bare attributes following their OKF names.
 
 ### 4.1 `mx:name`
 
@@ -488,10 +489,10 @@ Version string, equivalent to `version` in YAML.
 | **Profile** | html |
 | **Conformance** | SHOULD (Level 2) |
 
-Domain type classification, equivalent to `contentType` in YAML. The shorter name `type` is used in HTML to follow web conventions.
+Document type classification. Carries the same vocabulary as the Zone 1b `type` field in YAML frontmatter. In HTML, OKF-reserved Zone 1b fields use no `mx:` prefix — the bare `type` name is used directly, matching their top-level YAML position.
 
 ```html
-<meta name="mx:type" content="guide">
+<meta name="type" content="guide">
 ```
 
 ### 4.4 `mx:purpose`
