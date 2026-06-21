@@ -30,7 +30,7 @@ canonicalUri: https://raw.githubusercontent.com/ddttom/mx-shared-gathering/main/
 
 This note defines the core machine-readable document-metadata vocabulary for the Machine Experience (MX) framework. It specifies the foundational fields that every MX-aware document — whether a markdown file, an HTML page, a YAML sidecar, or any other text-bearing artefact — must, should, or may declare.
 
-The core vocabulary is organised into three zones and one supplementary group. **Zone 1a identity fields** (top-level document identity: title, description, author, dates, version) are required on every MX document. **Zone 1b OKF-reserved surface fields** (top-level: type, tags, and optionally resource) align MX with the Open Knowledge Format (OKF) so that a single frontmatter block is simultaneously valid OKF and full MX. **Zone 2 operational fields** (governance, classification, and distribution metadata under the `mx:` namespace) carry everything OKF does not define; an OKF consumer preserves the entire `mx:` block as one unknown key. **Externally-aligned fields** are YAML keys whose semantics are owned by, or modelled after, established external vocabularies — Dublin Core, Schema.org, BCP 47, SPDX, RFC 3986. The relationship between MX and each external standard is recorded explicitly per field; see §7.
+The core vocabulary is organised into three zones and one supplementary group. **Zone 1a identity fields** (top-level document identity: title, description, author, dates, version) are required on every MX document. **Zone 1b OKF-reserved surface fields** (top-level: type, tags, and resource when applicable) are required on every MX document. MX is an OKF implementation; Zone 1b fields are present unconditionally so that any OKF-compliant tool reads an MX document without adaptation. **Zone 2 operational fields** (governance, classification, and distribution metadata under the `mx:` namespace) carry everything OKF does not define; an OKF consumer preserves the entire `mx:` block as one unknown key. **Externally-aligned fields** are YAML keys whose semantics are owned by, or modelled after, established external vocabularies — Dublin Core, Schema.org, BCP 47, SPDX, RFC 3986. The relationship between MX and each external standard is recorded explicitly per field; see §7.
 
 The cog file format is **not** described here. Cogs are an optional layer on top of MX, covered by the MX Cogs note in the same draft set. A document can carry MX metadata without ever being a cog.
 
@@ -67,7 +67,7 @@ This note is a draft authored by Tom Cranstoun and offered to The Gathering for 
 ### 3.1 In scope
 
 - **Zone 1a identity fields** — top-level document identity (title, description, author, dates, version)
-- **Zone 1b OKF-reserved surface fields** — top-level fields that align MX with the Open Knowledge Format: `type` (required, carries MX content-type vocabulary), `tags` (recommended, for discovery), `resource` (optional, URI of the single external asset the document describes)
+- **Zone 1b OKF-reserved surface fields** — top-level fields present on every MX document. MX is an OKF implementation; these fields are required unconditionally so any OKF-compliant tool reads MX files without adaptation: `type` (MUST, carries MX content-type vocabulary), `tags` (MUST, for discovery), `resource` (MUST when the document describes a specific external asset; absent for abstract concepts)
 - **Zone 2 core operational fields** — classification, governance, and distribution metadata
 - **Externally-aligned fields** — fields where MX provides a YAML key whose value semantics are owned by, or modelled after, an established external vocabulary (§7)
 - **The conformance level framework** — Level 1/2/3 definitions
@@ -95,7 +95,7 @@ MX metadata in YAML frontmatter is organised into three zones.
 
 **Zone 1a** (top-level) carries document identity fields: `title`, `description`, `author`, `created`, `modified`, `version`. These are required on every MX document.
 
-**Zone 1b** (top-level) carries the OKF-reserved surface: `type`, `tags`, and optionally `resource`. These fields appear at the top level of the YAML block — the same location as Zone 1a — so that a consumer implementing the Open Knowledge Format (OKF) finds them where it expects them. An OKF consumer reading an MX file treats the entire `mx:` block as one unknown preserved key, which is OKF-conformant. The dual-conformance rule: one field, one zone, no duplicate. `type` carries the content-type vocabulary. `tags` carries discovery keywords. `resource` (when present) carries the singular URI of the external asset the document describes. The OKF `timestamp` field is satisfied by `modified` and derived at export time; it is never stored in source frontmatter.
+**Zone 1b** (top-level) carries the OKF-reserved surface: `type` (required), `tags` (required), and `resource` (required when the document describes a specific external asset; absent for abstract concepts). MX is an OKF implementation. These fields are present unconditionally so that any external tooling built to read OKF files reads an MX document without adaptation. `type` carries the content-type vocabulary. `tags` carries discovery keywords. `resource` carries the singular URI of the external asset the document describes — distinct from `mx.refersToExternal` (plural citations). An OKF consumer reading an MX file treats the entire `mx:` block as one unknown preserved key, which is OKF-conformant. One field, one zone, no duplicate. The OKF `timestamp` field is satisfied by `modified` and derived at export time; it is never stored in source frontmatter.
 
 **Zone 2** (under the `mx:` object) carries everything OKF does not define: lifecycle fields (`status`, `stability`), governance fields (`canonicalUri`, `license`, `audience`), the typed relation graph (`buildsOn`, `refersTo`, `relatedTo`, `refersToExternal`), and all MX extensions. An OKF consumer preserves the entire `mx:` object as one unknown key; it neither reads nor rejects it.
 
@@ -291,7 +291,7 @@ The three fields in this section sit at the top level of the YAML frontmatter bl
 |----------|-------|
 | **Type** | string |
 | **Zone** | 1b (top-level, OKF-reserved) |
-| **Conformance** | SHOULD (Level 2) |
+| **Conformance** | MUST (Level 1) |
 | **OKF field** | `type` (required in OKF) |
 | **Replaces** | `mx.contentType` (retiring synonym; see note) |
 
@@ -311,7 +311,7 @@ type: info-doc
 |----------|-------|
 | **Type** | array of strings |
 | **Zone** | 1b (top-level, OKF-reserved) |
-| **Conformance** | SHOULD (Level 2) |
+| **Conformance** | MUST (Level 1) |
 | **OKF field** | `tags` (optional in OKF) |
 | **Replaces** | `mx.tags` (retiring synonym) |
 
@@ -331,7 +331,7 @@ tags: [metadata, yaml, frontmatter]
 |----------|-------|
 | **Type** | string (URI) |
 | **Zone** | 1b (top-level, OKF-reserved) |
-| **Conformance** | MAY (Level 3) |
+| **Conformance** | MUST when the document describes a specific external asset; absent for abstract concepts |
 | **OKF field** | `resource` (optional in OKF) |
 
 A URI that uniquely identifies the underlying external asset this document describes. Present only when the document describes a specific external object (a table, a dataset, an API endpoint). Absent for abstract concepts (playbooks, runbooks, policies). **Semantically distinct from `mx.refersToExternal`**: `resource` names the one thing this document is *about*; `refersToExternal` is the set of external sources the document *cites*.

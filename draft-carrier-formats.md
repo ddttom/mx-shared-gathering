@@ -62,7 +62,7 @@ This note defines three conformance levels (modelled on the [WCAG 2.1](https://w
 | Level | Name | Requirement |
 |-------|------|-------------|
 | Level 1 | **MX Core** | Universal identity fields present (`title`, `author`, `created`, `description`); the carrier syntax for the file's format is used correctly. |
-| Level 2 | **MX Standard** | Adds Level 1 plus `type` (Zone 1b) and the operational fields applicable to the format (`status`, `license`); for non-YAML carriers, the `mx:*` identity fields in §4 are used where applicable. |
+| Level 1 / Level 2 | Zone 1b OKF surface MUST be present at all levels: `type`, `tags`, and `resource` (when applicable) are required unconditionally. MX is an OKF implementation; these fields are not optional extras — they are the OKF layer every external tool reads. Zone 2 operational fields (`status`, `license`, etc.) are added per the MX conformance ladder. |
 | Level 3 | **MX Complete** | Adds Level 2 plus the code-specific provenance fields in §5 where they apply, and any `MAY`-level identity fields. |
 
 A document claiming conformance at a given level MUST satisfy all requirements at that level and all lower levels.
@@ -105,7 +105,7 @@ This section defines how each supported file format carries MX metadata.
 | **Field naming** | camelCase (operational fields under `mx:` object) |
 | **Conformance** | MUST (Level 1) for all markdown-based MX documents |
 
-The primary carrier format. All MX-aware markdown documents carry metadata in YAML frontmatter using a three-zone model: Zone 1a (top-level) for document identity (`title`, `description`, `author`, `created`, `modified`, `version`); Zone 1b (top-level) for the OKF-reserved surface (`type`, `tags`, optionally `resource`); Zone 2 (under the `mx:` object) for MX-operational fields. Implementations MUST NOT place Zone 1a or Zone 1b fields inside the `mx:` object, and MUST NOT place Zone 2 fields at the top level.
+The primary carrier format. All MX-aware markdown documents carry metadata in YAML frontmatter using a three-zone model. MX is an OKF implementation; Zone 1b fields are required unconditionally so any OKF tool reads MX files without adaptation: Zone 1a (top-level) for document identity (`title`, `description`, `author`, `created`, `modified`, `version`); Zone 1b (top-level) for the OKF-reserved surface (`type` MUST, `tags` MUST, `resource` MUST when describing an external asset); Zone 2 (under the `mx:` object) for MX-operational fields. Implementations MUST NOT place Zone 1a or Zone 1b fields inside the `mx:` object, and MUST NOT place Zone 2 fields at the top level.
 
 **Example:**
 
