@@ -257,6 +257,41 @@ mx:
 
 ---
 
+### 5.7 `provenanceUri`
+
+| Property | Value |
+|----------|-------|
+| **Type** | string (URL) |
+| **Zone** | 2 (mx:) |
+| **Conformance** | MAY (Level 3) |
+
+Canonical URL of the document's AI-governance provenance record: the hosted account of the parties, the regulatory frameworks the record cites, and every recorded action in the chain. A consumer reads `provenanceUri`, fetches the named record, and walks the evidence without the chain embedded in the document itself.
+
+```yaml
+mx:
+  provenanceOrigin: ai-assisted
+  provenanceUri: "https://example.org/reports/q3.mxprov.json"
+```
+
+`provenanceUri` complements an embedded chain rather than replacing it. A carrier that can embed its provenance (a PDF XMP packet, a raster or SVG metadata block, an HTML script block) MAY carry a snapshot so the chain travels offline, AND declare `provenanceUri` so a consumer can reach the current, canonical record. When both are present, the embedded copy is authoritative offline and the URL names the version to check against. This mirrors `canonicalUri`: the file carries what it can and names where the canonical form lives.
+
+---
+
+### 5.8 The hosted provenance record (`.mxprov.json`)
+
+An implementation MAY publish a document's provenance chain as a standalone record served beside the document and addressed by `provenanceUri`. This note RECOMMENDS the file-name suffix `.mxprov.json` for such a record, so a consumer can recognise it by extension and a server can assign it a stable content type.
+
+The record is JSON. Its body is the provenance chain: a `schemaVersion`, the accountable `parties`, the `frameworks` the record attests to, a `responsiblePerson`, and an ordered list of `steps`, each recording one action (agent, outcome, inputs). The shape is the same one an embedded chain carries; the `.mxprov.json` record is that chain lifted out of the file and hosted on its own.
+
+```
+example.org/reports/q3.html          the document
+example.org/reports/q3.mxprov.json   its provenance record, named by q3.html's provenanceUri
+```
+
+A consumer that trusts the origin MAY fetch the `.mxprov.json` record named by `provenanceUri` to obtain the current chain. Fetching the record is a read of a public URL the document itself names; it discloses nothing about the consumer's copy of the document.
+
+---
+
 ## 6. Quality and trust fields
 
 ### 6.1 `accuracyCommitment`
