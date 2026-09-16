@@ -2,7 +2,7 @@
 # cog v1 spec=https://mx.allabout.network/cog.html runtime=https://mx.allabout.network/cog-runtime.html
 title: "MX Provenance note"
 docname: draft-cranstoun-mx-provenance
-date: 2026-05-07
+date: 2026-09-16
 consensus: false
 keyword:
   - mx
@@ -19,9 +19,9 @@ canonicalUri: https://raw.githubusercontent.com/ddttom/mx-shared-gathering/main/
 
 # MX Provenance note
 
-**Version:** 1.0
+**Version:** 1.1
 **Status:** Draft by Tom Cranstoun, offered to The Gathering for review
-**Date:** 27 April 2026
+**Date:** 16 September 2026
 **Author:** Tom Cranstoun
 **License:** MIT
 
@@ -282,6 +282,27 @@ mx:
 An implementation MAY publish a document's provenance chain as a standalone record served beside the document and addressed by `provenanceUri`. This note RECOMMENDS the file-name suffix `.mxprov.json` for such a record, so a consumer can recognise it by extension and a server can assign it a stable content type.
 
 The record is JSON. Its body is the provenance chain: a `schemaVersion`, the accountable `parties`, the `frameworks` the record attests to, a `responsiblePerson`, and an ordered list of `steps`, each recording one action (agent, outcome, inputs). The shape is the same one an embedded chain carries; the `.mxprov.json` record is that chain lifted out of the file and hosted on its own.
+
+The record describes itself. It meets readers with no context, so it SHOULD carry its own MX metadata in a root `mx` object, the place a JSON carrier holds such metadata (a package manifest or an API response carries it the same way). Because a JSON payload has no second zone, the identity fields (`title`, `description`, `author`, `created`, `modified`, `version`), the OKF fields (`type`, `tags`) and the governance fields (`status`, `purpose`, `canonicalUri`, `refersTo` naming the document the record is evidence for) sit together in that object. The RECOMMENDED `type` is `provenance-record`; a consumer keys on it to recognise the record without inferring from the shape of its fields.
+
+```json
+{
+  "schemaVersion": "2.0",
+  "mx": {
+    "title": "AI provenance record for q3.html",
+    "description": "Evidence chain of the non-deterministic steps behind q3.html.",
+    "created": "2026-09-16",
+    "modified": "2026-09-16",
+    "version": "1",
+    "type": "provenance-record",
+    "canonicalUri": "https://example.org/reports/q3.mxprov.json",
+    "refersTo": ["https://example.org/reports/q3.html"]
+  },
+  "parties": [],
+  "frameworks": [],
+  "steps": []
+}
+```
 
 ```
 example.org/reports/q3.html          the document
