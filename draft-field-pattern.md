@@ -1,7 +1,7 @@
 ---
 title: "MX Field Definition Pattern note"
 docname: draft-cranstoun-mx-field-pattern
-date: 2026-05-23
+date: 2026-09-16
 consensus: false
 keyword:
   - mx
@@ -17,9 +17,9 @@ canonicalUri: https://raw.githubusercontent.com/ddttom/mx-shared-gathering/main/
 
 # MX Field Definition Pattern note
 
-**Version:** 1.0
+**Version:** 1.1
 **Status:** Draft by Tom Cranstoun, offered to The Gathering for review — **primary note of the MX draft set**
-**Date:** 27 April 2026
+**Date:** 16 September 2026
 **Author:** Tom Cranstoun
 **License:** MIT
 
@@ -195,7 +195,7 @@ These rules are normative for any field defined under this pattern.
 
 ### 7.1 Naming
 
-Field names use camelCase in YAML contexts (matching the [Schema.org Style Guide](https://schema.org/docs/styleguide.html)). Vendor-extension fields use kebab-case after their prefix (`x-mx-deploy-target`, not `x-mx-deployTarget`). Field names MUST NOT use snake_case or PascalCase in YAML contexts.
+Field names use camelCase in YAML contexts (matching the [Schema.org Style Guide](https://schema.org/docs/styleguide.html)). Vendor-extension fields keep their hyphenated prefix and use camelCase after it (`x-mx-deployTarget`, never a hyphenated `deploy-target` after the prefix). Field names MUST NOT use snake_case or PascalCase in YAML contexts.
 
 ### 7.2 Conformance keywords
 

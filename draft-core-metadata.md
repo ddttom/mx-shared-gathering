@@ -2,7 +2,7 @@
 # cog v1 spec=https://mx.allabout.network/cog.html runtime=https://mx.allabout.network/cog-runtime.html
 title: "MX Core Metadata note"
 docname: draft-cranstoun-mx-core-metadata
-date: 2026-05-23
+date: 2026-09-16
 consensus: false
 keyword:
   - mx
@@ -18,9 +18,9 @@ canonicalUri: https://raw.githubusercontent.com/ddttom/mx-shared-gathering/main/
 
 # MX Core Metadata note
 
-**Version:** 1.0
+**Version:** 1.1
 **Status:** Draft by Tom Cranstoun, offered to The Gathering for review
-**Date:** 27 April 2026
+**Date:** 16 September 2026
 **Author:** Tom Cranstoun
 **License:** MIT
 
@@ -822,7 +822,7 @@ This section covers document discovery, version chains, lifecycle dates, machine
 
 `canonicalUri` carries the carrier's authoritative location at every tier; the URI scheme tells the receiver how to interpret it. A cog that lives only on disk SHOULD use a `file://` URI naming the carrier. A cog served from a network volume or internal corporate application SHOULD use the URI reachable inside the relevant network (`smb://`, `nfs://`, or an internal `https://`). When a cog is hosted in a publicly reachable source repository or website, the value MUST be that public URI: without it, an agent holding a copy cannot find the authoritative version.
 
-**Agreement with HTML's `<link rel="canonical">` (Normative).** For HTML carriers, the URL declared by the page's `<link rel="canonical">` element and the value of the `mx:canonical-uri` `<meta>` tag (the kebab-case HTML rendering of `mx.canonicalUri` per the MX Carrier Formats note) MUST agree. Verifiers MAY treat either form as authoritative. A page that declares both with disagreeing URLs is a conformance failure: tools cannot reconcile two contradictory canonical claims and SHOULD flag the page as ambiguous rather than guess. When only one form is present, that form is authoritative.
+**Agreement with HTML's `<link rel="canonical">` (Normative).** For HTML carriers, the URL declared by the page's `<link rel="canonical">` element and the value of the `mx:canonicalUri` `<meta>` tag (the HTML rendering of `mx.canonicalUri`, the same camelCase name after the `mx:` prefix, per the MX Carrier Formats note) MUST agree. Verifiers MAY treat either form as authoritative. A page that declares both with disagreeing URLs is a conformance failure: tools cannot reconcile two contradictory canonical claims and SHOULD flag the page as ambiguous rather than guess. When only one form is present, that form is authoritative.
 
 ### 7a.2 Lifecycle dates
 
