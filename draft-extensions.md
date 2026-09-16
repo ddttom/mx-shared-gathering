@@ -2,7 +2,7 @@
 # cog v1 spec=https://mx.allabout.network/cog.html runtime=https://mx.allabout.network/cog-runtime.html
 title: "MX Extensions note"
 docname: draft-cranstoun-mx-extensions
-date: 2026-05-23
+date: 2026-09-16
 consensus: false
 keyword:
   - mx
@@ -17,9 +17,9 @@ canonicalUri: https://raw.githubusercontent.com/ddttom/mx-shared-gathering/main/
 
 # MX Extensions note
 
-**Version:** 1.0
+**Version:** 1.1
 **Status:** Draft by Tom Cranstoun, offered to The Gathering for review
-**Date:** 27 April 2026
+**Date:** 16 September 2026
 **Author:** Tom Cranstoun
 **License:** MIT
 
@@ -141,24 +141,24 @@ mx:
 
 ### 6.3 Public extension fields (`x-mx-`)
 
-Public extension fields use the `x-mx-` prefix. The namespace is the public extension space for the MX vocabulary; CogNovaMX operates it during the seed phase. Vendor sub-namespaces of the form `x-mx-{vendor}-*` are reserved for individual vendors and allocated on request — for example, a vendor named "Acme" would publish fields as `x-mx-acme-deploy-target`. Within a vendor sub-namespace the vendor governs the field set.
+Public extension fields use the `x-mx-` prefix. The namespace is the public extension space for the MX vocabulary; CogNovaMX operates it during the seed phase. Vendor sub-namespaces of the form `x-mx-{vendor}-*` are reserved for individual vendors and allocated on request — for example, a vendor named "Acme" would publish fields as `x-mx-acme-deployTarget`. Within a vendor sub-namespace the vendor governs the field set.
 
-Public extension fields MUST use the `x-mx-` prefix. They MUST use kebab-case for the field name portion (unlike standard fields which use camelCase in YAML). They are visible in published cogs and public outputs; they are implementation-specific features, not part of the open standard.
+Public extension fields MUST use the `x-mx-` prefix. The prefix (and a vendor sub-namespace prefix) keeps its hyphens; the field name portion after it MUST be camelCase, the same spelling rule as standard fields (`x-mx-mountType`, `x-mx-acme-deployTarget`). They are visible in published cogs and public outputs; they are implementation-specific features, not part of the open standard.
 
 **Example (CogNovaMX, the seed-phase operator):**
 
 ```yaml
 mx:
-  x-mx-mount-type: personal
-  x-mx-mount-swappable: true
+  x-mx-mountType: personal
+  x-mx-mountSwappable: true
 ```
 
 **Example (vendor sub-namespace):**
 
 ```yaml
 mx:
-  x-mx-acme-deploy-target: production
-  x-mx-acme-cluster-id: cluster-east-1
+  x-mx-acme-deployTarget: production
+  x-mx-acme-clusterId: cluster-east-1
 ```
 
 ### 6.4 Private extension fields (`x-mx-p-`)
@@ -172,7 +172,7 @@ Private extension fields use the `x-mx-p-` prefix. They are owned by CogNovaMX a
 
 ```yaml
 mx:
-  x-mx-p-client-tier: "a3f2c8"
+  x-mx-p-clientTier: "a3f2c8"
 ```
 
 ### 6.5 Prefix parsing rule
@@ -199,25 +199,25 @@ The table below summarises the per-carrier conventions. The **normative form** o
 |---------|-----------|--------------------------------|---------------|----------------|
 | YAML | camelCase | *(canonical)* | `buildsOn` | `buildsOn: [cog-unified-spec]` |
 | YAML (Zone 1b) | camelCase, top-level, no prefix | OKF-reserved field at top level | `type` | `type: guide` |
-| HTML | Zone 1b: bare kebab-case; Zone 2: kebab-case with `mx:` prefix | OKF fields: no prefix; operational: prepend `mx:` | `type` / `mx:status` | `<meta name="type" content="guide">` / `<meta name="mx:status" content="active">` |
-| JSDoc | kebab-case with `@mx:` tag | camelCase → kebab-case, prepend `@mx:` | `@mx:runtime` | `@mx:runtime node` |
-| CSS | kebab-case with `@mx:` comment | camelCase → kebab-case, prepend `@mx:` | `@mx:type` | `/* @mx:type utility */` |
+| HTML | Zone 1b: bare name; Zone 2: camelCase with `mx:` prefix | OKF fields: no prefix; operational: prepend `mx:`, case preserved | `type` / `mx:status` | `<meta name="type" content="guide">` / `<meta name="mx:status" content="active">` |
+| JSDoc | camelCase with `@mx:` tag | prepend `@mx:`, case preserved | `@mx:contentType` | `@mx:contentType script` |
+| CSS | camelCase with `@mx:` comment | prepend `@mx:`, case preserved | `@mx:contentType` | `/* @mx:contentType theme */` |
 | Shell | camelCase in `# key: value` | none — preserve camelCase | `type` | `# type: guide` |
 | XMP | `mx:` namespace prefix, case preserved | prepend `mx:` | `mx:type` | `<mx:type>guide</mx:type>` |
 | Sidecar | camelCase in YAML (three-zone) | Zone 1b fields at top level | `type` | `type: guide` |
 | SQL | camelCase in `-- @mx` block | none — preserve camelCase | `type` | `-- @mx type: guide` |
 
-For HTML in particular: the four MUST-at-Level-2 fields from MX Core Metadata §7a (`canonicalUri`, `summary`, `conformsTo`, `trainingDataPolicy`) MUST be present in HTML carriers as the kebab-case `mx:` `<meta>` tags `mx:canonical-uri`, `mx:summary`, `mx:conforms-to`, `mx:training-data-policy`. The carrier-formats note defines the binding form and worked examples.
+For HTML in particular: the four MUST-at-Level-2 fields from MX Core Metadata §7a (`canonicalUri`, `summary`, `conformsTo`, `trainingDataPolicy`) MUST be present in HTML carriers as the `mx:` `<meta>` tags `mx:canonicalUri`, `mx:summary`, `mx:conformsTo`, `mx:trainingDataPolicy`, the same camelCase names after the prefix. The carrier-formats note defines the binding form and worked examples.
 
 ### 7.2 Extension field naming in non-YAML contexts
 
-Extension fields (`x-mx-` and `x-mx-p-`) already use kebab-case. In non-YAML contexts, the prefix is preserved as-is:
+Extension fields (`x-mx-` and `x-mx-p-`) carry a hyphenated prefix and a camelCase name. In non-YAML contexts the whole name is preserved as-is:
 
 | Context | Standard field example | Extension field example |
 |---------|----------------------|------------------------|
-| YAML | `type: guide` (Zone 1b) | `x-mx-mount-type: personal` |
-| HTML | `<meta name="type" content="guide">` | `<meta name="mx:x-mx-mount-type">` |
-| JSDoc | `@okf-type guide` | `@mx:x-mx-mount-type personal` |
+| YAML | `type: guide` (Zone 1b) | `x-mx-mountType: personal` |
+| HTML | `<meta name="type" content="guide">` | `<meta name="mx:x-mx-mountType">` |
+| JSDoc | `@okf-type guide` | `@mx:x-mx-mountType personal` |
 
 ---
 
@@ -225,7 +225,7 @@ Extension fields (`x-mx-` and `x-mx-p-`) already use kebab-case. In non-YAML con
 
 The following fields use the `x-mx-` prefix and are owned by CogNovaMX. They are visible in published cogs and provide implementation-specific features that are not part of the open standard.
 
-### 8.1 `x-mx-mount-type`
+### 8.1 `x-mx-mountType`
 
 | Property | Value |
 |----------|-------|
@@ -246,10 +246,10 @@ This field is REQUIRED for all `.mx.yaml.md` folder metadata files that describe
 
 ```yaml
 mx:
-  x-mx-mount-type: personal
+  x-mx-mountType: personal
 ```
 
-### 8.2 `x-mx-mount-swappable`
+### 8.2 `x-mx-mountSwappable`
 
 | Property | Value |
 |----------|-------|
@@ -267,10 +267,10 @@ Whether this mount can be swapped for a different implementation.
 
 ```yaml
 mx:
-  x-mx-mount-swappable: true
+  x-mx-mountSwappable: true
 ```
 
-### 8.3 `x-mx-mount-upstream`
+### 8.3 `x-mx-mountUpstream`
 
 | Property | Value |
 |----------|-------|
@@ -279,11 +279,11 @@ mx:
 | **Profile** | x-mx-public |
 | **Conformance** | MAY (Level 2) |
 
-Upstream source for standard-type mounts. Identifies the canonical source repository for a forked or derived mount. Only meaningful when `x-mx-mount-type` is `standard`. The value SHOULD be a URL pointing to the upstream repository.
+Upstream source for standard-type mounts. Identifies the canonical source repository for a forked or derived mount. Only meaningful when `x-mx-mountType` is `standard`. The value SHOULD be a URL pointing to the upstream repository.
 
 ```yaml
 mx:
-  x-mx-mount-upstream: "https://github.com/example/upstream-repo"
+  x-mx-mountUpstream: "https://github.com/example/upstream-repo"
 ```
 
 ---
@@ -325,7 +325,7 @@ New extension fields are registered by CogNovaMX. The Gathering does not govern 
 ### 10.2 Registration steps
 
 1. **Choose the prefix.** Use `x-mx-` for public extensions, `x-mx-p-` for private extensions.
-2. **Use kebab-case.** Extension field names MUST use kebab-case (unlike standard fields which use camelCase in YAML). Example: `x-mx-deploy-target`, not `x-mx-deployTarget`.
+2. **Use camelCase after the prefix.** The prefix keeps its hyphens; the name after it MUST be camelCase, the same rule as standard fields. Example: `x-mx-deployTarget`, not a hyphenated `deploy-target` after the prefix.
 3. **Document the context.** Describe the field's purpose, type, valid values, and which carrier formats it applies to.
 4. **No Gathering approval needed.** Extension fields follow vendor governance, not community governance.
 
@@ -380,9 +380,9 @@ A field MUST remain in the deprecated state for at least one major version cycle
 | Extension fields use `x-mx-` or `x-mx-p-` | MUST | — |
 | No prefix pollution | MUST | — |
 | Correct context-specific naming for non-YAML carriers | — | SHOULD |
-| `x-mx-mount-type` (when x-mx-public profile applies) | MUST | — |
-| `x-mx-mount-swappable` (when x-mx-public profile applies) | MUST | — |
-| `x-mx-mount-upstream` | — | MAY |
+| `x-mx-mountType` (when x-mx-public profile applies) | MUST | — |
+| `x-mx-mountSwappable` (when x-mx-public profile applies) | MUST | — |
+| `x-mx-mountUpstream` | — | MAY |
 
 ---
 
@@ -433,17 +433,17 @@ mx:
 **Mistake 2: camelCase on an extension field.**
 
 ```yaml
-# WRONG — extension fields use kebab-case in YAML, not camelCase
+# WRONG — the name after the prefix is camelCase, not kebab-case
 mx:
-  x-mx-deployTarget: production
+  x-mx-deploy-target: production
 ```
 
-Extension fields (§6.3, §10.2) use kebab-case for the suffix:
+Extension fields (§6.3, §10.2) keep the hyphenated prefix and use camelCase for the suffix:
 
 ```yaml
 # RIGHT
 mx:
-  x-mx-deploy-target: production
+  x-mx-deployTarget: production
 ```
 
 **Mistake 3: claiming a vendor sub-namespace without permission.**
@@ -451,7 +451,7 @@ mx:
 ```yaml
 # WRONG — `acme` sub-namespace not allocated to this author
 mx:
-  x-mx-acme-cluster-id: "prod-1"
+  x-mx-acme-clusterId: "prod-1"
 ```
 
 The vendor sub-namespace pattern `x-mx-{vendor}-*` (§6.3) is reserved. Only use a vendor's sub-namespace if the namespace has been allocated to that vendor. For one-off fields outside an allocated sub-namespace, the seed-phase `x-mx-` namespace operated by CogNovaMX is the default until a sub-namespace is allocated.
@@ -461,7 +461,7 @@ The vendor sub-namespace pattern `x-mx-{vendor}-*` (§6.3) is reserved. Only use
 ```yaml
 # WRONG — implementations without the registry MUST NOT attempt to interpret
 mx:
-  x-mx-p-client-tier: "a3f2c8"
+  x-mx-p-clientTier: "a3f2c8"
   # ... and downstream code does:
   # if (clientTier === "a3f2c8") { ... }
 ```
@@ -473,7 +473,7 @@ Private extension values (§9) are opaque. Implementations without access to the
 ```yaml
 # WRONG — modified is already a standard field
 mx:
-  x-mx-last-changed: 2026-05-07
+  x-mx-lastChanged: 2026-05-07
 ```
 
 Before declaring an `x-mx-` extension, check the standard vocabulary in MX Core Metadata §5–6. The intent here is captured by `modified` (Zone 1, §5.5). Use the standard field; the extension namespace is for genuinely new vocabulary, not synonyms of existing fields.
