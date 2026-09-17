@@ -19,7 +19,7 @@ canonicalUri: https://raw.githubusercontent.com/ddttom/mx-shared-gathering/main/
 
 # MX Provenance note
 
-**Version:** 1.2
+**Version:** 1.3
 **Status:** Draft by Tom Cranstoun, offered to The Gathering for review
 **Date:** 17 September 2026
 **Author:** Tom Cranstoun
@@ -614,6 +614,9 @@ mx:
 | `source` | attribution | — | — | MAY |
 | `publisher` | attribution | — | — | MAY |
 | `generate` | attribution | — | — | MAY |
+| `provenanceUri` | attribution | — | — | MAY |
+| `workflowId` | attribution | — | — | MAY |
+| `workflowRecord` | attribution | — | — | MAY |
 | `reviewCycle` | quality | — | SHOULD | — |
 | `accuracyCommitment` | quality | — | — | MAY |
 | `correctionSla` | quality | — | — | MAY |

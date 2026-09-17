@@ -16,7 +16,7 @@ The **MX Field Definition Pattern note** is the primary note of the set: it spec
 | **MX Core Metadata note** | [draft-core-metadata.md](draft-core-metadata.md) | Draft (v1.0) — Zone 1 / Zone 2 document metadata and externally-aligned fields. |
 | **MX Cogs note** | [draft-cogs.md](draft-cogs.md) | Draft (v1.0) — the `.cog.md` file format as an optional layer on top of MX. |
 | **MX Extensions note** | [draft-extensions.md](draft-extensions.md) | Draft (v1.0) — namespace policy and context-specific naming. |
-| **MX Provenance note** | [draft-provenance.md](draft-provenance.md) | Draft (v1.0) — attribution, trust, maintenance, decision records. **Part of the Level-2 floor for documents that need verifiable origin and stewardship.** |
+| **MX Provenance note** | [draft-provenance.md](draft-provenance.md) | Draft (v1.3) — attribution, trust, maintenance, decision records, workflow boundary. **Part of the Level-2 floor for documents that need verifiable origin and stewardship.** |
 | **MX Temporal Stance note** | [draft-temporal-stance.md](draft-temporal-stance.md) | Draft (v1.0) — temporal vocabulary for documents whose prose depends on dated anchors (regulatory analyses, contracts, SLAs, compliance reports, pricing pages). |
 | **MX Carrier Formats note** | [draft-carrier-formats.md](draft-carrier-formats.md) | Draft (v1.0) — carrier mechanisms (markdown, HTML, JSDoc, CSS, shell, XMP, sidecar, SQL) and code-specific provenance. **Carries the binding HTML mapping for the four MUST-at-Level-2 web fields.** |
 | **MX Workflow Contracts note** | [draft-workflow-contracts.md](draft-workflow-contracts.md) | Draft (v1.0) — top-level fields for workflow contract cogs (thresholds, approvers, procedures, target environment). |
