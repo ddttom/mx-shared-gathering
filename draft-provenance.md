@@ -2,7 +2,7 @@
 # cog v1 spec=https://mx.allabout.network/cog.html runtime=https://mx.allabout.network/cog-runtime.html
 title: "MX Provenance note"
 docname: draft-cranstoun-mx-provenance
-date: 2026-09-16
+date: 2026-09-17
 consensus: false
 keyword:
   - mx
@@ -19,9 +19,9 @@ canonicalUri: https://raw.githubusercontent.com/ddttom/mx-shared-gathering/main/
 
 # MX Provenance note
 
-**Version:** 1.1
+**Version:** 1.2
 **Status:** Draft by Tom Cranstoun, offered to The Gathering for review
-**Date:** 16 September 2026
+**Date:** 17 September 2026
 **Author:** Tom Cranstoun
 **License:** MIT
 
@@ -285,6 +285,8 @@ The record is JSON. Its body is the provenance chain: a `schemaVersion`, the acc
 
 The record describes itself. It meets readers with no context, so it SHOULD carry its own MX metadata in a root `mx` object, the place a JSON carrier holds such metadata (a package manifest or an API response carries it the same way). Because a JSON payload has no second zone, the identity fields (`title`, `description`, `author`, `created`, `modified`, `version`), the OKF fields (`type`, `tags`) and the governance fields (`status`, `purpose`, `canonicalUri`, `refersTo` naming the document the record is evidence for) sit together in that object. The RECOMMENDED `type` is `provenance-record`; a consumer keys on it to recognise the record without inferring from the shape of its fields.
 
+The record also names the boundary it ran under. `workflowId` and `workflowRecord` (§5.9, §5.10) sit at the top level of the record beside the chain, so a consumer asking whether the agent stayed inside its declared scope walks from the trail to the declaration in one step. A record with no declared boundary carries the pair as `null`, which is an honest absence rather than a default.
+
 ```json
 {
   "schemaVersion": "2.0",
@@ -298,6 +300,8 @@ The record describes itself. It meets readers with no context, so it SHOULD carr
     "canonicalUri": "https://example.org/reports/q3.mxprov.json",
     "refersTo": ["https://example.org/reports/q3.html"]
   },
+  "workflowId": "quarterly-report-drafting",
+  "workflowRecord": "https://example.org/workflows/quarterly-report-drafting.md",
   "parties": [],
   "frameworks": [],
   "steps": []
@@ -310,6 +314,42 @@ example.org/reports/q3.mxprov.json   its provenance record, named by q3.html's p
 ```
 
 A consumer that trusts the origin MAY fetch the `.mxprov.json` record named by `provenanceUri` to obtain the current chain. Fetching the record is a read of a public URL the document itself names; it discloses nothing about the consumer's copy of the document.
+
+---
+
+### 5.9 `workflowId`
+
+| Property | Value |
+|----------|-------|
+| **Type** | string |
+| **Zone** | 2 (mx:) |
+| **Conformance** | MAY (Level 3) |
+
+Stable identifier of the workflow record that declares the boundary a document, or its provenance chain, was produced under: the tasks and authority given to the agent, the points where a human decides, and the residual risk the operator accepted. A provenance chain proves what happened; the workflow record says what was permitted; this identifier joins them.
+
+Conventionally a slug naming the team and the process. One record per workflow: a redesign of the workflow updates the same record, and a different workflow gets a different identifier. The workflow record carries the value as its own handle, and every document or provenance record produced under that workflow carries the same value as a pointer back to it.
+
+```yaml
+mx:
+  provenanceOrigin: ai-assisted
+  provenanceUri: "https://example.org/reports/q3.mxprov.json"
+  workflowId: quarterly-report-drafting
+  workflowRecord: "https://example.org/workflows/quarterly-report-drafting.md"
+```
+
+---
+
+### 5.10 `workflowRecord`
+
+| Property | Value |
+|----------|-------|
+| **Type** | string (path or URL) |
+| **Zone** | 2 (mx:) |
+| **Conformance** | MAY (Level 3) |
+
+Where the workflow record named by `workflowId` lives, so a consumer walks from the document or the chain to the declared boundary in one step. It is the pointer, not the record. A path follows the `refersTo` convention and a URL follows the `refersToExternal` convention of MX Core Metadata.
+
+An absent or `null` value is an honest "no declared boundary", never a default, and a consumer SHOULD weigh a chain with no workflow record as one whose scope was never declared. The pair complements `provenanceUri`, which points from a document to its chain: these two point from the chain to the boundary the chain was meant to stay inside.
 
 ---
 
