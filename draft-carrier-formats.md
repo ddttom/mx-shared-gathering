@@ -2,7 +2,7 @@
 # cog v1 spec=https://mx.allabout.network/cog.html runtime=https://mx.allabout.network/cog-runtime.html
 title: "MX Carrier Formats note"
 docname: draft-cranstoun-mx-carrier-formats
-date: 2026-09-16
+date: 2026-10-02
 consensus: false
 keyword:
   - mx
@@ -22,9 +22,9 @@ canonicalUri: https://raw.githubusercontent.com/ddttom/mx-shared-gathering/main/
 
 # MX Carrier Formats note
 
-**Version:** 1.1
+**Version:** 1.2
 **Status:** Draft by Tom Cranstoun, offered to The Gathering for review
-**Date:** 16 September 2026
+**Date:** 2 October 2026
 **Author:** Tom Cranstoun
 **License:** MIT
 
@@ -35,7 +35,7 @@ canonicalUri: https://raw.githubusercontent.com/ddttom/mx-shared-gathering/main/
 This note specifies how MX metadata is carried across file formats. It covers two layers:
 
 1. **Carrier mechanisms** — the syntactic envelope each file format uses to host MX metadata: YAML frontmatter for markdown, `<meta>` tags for HTML, JSDoc comments for JavaScript, CSS comments, shell comment blocks, XMP for media, sidecar files, and SQL comment blocks.
-2. **Code-specific provenance vocabulary** — a minimum viable set of fields specific to source code as a document and not covered by the universal identity vocabulary.
+2. **Code-specific provenance vocabulary** — a minimum viable set of fields specific to source code as a document and not covered by the universal identity vocabulary, and a mod vocabulary for code a host application loads into its own event loop.
 
 The note also defines the `mx:*` identity fields used by carriers that do not have YAML frontmatter (HTML, JavaScript, CSS).
 
@@ -622,7 +622,7 @@ What context this file provides to agents. Declares the knowledge or capability 
 
 ## 5. Code-specific provenance vocabulary
 
-This section adds two fields specific to source code as a document. They are not covered by the universal identity vocabulary or by the language's own documentation convention.
+This section adds two fields specific to source code as a document, and four for mods (§5.4). They are not covered by the universal identity vocabulary or by the language's own documentation convention.
 
 ### 5.1 Fields
 
@@ -650,6 +650,54 @@ A JavaScript file declaring `@mx:sourceRepo` and a markdown file with `sourceRep
 ### 5.3 Profile
 
 This note declares a single profile for code: `code`. An implementation handling code artefacts applies the `code` profile's fields in addition to the universal identity fields. There are no per-language sub-profiles — the vocabulary is language-agnostic.
+
+### 5.4 Mod vocabulary
+
+A mod is code that a host application loads into its own event loop, where it can observe what happens, rewrite an action before the host takes it, or answer in the host's place. A plugin for an AI coding agent that hooks the agent's tool calls is the common case. Such code sits between what an agent decides and what the machine does, so it declares what it hooks, what it may touch, and what it promises. This note declares a second profile, `code-mod`, with four fields.
+
+| Field | Type | Required | Purpose |
+|-------|------|----------|---------|
+| `modHooks` | array | REQUIRED | Each host event the mod hooks, as a hook string in the canonical form defined below, with the matcher list omitted when the hook takes every event. The move is `observe` (passes the event on unchanged), `rewrite` (passes on a changed event) or `answer` (returns without passing it on). |
+| `modCapabilities` | array | REQUIRED | The host API surfaces the mod's code uses, in the host's own names. |
+| `modGuarantee` | string | OPTIONAL | One sentence stating what the mod promises and what it explicitly does not. A machine reads it as a declared limit. |
+| `testedWith` | string | OPTIONAL | The host and version the mod was last tested against, written `host@version`. |
+
+**Hook string (Normative).** Each `modHooks` entry MUST match this grammar, written in ABNF ([RFC 5234](https://www.rfc-editor.org/rfc/rfc5234)), with `unreserved` and `pct-encoded` as defined in [RFC 3986](https://www.rfc-editor.org/rfc/rfc3986) section 2:
+
+```abnf
+mod-hook = event [ "{" matcher *( "," matcher ) "}" ] ":" move
+event    = name *( "." name )
+name     = ALPHA *( ALPHA / DIGIT / "_" / "-" )
+matcher  = key "=" value
+key      = ALPHA *( ALPHA / DIGIT / "_" )
+value    = 1*( unreserved / pct-encoded )
+move     = "observe" / "rewrite" / "answer"
+```
+
+The grammar admits no whitespace. Event names, keys and values are case-sensitive and are compared as the host writes them. A declaration is in canonical form when:
+
+1. its matchers are sorted by key in ascending code-point order, and no key appears twice;
+2. every octet of a value outside `unreserved` is percent-encoded from its UTF-8 bytes, and nothing else is;
+3. percent-encodings use uppercase hexadecimal digits.
+
+An implementation that checks a mod MUST bring both the declared hooks and the host-derived hooks to canonical form before comparing them, and then compare the strings byte for byte. A declaration that does not match the grammar MUST fail the check. For example, a hook on `tool.call` matching the Bash tool and the working directory `/srv/app` is written `tool.call{cwd=%2Fsrv%2Fapp,tool=Bash}:answer`.
+
+A mod carries these fields in the carriers its files already use: a root `mx` object in a JSON plugin manifest, and `@mx:` tags in the module's leading JSDoc block (§3.3).
+
+```json
+{
+  "name": "blast-radius",
+  "version": "0.1.0",
+  "mx": {
+    "modHooks": ["tool.call{tool=Bash}:answer", "ui.render{component=Pane}:observe"],
+    "modCapabilities": ["process", "ui", "session"],
+    "modGuarantee": "A safety net that reads the command text; not a permission system.",
+    "testedWith": "claude-code@2.1.287"
+  }
+}
+```
+
+**Declared against derived (Normative).** Where the host can derive a mod's hooks and API calls from its source, an implementation that checks a mod MUST compare the derivation with `modHooks` and `modCapabilities`. A hook or capability found in the code but missing from the declaration MUST fail the check. A declared hook or capability the source no longer uses SHOULD be reported as stale. A mod whose hooks include a `rewrite` or `answer` move SHOULD contribute a step to the provenance record of any decision it shaped; a mod that only observes need not.
 
 ---
 
@@ -710,6 +758,8 @@ MX is explicit about deferring to established vocabularies:
 ### 9.1 Normative references
 
 - [RFC 2119](https://www.rfc-editor.org/rfc/rfc2119) — Key words for use in RFCs to indicate requirement levels
+- [RFC 3986](https://www.rfc-editor.org/rfc/rfc3986) - Uniform Resource Identifier generic syntax (`unreserved` and `pct-encoded`, used by the §5.4 hook string)
+- [RFC 5234](https://www.rfc-editor.org/rfc/rfc5234) - Augmented BNF for syntax specifications (the §5.4 hook-string grammar)
 
 ### 9.2 Informative references — external standards MX defers to
 
