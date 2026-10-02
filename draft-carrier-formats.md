@@ -2,7 +2,7 @@
 # cog v1 spec=https://mx.allabout.network/cog.html runtime=https://mx.allabout.network/cog-runtime.html
 title: "MX Carrier Formats note"
 docname: draft-cranstoun-mx-carrier-formats
-date: 2026-09-16
+date: 2026-10-02
 consensus: false
 keyword:
   - mx
@@ -22,9 +22,9 @@ canonicalUri: https://raw.githubusercontent.com/ddttom/mx-shared-gathering/main/
 
 # MX Carrier Formats note
 
-**Version:** 1.1
+**Version:** 1.2
 **Status:** Draft by Tom Cranstoun, offered to The Gathering for review
-**Date:** 16 September 2026
+**Date:** 2 October 2026
 **Author:** Tom Cranstoun
 **License:** MIT
 
@@ -35,7 +35,7 @@ canonicalUri: https://raw.githubusercontent.com/ddttom/mx-shared-gathering/main/
 This note specifies how MX metadata is carried across file formats. It covers two layers:
 
 1. **Carrier mechanisms** — the syntactic envelope each file format uses to host MX metadata: YAML frontmatter for markdown, `<meta>` tags for HTML, JSDoc comments for JavaScript, CSS comments, shell comment blocks, XMP for media, sidecar files, and SQL comment blocks.
-2. **Code-specific provenance vocabulary** — a minimum viable set of fields specific to source code as a document and not covered by the universal identity vocabulary.
+2. **Code-specific provenance vocabulary** — a minimum viable set of fields specific to source code as a document and not covered by the universal identity vocabulary, and a mod vocabulary for code a host application loads into its own event loop.
 
 The note also defines the `mx:*` identity fields used by carriers that do not have YAML frontmatter (HTML, JavaScript, CSS).
 
@@ -622,7 +622,7 @@ What context this file provides to agents. Declares the knowledge or capability 
 
 ## 5. Code-specific provenance vocabulary
 
-This section adds two fields specific to source code as a document. They are not covered by the universal identity vocabulary or by the language's own documentation convention.
+This section adds two fields specific to source code as a document, and four for mods (§5.4). They are not covered by the universal identity vocabulary or by the language's own documentation convention.
 
 ### 5.1 Fields
 
@@ -650,6 +650,34 @@ A JavaScript file declaring `@mx:sourceRepo` and a markdown file with `sourceRep
 ### 5.3 Profile
 
 This note declares a single profile for code: `code`. An implementation handling code artefacts applies the `code` profile's fields in addition to the universal identity fields. There are no per-language sub-profiles — the vocabulary is language-agnostic.
+
+### 5.4 Mod vocabulary
+
+A mod is code that a host application loads into its own event loop, where it can observe what happens, rewrite an action before the host takes it, or answer in the host's place. A plugin for an AI coding agent that hooks the agent's tool calls is the common case. Such code sits between what an agent decides and what the machine does, so it declares what it hooks, what it may touch, and what it promises. This note declares a second profile, `code-mod`, with four fields.
+
+| Field | Type | Required | Purpose |
+|-------|------|----------|---------|
+| `modHooks` | array | REQUIRED | Each host event the mod hooks, written `event{matcher}:move`, with the matcher omitted when the hook takes every event. The move is `observe` (passes the event on unchanged), `rewrite` (passes on a changed event) or `answer` (returns without passing it on). |
+| `modCapabilities` | array | REQUIRED | The host API surfaces the mod's code uses, in the host's own names. |
+| `modGuarantee` | string | OPTIONAL | One sentence stating what the mod promises and what it explicitly does not. A machine reads it as a declared limit. |
+| `testedWith` | string | OPTIONAL | The host and version the mod was last tested against, written `host@version`. |
+
+A mod carries these fields in the carriers its files already use: a root `mx` object in a JSON plugin manifest, and `@mx:` tags in the module's leading JSDoc block (§3.3).
+
+```json
+{
+  "name": "blast-radius",
+  "version": "0.1.0",
+  "mx": {
+    "modHooks": ["tool.call{tool=Bash}:answer", "ui.render{component=Pane}:observe"],
+    "modCapabilities": ["process", "ui", "session"],
+    "modGuarantee": "A safety net that reads the command text; not a permission system.",
+    "testedWith": "claude-code@2.1.287"
+  }
+}
+```
+
+**Declared against derived (Normative).** Where the host can derive a mod's hooks and API calls from its source, an implementation that checks a mod MUST compare the derivation with `modHooks` and `modCapabilities`. A hook or capability found in the code but missing from the declaration MUST fail the check. A declared hook or capability the source no longer uses SHOULD be reported as stale. A mod whose hooks include a `rewrite` or `answer` move SHOULD contribute a step to the provenance record of any decision it shaped; a mod that only observes need not.
 
 ---
 
