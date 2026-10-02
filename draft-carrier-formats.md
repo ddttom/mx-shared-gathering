@@ -657,10 +657,30 @@ A mod is code that a host application loads into its own event loop, where it ca
 
 | Field | Type | Required | Purpose |
 |-------|------|----------|---------|
-| `modHooks` | array | REQUIRED | Each host event the mod hooks, written `event{matcher}:move`, with the matcher omitted when the hook takes every event. The move is `observe` (passes the event on unchanged), `rewrite` (passes on a changed event) or `answer` (returns without passing it on). |
+| `modHooks` | array | REQUIRED | Each host event the mod hooks, as a hook string in the canonical form defined below, with the matcher list omitted when the hook takes every event. The move is `observe` (passes the event on unchanged), `rewrite` (passes on a changed event) or `answer` (returns without passing it on). |
 | `modCapabilities` | array | REQUIRED | The host API surfaces the mod's code uses, in the host's own names. |
 | `modGuarantee` | string | OPTIONAL | One sentence stating what the mod promises and what it explicitly does not. A machine reads it as a declared limit. |
 | `testedWith` | string | OPTIONAL | The host and version the mod was last tested against, written `host@version`. |
+
+**Hook string (Normative).** Each `modHooks` entry MUST match this grammar, written in ABNF ([RFC 5234](https://www.rfc-editor.org/rfc/rfc5234)), with `unreserved` and `pct-encoded` as defined in [RFC 3986](https://www.rfc-editor.org/rfc/rfc3986) section 2:
+
+```abnf
+mod-hook = event [ "{" matcher *( "," matcher ) "}" ] ":" move
+event    = name *( "." name )
+name     = ALPHA *( ALPHA / DIGIT / "_" / "-" )
+matcher  = key "=" value
+key      = ALPHA *( ALPHA / DIGIT / "_" )
+value    = 1*( unreserved / pct-encoded )
+move     = "observe" / "rewrite" / "answer"
+```
+
+The grammar admits no whitespace. Event names, keys and values are case-sensitive and are compared as the host writes them. A declaration is in canonical form when:
+
+1. its matchers are sorted by key in ascending code-point order, and no key appears twice;
+2. every octet of a value outside `unreserved` is percent-encoded from its UTF-8 bytes, and nothing else is;
+3. percent-encodings use uppercase hexadecimal digits.
+
+An implementation that checks a mod MUST bring both the declared hooks and the host-derived hooks to canonical form before comparing them, and then compare the strings byte for byte. A declaration that does not match the grammar MUST fail the check. For example, a hook on `tool.call` matching the Bash tool and the working directory `/srv/app` is written `tool.call{cwd=%2Fsrv%2Fapp,tool=Bash}:answer`.
 
 A mod carries these fields in the carriers its files already use: a root `mx` object in a JSON plugin manifest, and `@mx:` tags in the module's leading JSDoc block (§3.3).
 
@@ -738,6 +758,8 @@ MX is explicit about deferring to established vocabularies:
 ### 9.1 Normative references
 
 - [RFC 2119](https://www.rfc-editor.org/rfc/rfc2119) — Key words for use in RFCs to indicate requirement levels
+- [RFC 3986](https://www.rfc-editor.org/rfc/rfc3986) - Uniform Resource Identifier generic syntax (`unreserved` and `pct-encoded`, used by the §5.4 hook string)
+- [RFC 5234](https://www.rfc-editor.org/rfc/rfc5234) - Augmented BNF for syntax specifications (the §5.4 hook-string grammar)
 
 ### 9.2 Informative references — external standards MX defers to
 
