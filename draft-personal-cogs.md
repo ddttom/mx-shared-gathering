@@ -119,7 +119,7 @@ mx:
 
 - **`private`**: the cog never leaves the device. It shapes what the person sees and nothing else.
 - **`derived`**: only the neutral preferences named in `disclosesAs` leave the device, in place of the cog.
-- **`guarded`**: the cog MAY leave the device whole, only on a transaction the owner starts, only through the reader application's disclosure step (§5), and only for a purpose named in `discloseFor`.
+- **`guarded`**: the cog MAY leave the device whole, only on a transaction the owner starts and only through the reader application's disclosure step (§5). The purpose MUST be one named in `discloseFor`; when `discloseFor` is absent, it MUST be the one the owner confirms at that moment.
 
 ```yaml
 mx:
@@ -200,7 +200,7 @@ mx:
 **Definition:** The kinds of transaction for which a `guarded` cog may be disclosed, in the owner's own words (`dining`, `travel`, `client-meeting`).
 
 - The list narrows disclosure and never widens it: a `private` cog stays private whatever this lists.
-- With no `discloseFor`, a reader MUST ask the owner before the first disclosure in any context.
+- With no `discloseFor`, a reader MUST ask the owner before each disclosure and name the purpose. The confirmation covers that purpose and that transaction only. It does not extend `discloseFor`, and a reader MUST NOT reuse it later.
 
 ### 4.7 `declaredBy`
 
