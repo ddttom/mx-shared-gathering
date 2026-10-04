@@ -3,7 +3,7 @@
 title: "MX Personal Cogs note"
 docname: draft-cranstoun-mx-personal-cogs
 date: 2026-10-04
-consensus: false
+consensus: true
 keyword:
   - mx
   - personal
@@ -20,7 +20,7 @@ canonicalUri: https://raw.githubusercontent.com/ddttom/mx-shared-gathering/main/
 # MX Personal Cogs note
 
 **Version:** 1.0
-**Status:** Draft by Tom Cranstoun, offered to The Gathering for review
+**Status:** Ratified by The Gathering on 4 October 2026
 **Date:** 4 October 2026
 **Author:** Tom Cranstoun
 **License:** MIT
@@ -53,9 +53,9 @@ A personal cog SHALL satisfy:
 
 A reader application conforms when it applies §5 to every personal cog it holds, whatever level the cog reaches.
 
-### 2.2 Draft status
+### 2.2 Ratification status
 
-This is a draft note. Conformance levels and field semantics MAY change in response to community review. Implementations of this draft SHOULD note the draft version number they implemented against.
+The Gathering ratified this note at version 1.0 on 4 October 2026. A later change to its text re-opens review and is published as a new version. Implementations SHOULD note the version they implemented against.
 
 ---
 
