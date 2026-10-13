@@ -336,7 +336,7 @@ The following fields classify a cog within its registry. They live in vendor-ext
 | Field | Type | Zone | Purpose |
 |-------|------|:----:|---------|
 | `cogId` | string | 2 | Unique cog identifier within the registry. Typically derived from the filename without `.cog.md`. MUST be unique within its `partOf` namespace. |
-| `cogType` | string | 2 | Cog classification. Common values: `info` (reference / documentation), `action.scripted` / `action.sop` / `action.hybrid` (carries an execute contract; the discriminator after the dot names the cognitive class — see §6.5.2; `action` paired with a separate `actionType` field is an equivalent alias), `routing` (agent navigation), `certificate-of-genuineness` (publisher-provenanced credential), `cogs` (community-owned governance standard; see §6.5.1). |
+| `cogType` | string | 2 | Cog classification. Common values: `info` (reference / documentation), `action.scripted` / `action.sop` / `action.hybrid` (carries an execute contract; the discriminator after the dot names the cognitive class — see §6.5.2; `action` paired with a separate `actionType` field is an equivalent alias), `routing` (agent navigation), `cogs` (community-owned governance standard; see §6.5.1). |
 | `category` | string | 2 | Registry grouping (e.g. `mx-core`, `mx-tool`, `mx-content`). Coarser than `cogType`. |
 
 #### 6.5.1 The `cogs` classification (community-owned governance standard)
@@ -664,7 +664,7 @@ The order a consuming tool SHOULD process a cog file:
 5. **Walk `buildsOn`.** Load the named context cogs into the graph. Missing `buildsOn` entries are warnings, not failures.
 6. **Walk `dependencies`.** Hard-resolve each entry per its declared `kind`. A missing `dependencies` entry is a hard failure (§6.3).
 7. **Branch on `cogType`.**
-    - `info` / `routing` / `cogs` / `certificate-of-genuineness` — process as a documentation or governance artefact; do not look for `execute`.
+    - `info` / `routing` / `cogs` — process as a documentation or governance artefact; do not look for `execute`.
     - `action.<kind>` (or `action` with a separate `actionType`) — process as an executable cog; resolve the runtime requirement before extracting any artefact.
 8. **For action cogs, validate `execute`.** Confirm the runtime is permitted in the consumer's environment. For `scripted` and `hybrid` cogs, locate the `@embedded:<id>` artefact named in `execute.actions[].name`.
 9. **For action cogs that declare `produces`,** prepare to validate the output against the declared shape after execution. A shape mismatch is an unmodelled failure and triggers `defaultRemedy` (§6.7.2).
