@@ -2,7 +2,7 @@
 # cog v1 spec=https://mx.allabout.network/cog.html runtime=https://mx.allabout.network/cog-runtime.html
 title: "MX Provenance note"
 docname: draft-cranstoun-mx-provenance
-date: 2026-09-17
+date: 2026-10-16
 consensus: false
 keyword:
   - mx
@@ -19,9 +19,9 @@ canonicalUri: https://raw.githubusercontent.com/ddttom/mx-shared-gathering/main/
 
 # MX Provenance note
 
-**Version:** 1.3
+**Version:** 1.4
 **Status:** Draft by Tom Cranstoun, offered to The Gathering for review
-**Date:** 17 September 2026
+**Date:** 16 October 2026
 **Author:** Tom Cranstoun
 **License:** MIT
 
@@ -66,6 +66,7 @@ This note is a draft authored by Tom Cranstoun and offered to The Gathering for 
 - **Attribution fields** — authorship, publishing entity, content origin, source material, and generation instructions
 - **Quality and trust fields** — accuracy commitments, review cycles, compliance levels, and the quality triad
 - **Maintenance fields** — freshness tracking, maintainer identity, expiry, and update triggers
+- **Currency fields** - when a document was last reviewed, which laws it makes claims under, and when each time-dependent claim must be checked again
 - **Decision record references** — links to architecture, naming, and business decision records
 - **Migration fields** — content relocation tracking
 
@@ -380,7 +381,9 @@ mx:
 | **Zone** | 2 (mx:) |
 | **Conformance** | SHOULD (Level 2) |
 
-How often content is reviewed for accuracy. Common values: `weekly`, `monthly`, `quarterly`, `annually`, `on-change`.
+How often the document's content is reviewed for accuracy. The value is one of the named cycles `daily`, `weekly`, `monthly`, `quarterly` or `annually`, or an [ISO 8601](https://www.iso.org/iso-8601-date-and-time-format.html) duration such as `P90D`. A named cycle maps to a duration: `daily` is `P1D`, `weekly` is `P7D`, `monthly` is `P1M`, `quarterly` is `P3M` and `annually` is `P1Y`.
+
+With `lastReviewed` (§7.5), `reviewCycle` gives the date the next review is due: `lastReviewed` plus one cycle. A consumer SHOULD treat a document whose due date has passed as unreviewed.
 
 ```yaml
 mx:
@@ -533,6 +536,93 @@ mx:
 
 ---
 
+### 7.5 `lastReviewed`
+
+| Property | Value |
+|----------|-------|
+| **Type** | string (ISO 8601 date) |
+| **Zone** | 2 (mx:) |
+| **Conformance** | SHOULD (Level 2) when `reviewCycle` is declared |
+
+The date on which the document's content was last reviewed for accuracy as a whole. Distinct from a top-level `modified` field, which moves on any edit, including a typo fix, and does not say the content was checked. A review that finds nothing to change still moves `lastReviewed`.
+
+```yaml
+mx:
+  reviewCycle: quarterly
+  lastReviewed: 2026-10-16
+```
+
+`lastReviewed` and `maintainedDate` (§7.1) record the same act: a confirmation that the content is still accurate. Where both are present they SHOULD carry the same date, and a consumer that finds them different SHOULD read the later one. New documents SHOULD declare `lastReviewed`.
+
+---
+
+### 7.6 `legalInstruments`
+
+| Property | Value |
+|----------|-------|
+| **Type** | array of strings |
+| **Zone** | 2 (mx:) |
+| **Conformance** | SHOULD on any document that states what a law, regulation or ruling requires, allows or decided; otherwise MAY |
+
+The laws, regulations, standards and court proceedings this document makes claims under, so that a change to any of them obliges the document to be checked again.
+
+```yaml
+mx:
+  legalInstruments:
+    - eu-accessibility-act
+    - eu-ai-act-article-50
+    - EN 301 549
+```
+
+- The field is operational governance, not subject matter: it names the instruments whose change puts the document's claims at risk. A document that only mentions a law in passing does not declare it.
+- Each entry is a stable instrument identifier where the publisher keeps a register of instrument dates, otherwise the instrument's own citation as text.
+- A document carrying the field is one a reader treats as legal or regulatory content: general information, never legal advice, unless it says otherwise.
+- Distinct from a jurisdiction field, which says where the document is in force, and from a field naming what the document is about.
+
+---
+
+### 7.7 `claims[].checkedOn`
+
+| Property | Value |
+|----------|-------|
+| **Type** | string (ISO 8601 date) |
+| **Zone** | 2 (mx:), inside an entry of the `claims` array |
+| **Conformance** | MAY |
+
+A document MAY carry a `claims` array in which each entry states one claim the document makes and the basis it rests on. This note defines two date sub-keys for those entries.
+
+`checkedOn` is the date on which the claim was last verified against the source its basis names. It is distinct from the date the claim was first recorded: a claim can be recorded once and checked many times, and each check that finds it still true moves `checkedOn` alone. A check that finds it false changes the claim or its basis instead.
+
+---
+
+### 7.8 `claims[].recheckBy`
+
+| Property | Value |
+|----------|-------|
+| **Type** | string (ISO 8601 date) |
+| **Zone** | 2 (mx:), inside an entry of the `claims` array |
+| **Conformance** | SHOULD on a claim whose truth depends on time; otherwise not declared |
+
+The date by which the claim must be verified again, because the fact it states can change: a pending court ruling, a compliance deadline, a figure that is revised, a date a legislator can move.
+
+```yaml
+mx:
+  legalInstruments:
+    - eu-accessibility-act
+  claims:
+    - statement: "The regulator's compliance deadline for this rule is 1 March 2027."
+      basis: corroborated
+      checkedOn: 2026-10-16
+      recheckBy: 2026-12-04
+```
+
+- Past `recheckBy`, a consumer SHOULD treat the claim as unverified, whatever its basis, until `checkedOn` moves past that date.
+- The document as a whole is due for review on the earliest `recheckBy` among its claims, or on its `reviewCycle` due date (§6.2) if that comes first.
+- A claim that does not change carries no `recheckBy`.
+- Tooling MAY refuse to publish a document whose earliest due date has passed.
+
+---
+
 ## 8. Decision record references
 
 The fields `adr`, `ndr`, and `bdr` link a document to the formal decision record that governs an aspect of its content. Decision records provide governance traceability — they explain why certain choices were made.
@@ -626,6 +716,10 @@ mx:
 | `maintainedBy` | maintenance | — | — | MAY |
 | `expires` | maintenance | — | — | MAY |
 | `updateTriggers` | maintenance | — | — | MAY |
+| `lastReviewed` | currency | — | SHOULD (with `reviewCycle`) | — |
+| `legalInstruments` | currency | — | SHOULD (legal or regulatory content) | MAY |
+| `claims[].checkedOn` | currency | — | — | MAY |
+| `claims[].recheckBy` | currency | — | SHOULD (time-dependent claims) | — |
 | `adr` | decisions | — | — | MAY |
 | `ndr` | decisions | — | — | MAY |
 | `bdr` | decisions | — | — | MAY |
@@ -640,6 +734,7 @@ mx:
 - The `publisher.contact` sub-field MAY contain email addresses or other contact information. Implementations SHOULD consider whether such values are appropriate for public exposure before publishing this metadata externally.
 - The `provenanceOrigin` field declares the human-machine authorship balance. Publishers SHOULD declare this field honestly to maintain trust with consumers and agents.
 - Decision record references (`adr`, `ndr`, `bdr`) MAY link to internal governance documents. Implementations SHOULD verify that referenced documents are accessible to the intended audience before publishing these links externally.
+- The `legalInstruments` field signals that a document makes legal or regulatory claims. Declaring it does not make the document legal advice, and a consumer SHOULD NOT present it as such.
 - The `generate` field contains instructions for content regeneration. Implementations SHOULD ensure that generation prompts do not expose sensitive business logic or proprietary processes in publicly accessible metadata.
 
 ---
