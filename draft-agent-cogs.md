@@ -60,7 +60,7 @@ A publishing-point cog SHALL satisfy:
 
 A CMS cog SHALL satisfy:
 
-- **Level 1 (Declared):** the record carries `type: cms-cog`, the Zone 1 identity fields, `cmsProduct` and `publishingPoints`.
+- **Level 1 (Declared):** the record carries `type: cms-cog`, the Zone 1 identity fields, `cmsProduct` and a non-empty `publishingPoints`.
 - **Level 2 (Checkable):** Level 1 plus `cmsVersion`, `cmsArchitecture` and `machineOutputs`.
 
 A publishing point conforms when it applies §6 to every agent action it accepts, whatever level the agent's cog reaches.
@@ -111,6 +111,8 @@ This note is a draft offered to The Gathering for review. It is not ratified. Im
 | `delete` | Remove content or records. |
 | `message` | Send a communication to a person. |
 | `pay` | Commit money. |
+
+An operation counts as every action whose effect it has, and a publishing point MUST apply §6 to each of them. A `write` that makes content visible to its audience is also `publish`; a `delete` of published content is also `unpublish`; a `submit` that commits money is also `pay`. Changing content its audience cannot see is `draft`, whether or not the content is already stored.
 
 ---
 
@@ -175,7 +177,7 @@ mx:
 | **Profile** | agent |
 | **Conformance** | SHOULD (Level 2) |
 
-**Definition:** The release of the agent the cog describes. A mandate given to one release MUST NOT be read as given to another.
+**Definition:** The release of the agent the cog describes. A mandate given to one release MUST NOT be read as given to another. When `agentVersion` is absent, the cog makes no distinction between releases: its mandate covers whichever release presents it, and a publishing point SHOULD record in its `actionLog` the release the agent reports. A principal who needs a mandate bound to one release sets `agentVersion`.
 
 ### 5.5 `operatesAt`
 
@@ -228,7 +230,7 @@ mx:
 | **Profile** | agent, publishing-point |
 | **Conformance** | SHOULD (Level 2) |
 
-**Definition:** Where actions are recorded, each attributed to the `agentId` and `agentVersion` that took it, the principal it was taken for, and any approval it waited on. On an agent cog, the agent's record; on a publishing-point cog, the point's record of agent actions taken through it.
+**Definition:** Where actions are recorded, each attributed to the `agentId` and `agentVersion` that took it, the principal it was taken for, and any approval it waited on. On an agent cog, the agent's record; on a publishing-point cog, the point's record of agent actions taken through it. A log SHOULD be append-only, so concurrent entries cannot overwrite one another.
 
 ### 5.9 `revocationUri`
 
@@ -329,7 +331,7 @@ mx:
 | **Profile** | cms |
 | **Conformance** | MUST (Level 1) |
 
-**Definition:** The publishing points the CMS controls, as the locations of their publishing-point cogs, or as the URLs they serve where no cog exists. A point listed without a cog has made no statement to agents.
+**Definition:** The publishing points the CMS controls, as the locations of their publishing-point cogs, or as the URLs they serve where no cog exists. The list MUST contain at least one entry. A point listed without a cog has made no statement to agents.
 
 ### 5.17 `cmsVersion`
 
@@ -364,20 +366,23 @@ mx:
 | **Conformance** | SHOULD (Level 2) |
 | **Valid values** | json-ld, mx-frontmatter, llms-txt, sitemap, feed, robots-txt, agent-card, mcp-server, markdown-mirror |
 
-**Definition:** The machine-readable outputs the running instance emits for its publishing points, as configured, not as the product could be configured. The list is a statement an outside-in audit can check against what the points serve.
+**Definition:** The machine-readable outputs the running instance emits for its publishing points, as configured, not as the product could be configured. The list applies to every point in `publishingPoints`. A CMS whose points emit different outputs SHOULD carry one CMS cog per group of points that share the same outputs, so each list stays true of every point it names. The list is a statement an outside-in audit can check against what the points serve.
 
 ---
 
 ## 6. Publishing-point behaviour
 
-A publishing point that admits agents:
+A publishing point that admits agents MUST, for each action an agent requests, apply these checks in order, and MUST refuse the action at the first check it fails:
 
-1. MUST permit an action only when both the agent's `mandate` and the point's `agentActions` name it.
-2. MUST hold an action for a named person's approval when either record lists it in `humanApprovalFor`, and SHOULD record the approval in its `actionLog`.
-3. MUST refuse a `pay` mandate that carries no `spendLimit`, and MUST NOT assume a ceiling in its place.
-4. MUST check `revocationUri` before any irreversible action, and MUST refuse the action when the address reports the mandate withdrawn or cannot be reached.
-5. MUST treat a mandate past its `expires` date as withdrawn.
-6. MUST read its own terms from its own copy of the publishing-point cog, never from a value the agent supplies.
+1. **Admission.** The agent is admitted under the point's `agentAccess`: any agent under `open`; an agent that presents an agent cog under `declared`; an agent whose `agentId` is in `admittedAgents` under `listed`; none under `closed`.
+2. **Binding.** For any action other than `read`, the point has bound the presented `agentId` to the caller it authenticated, and has obtained the agent cog from a source it trusts for that agent: by resolving `agentId` over an authenticated channel, by verifying a signature from the principal or the developer, or through an established relationship with the principal. A cog the point cannot bind and source this way MUST NOT authorise any action beyond `read`.
+3. **Venue.** When the cog carries `operatesAt`, the point's own host or address matches one of its entries.
+4. **Standing.** The mandate is not past its `expires` date, and is not known to be withdrawn. The point MUST check `revocationUri` before any irreversible action and before any action at high risk, and MUST refuse when the address reports the mandate withdrawn or cannot be reached. For other actions it MAY rely on a status it checked within a period it declares, and SHOULD check at least at the start of each session. Once the point learns a mandate is withdrawn, it MUST refuse every later action under it.
+5. **Authority.** Every action the operation counts as (§4) is named in both the agent's `mandate` and the point's `agentActions`.
+6. **Spend.** For `pay`, the cog carries a `spendLimit`, the payment is in the limit's currency, and the payment plus every payment already committed under the mandate in the current period does not exceed `amount`. The point MUST count concurrent payments against the same limit so that together they cannot exceed it. A point MUST NOT assume a ceiling in place of a missing `spendLimit`.
+7. **Approval.** Any action the operation counts as that either record lists in `humanApprovalFor` waits for a named person's approval.
+
+The point MUST read its own terms from its own copy of the publishing-point cog, never from a value the agent supplies. It SHOULD record each action in its `actionLog` with the agent, its release, the principal and any approval, and SHOULD NOT report an action complete to the agent before that entry is durable.
 
 A publishing point that carries no publishing-point cog has made no statement. An agent MUST NOT read the absence as permission.
 
@@ -386,9 +391,9 @@ A publishing point that carries no publishing-point cog has made no statement. A
 ## 7. Security and privacy considerations
 
 - The records describe authority; they do not enforce it. An agent that ignores a publishing point's terms can still drive its human interface. The value of the records is that the honest route exists and an agent that bypasses it, presenting itself as a person, is plainly outside the terms.
-- An agent cog is the principal's assertion. A publishing point SHOULD weigh it by how it is corroborated (a signature, a registry entry, an established relationship) before admitting the agent to any action beyond `read`.
+- An agent cog is an assertion until it is bound and sourced as §6 step 2 requires. A self-authored cog that names someone else in `actingFor` is the attack that step exists to stop.
 - `actingFor` can identify a private individual. Agents SHOULD disclose only what the point needs; a personal record held under the **MX Personal Cogs note** carries the rest under its own disclosure tier.
-- `revocationUri` and `actionLog` are addresses an attacker may spoof. A point SHOULD resolve them only from a copy of the agent cog it trusts.
+- `revocationUri` and `actionLog` are addresses chosen by whoever wrote the agent cog. A point MUST fetch them only over HTTPS, MUST resolve them through a resolver that refuses loopback, private and link-local addresses, and SHOULD accept only addresses on the same host as `agentId` or on a host it has approved. It MUST take them only from a copy of the agent cog it obtained under §6 step 2.
 - `machineOutputs` can overstate. An audit that finds a claimed output missing has found a defect in the record or in the instance, and either is worth reporting to the owner.
 
 ---
@@ -433,7 +438,7 @@ mx:
   agentVersion: 2.1.0
   actingFor:
     name: Example News Ltd
-  mandate: [read, draft, write]
+  mandate: [read, draft, write, publish]
   humanApprovalFor: [publish]
   actionLog: https://agents.example.com/editorial-assistant/log
   revocationUri: https://agents.example.com/editorial-assistant/status
@@ -487,5 +492,5 @@ mx:
 
 1. Is the action vocabulary in §4 the right closed list, and how should it be extended?
 2. Should `agentId` require a resolvable URI that serves the agent cog, or may it be an opaque identifier?
-3. Should the `revocationUri` check in §6 apply to every action at high risk, not only irreversible ones?
+3. Should §6 step 4 require a fresh `revocationUri` check before every action, at the cost of a request per action?
 4. Should `machineOutputs` keep its vocabulary in this note, or defer to a registry of output kinds?
