@@ -569,6 +569,20 @@ A cog at Tier A is registry-locatable. At Tier B it is identifiable to unfamilia
 - Cogs declaring `execute` contracts give agents a runnable surface. Operators MUST treat `execute.command` and `execute.actions[]` values as untrusted input and apply the same sandboxing, allowlisting, and audit measures they apply to any user-supplied command.
 - A signed cog only attests provenance and integrity, never the truth of the content. Even when a cog's signature verifies cleanly, downstream consumers MUST NOT treat the values as factually correct — the signature confirms only that the cog genuinely came from the named signer and has not been altered. Editorial truth-curation is a different problem and out of scope for the cog format. User-facing language SHOULD say *attested*, not *verified*, to avoid implying a truth claim no signer makes.
 
+### 8.1 Receiver behaviour: a received cog is declarative
+
+A cog that a consumer receives from another system is a statement about the file it wraps, not an instruction to the consumer. The consumer reads it and does not act on it.
+
+- **Execution needs a human promotion.** A consumer **MUST NOT** run a received cog's `execute` contract, or follow its `runbook` or `usage` text, until a human on the consuming side has reviewed the cog and promoted it for execution. The promotion **MUST** be bound to the cog's declared `version` and to the SHA-256 of the bytes as received. A change to either **MUST** revoke it. Attestation does not substitute for this review: a signature says who published the cog and that it arrived intact, not that its instructions are safe to follow on the consuming system.
+- **The received bytes are evidence.** A consumer **SHOULD** keep the bytes exactly as received and **MUST NOT** edit them in place.
+- **Three triggers.** A consumer **SHOULD** investigate a received cog only on three occasions: when it first sees the cog, when the cog changes (a different declared `version` or a different SHA-256), and when it receives a notice that the cog was deleted. Between triggers the consumer does not re-decide, so an accepted cog stays as it was accepted.
+- **Four decisions.** Each investigation reads the cog, runs the consumer's safety checks, and **SHOULD** record one decision, together with who made it and when:
+  - *accept* relies on the cog unchanged.
+  - *review* refers it to a human, together with the findings that prompted the referral.
+  - *modify* means the consumer writes its own derived cog, which references the received original by SHA-256 and keeps the original beside it.
+  - *reject* means the consumer does not rely on it, and keeps the bytes and the reason.
+- **Deletion withdraws, it does not erase.** On a notice of deletion, a consumer **SHOULD** stop relying on the cog and revoke any promotion. It keeps the received bytes and the decision record, so that what it relied on stays answerable.
+
 ---
 
 ## 9. References
@@ -723,4 +737,4 @@ All cog structural fields live in Zone 2 (§6) unless explicitly noted as top-le
 
 *End of MX Cogs note draft.*
 
-<!-- cog-spec-sync: 2026-07-01-a -->
+<!-- cog-spec-sync: 2026-10-23-a -->
