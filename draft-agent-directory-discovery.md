@@ -2,15 +2,15 @@
 # cog v1 spec=https://mx.allabout.network/cog.html runtime=https://mx.allabout.network/cog-runtime.html
 title: "MX Agent Directory Discovery note"
 docname: draft-cranstoun-mx-agent-directory-discovery
-date: 2026-04-28
+date: 2026-11-16
 consensus: false
 keyword:
   - mx
   - agent-directory
   - llms.txt
   - discovery
-  - common-crawl
-  - sitemap
+  - describedby
+  - link-relations
 author:
   - fullname: Tom Cranstoun
     organization: CogNovaMX
@@ -20,9 +20,9 @@ canonicalUri: https://raw.githubusercontent.com/ddttom/mx-shared-gathering/main/
 
 # MX Agent Directory Discovery note
 
-**Version:** 1.0
+**Version:** 1.1
 **Status:** Draft by Tom Cranstoun, offered to The Gathering for review
-**Date:** 28 April 2026
+**Date:** 16 November 2026
 **Author:** Tom Cranstoun
 **License:** MIT
 
@@ -30,11 +30,11 @@ canonicalUri: https://raw.githubusercontent.com/ddttom/mx-shared-gathering/main/
 
 ## 1. Abstract
 
-This note specifies how a host SHOULD expose an *agent-directory file* so that AI training pipelines, search indexers, and agent crawlers can discover and ingest it. An agent-directory file is any well-known, host-rooted resource that describes the host to non-human readers. Examples include `llms.txt` (Jeremy Howard, September 2024), `robots.txt` (RFC 9309), `humans.txt` (humanstxt.org), and `ai.txt` (various proposals).
+This note specifies how a host SHOULD expose an *agent-directory file* so that AI agents, and the tools that check and index on their behalf, can find it and read it as written. An agent-directory file is any well-known, host-rooted resource that describes the host to non-human readers. Examples include `llms.txt` (Jeremy Howard, September 2024), `robots.txt` (RFC 9309), `humans.txt` (humanstxt.org), and `ai.txt` (various proposals).
 
-This note does not define or redefine any specific agent-directory file format. Each format remains owned by its own community. This note specifies a transport, sitemap, and in-page discovery layer that any agent-directory file SHOULD adopt to be reliably reached by the systems it is intended to inform.
+This note does not define or redefine any specific agent-directory file format. Each format remains owned by its own community. This note specifies a transport and discovery layer that any agent-directory file SHOULD adopt to be reliably reached by the systems it is intended to inform.
 
-The note is motivated by an observable gap: well-formed agent-directory files are routinely invisible to large-scale crawlers because they are served as `text/plain` (which Common Crawl and similar HTML-only pipelines do not ingest), are absent from `sitemap.xml`, and are not linked from any page in the host. The three normative requirements in this note (HTML transport, sitemap inclusion, in-page discovery link) close that gap without modifying the directory file's content.
+The note addresses two gaps. An agent-directory file wrapped in HTML, or served with a misleading content type, is no longer the text its readers expect to parse. And a file linked from no page on the host gives an agent that arrives on a deep page no signal that the file exists. The normative requirements in this note (plain-text or Markdown transport with no wrapper, no sitemap entry, and discovery through the registered `describedby` link relation, in line with the [llms.txt proposal](https://llmstxt.org/)) close both gaps without modifying the directory file's content.
 
 ---
 
@@ -46,9 +46,8 @@ The key words "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL NOT", "SHOULD", "S
 
 A host claiming conformance to this note SHALL satisfy:
 
-- **Level 1 (Transport):** the HTML-serving requirement in §4.
-- **Level 2 (Discovery):** Level 1 plus the sitemap requirement in §5.
-- **Level 3 (Resilience):** Level 2 plus the in-page link requirement in §6.
+- **Level 1 (Transport):** the plain-text serving requirement in §4 and the sitemap requirement in §5.
+- **Level 2 (Discovery):** Level 1 plus the `describedby` link requirement in §6.
 
 A claim of conformance SHALL state the level reached.
 
@@ -62,108 +61,100 @@ This is a draft note. Conformance levels and field semantics MAY change in respo
 
 ### 3.1 In scope
 
-- The transport mechanism by which an agent-directory file is delivered to crawlers.
-- The discovery mechanism by which crawlers learn the file exists.
+- The transport mechanism by which an agent-directory file is delivered to its readers.
+- The discovery mechanism by which agents learn the file exists.
 - The in-page mechanism by which agents loading any HTML page on the host learn the file's location.
 - The relationship between the agent-directory file and the host's `sitemap.xml`.
 
 ### 3.2 Out of scope
 
 - The content, schema, or vocabulary of any specific agent-directory file. This note does not specify what `llms.txt` should contain; that is owned by the llms.txt community. The same applies to `robots.txt`, `ai.txt`, `humans.txt`, and any future agent-directory format.
-- The behaviour of inference-time agents that retrieve the directory file on demand. This note addresses training-pipeline and bulk-crawler discovery; inference-time retrieval has its own discovery patterns.
-- HTTP caching, CDN configuration, geographic routing, and other transport details unrelated to content negotiation and sitemap inclusion.
+- How training pipelines and bulk crawlers choose what to ingest. The llms.txt proposal expects `llms.txt` to be used mainly at inference time, on demand, when an agent needs information while assisting a user, rather than for training ([llms.txt proposal](https://llmstxt.org/)). This note serves that use.
+- HTTP caching, CDN configuration, geographic routing, and other transport details unrelated to content type, link relations, and sitemap exclusion.
 
 ### 3.3 Relationship to existing standards
 
 This note relies on:
 
-- **[RFC 9110](https://datatracker.ietf.org/doc/html/rfc9110)** for HTTP semantics, including `Content-Type` negotiation.
+- **[RFC 9110](https://datatracker.ietf.org/doc/html/rfc9110)** for HTTP semantics, including `Content-Type`.
+- **[RFC 7763](https://www.rfc-editor.org/rfc/rfc7763.html)** for the `text/markdown` media type.
+- **[RFC 8288](https://datatracker.ietf.org/doc/html/rfc8288)** for Web Linking, including the HTTP `Link` header.
+- **[IANA Link Relations registry](https://www.iana.org/assignments/link-relations/link-relations.xhtml)** for the `describedby` relation used in §6.
 - **[Sitemaps 0.9 protocol](https://www.sitemaps.org/protocol.html)** for `sitemap.xml`.
 - **[HTML Living Standard](https://html.spec.whatwg.org/)** for the `<link>` and `<meta>` element semantics used in §6.
-- **[Schema.org WebPage](https://schema.org/WebPage)** as the structured-data vocabulary for the optional JSON-LD block in §4.3.
 
 This note adds nothing to those standards; it specifies how they combine for the agent-directory case.
 
 ---
 
-## 4. Transport: serve as text/html
+## 4. Transport: serve as text/plain or text/markdown
 
-A host conforming to this note SHALL serve every agent-directory file with `Content-Type: text/html; charset=utf-8`. The host MAY additionally serve the file at a separate URL with `Content-Type: text/plain` for legacy clients, but the canonical URL referenced by §5 and §6 SHALL return `text/html`.
+A host conforming to this note SHALL serve every agent-directory file as the file's own text, with no HTML wrapper, and with one of:
 
-### 4.1 Why HTML
+- `Content-Type: text/markdown; charset=utf-8` ([RFC 7763](https://www.rfc-editor.org/rfc/rfc7763.html)) for a file written in Markdown, such as `llms.txt`;
+- `Content-Type: text/plain; charset=utf-8` for any other agent-directory file, and for a Markdown file whose host prefers the plain-text type.
 
-The largest training-data crawlers (Common Crawl is the canonical example, ingested by most major LLM training pipelines) only index HTML responses. A file served as `text/plain` is fetched but excluded from the resulting HTML corpus. The agent-directory file therefore does not reach training data, even though the file exists, is well-formed, and is reachable by direct URL.
+The canonical URL referenced by §6 SHALL NOT return `text/html`. The host SHALL NOT wrap, escape, or otherwise alter the file's text at serve time.
 
-### 4.2 Wrapper requirements
+### 4.1 Why no wrapper
 
-The HTML wrapper SHALL:
+Agent-directory files are read by software that parses their text directly. An `llms.txt` file is Markdown with an H1 heading followed by lists of Markdown links ([llms.txt proposal](https://llmstxt.org/)); `robots.txt` is a line-based record format ([RFC 9309](https://datatracker.ietf.org/doc/html/rfc9309)). A wrapper adds markup the reader has to strip and escapes characters the format depends on, so the reader no longer receives the file as written.
 
-1. Preserve the agent-directory file's text content verbatim. Implementations SHOULD place the text inside a `<pre>` element to preserve whitespace.
-2. HTML-escape any `<`, `>`, and `&` characters in the directory text before insertion into the wrapper.
-3. Include a `<title>` element. If the directory text begins with a heading recognisable in its own format (e.g. a Markdown `# Heading` line in `llms.txt`), the wrapper SHOULD promote that heading to `<title>`. Otherwise the wrapper SHOULD use a fallback of the form `<directory-filename>, <hostname>`.
-4. Include `<meta charset="utf-8">` and `<meta name="viewport" content="width=device-width, initial-scale=1">`.
-5. Include `<meta name="robots" content="index, follow">`. The point of the wrapper is to be indexed.
-6. Include `<link rel="canonical" href="<bare-resource-url>">` where `<bare-resource-url>` is the agent-directory file's URL with query string and fragment stripped.
+Tools that check these files read the response body as the format itself. The Lighthouse `llms-txt` audit, for example, checks that the body has an H1 heading, at least one Markdown link, and at least 50 characters. It treats a 4xx response as not applicable and fails a 5xx or 429 response ([Lighthouse audit source](https://github.com/GoogleChrome/lighthouse/blob/main/core/audits/agentic/llms-txt.js)).
 
-### 4.3 Optional structured data
+### 4.2 Status codes
 
-The wrapper MAY include a Schema.org JSON-LD block describing itself as a `WebPage`. When present, the block SHOULD include at minimum:
+The canonical URL of a published agent-directory file SHOULD return `200`. A host that does not publish a given file SHOULD return `404` for its conventional path, not a 5xx or `429` response.
 
-- `@context: https://schema.org`
-- `@type: WebPage`
-- `name`: the title computed in §4.2 step 3
-- `description`: a short prose description identifying the resource as an agent-directory file
-- `url`: the canonical URL from §4.2 step 6
+### 4.3 Proxies and edge functions
 
-This block is OPTIONAL because Schema.org is an extension; the transport requirement (§4) does not depend on it.
-
-### 4.4 Wrapping at serve time
-
-The wrapper SHOULD be applied at serve time (e.g. by a reverse proxy, edge worker, or CDN function) rather than by modifying the source file. Wrapping at serve time keeps the source agent-directory file in its native plain-text form for tools that parse it directly, while delivering the HTML form to HTTP clients that request it.
+Where a reverse proxy, edge worker, or CDN function sits in front of the origin, it SHALL pass the agent-directory file through unchanged. It MAY set the `Content-Type` in §4 where the origin does not, and MAY add the HTTP `Link` header described in §6.
 
 ---
 
-## 5. Discovery: list in sitemap.xml
+## 5. Sitemap: do not list
 
-If the host publishes a `sitemap.xml` (per the Sitemaps 0.9 protocol), the host SHALL include each agent-directory file as a `<url>` entry in `sitemap.xml`.
+A host SHALL NOT list an agent-directory file as a `<url>` entry in `sitemap.xml`.
 
-### 5.1 Why sitemap inclusion
+### 5.1 Why not the sitemap
 
-Crawlers that discover URLs via `sitemap.xml` (the dominant pattern for large-scale crawl) have no reliable signal that an agent-directory file exists if it is absent from the sitemap. Root-directory speculative fetches are not universal and not guaranteed; sitemap inclusion is.
+`sitemap.xml` lists a host's indexable, human-readable pages ([Sitemaps 0.9 protocol](https://www.sitemaps.org/protocol.html)). An agent-directory file is not one of those pages. The llms.txt proposal sets the two side by side: a sitemap lists all pages for search engines, while `llms.txt` offers a curated overview for language models ([llms.txt proposal](https://llmstxt.org/)). Agents find the file at its conventional path and through the `describedby` link in §6.
 
-### 5.2 Sitemap entry shape
+### 5.2 Hosts that already list the file
 
-The sitemap entry SHALL identify the agent-directory file's canonical URL (the `text/html` URL from §4). The entry MAY include `<lastmod>`, `<changefreq>`, and `<priority>` per the Sitemaps protocol.
-
-### 5.3 Hosts without sitemap.xml
-
-A host that does not publish `sitemap.xml` is not in scope for §5. Such hosts SHOULD reach Level 1 (transport) and Level 3 (in-page link) instead; the sitemap requirement of Level 2 is moot when no sitemap exists.
+A host whose `sitemap.xml` lists an agent-directory file SHOULD remove the entry. The file's URL stays where it is.
 
 ---
 
-## 6. In-page resilience: <link rel="..."> in every page
+## 6. Discovery: rel="describedby"
 
-Every HTML page on the host SHOULD include in its `<head>` a `<link>` element referencing each agent-directory file the host publishes:
+Every HTML page on the host SHOULD include in its `<head>` a `<link>` element that points to the agent-directory file covering it:
 
 ```html
-<link rel="<directory-name>" href="/<directory-filename>">
+<link rel="describedby" href="/llms.txt">
 ```
+
+A host MAY instead, or as well, send the same relation as an HTTP `Link` header ([RFC 8288](https://datatracker.ietf.org/doc/html/rfc8288)):
+
+```http
+Link: </llms.txt>; rel="describedby"
+```
+
+The header form also works for non-HTML responses, such as the Markdown versions of pages, and can be added in web server or CDN configuration without modifying any page ([llms.txt proposal](https://llmstxt.org/)).
 
 ### 6.1 Why per-page links
 
-Three discovery paths reinforce each other. Sitemap inclusion (§5) covers crawlers that read sitemaps. HTML serving (§4) makes the file ingestible once reached. The in-page link covers everything in between: agents that arrive via a deep link, JS-only single-page applications whose `<body>` is empty until script execution completes, and crawlers that do not read the sitemap.
+Two discovery paths reinforce each other. The conventional path (`/llms.txt`, `/robots.txt`) covers readers that already know the convention. The `describedby` link covers everything else: agents that arrive via a deep link, JS-only single-page applications whose `<body>` is empty until script execution completes, and readers that do not probe conventional paths.
+
+An `llms.txt` file covers the URLs under its path, and where more than one file applies, agents should use the most specific one ([llms.txt proposal](https://llmstxt.org/)). A host that publishes `llms.txt` at more than one path SHOULD point each page to the most specific file that covers it.
 
 For headless and JavaScript-rendered sites the per-page link is particularly load-bearing. The `<head>` is delivered before any script runs and is therefore the only part of the response many crawlers and agents see.
 
 ### 6.2 The rel attribute
 
-The `rel` attribute value SHALL be the bare directory name without the `.txt` extension. Example values:
+For `llms.txt`, the `rel` value SHALL be `describedby`, in line with the llms.txt proposal ([llms.txt proposal](https://llmstxt.org/)). `describedby` is registered in the IANA Link Relations registry, where it refers to a resource providing information about the link's context ([IANA Link Relations registry](https://www.iana.org/assignments/link-relations/link-relations.xhtml)). Hosts SHALL NOT use unregistered per-file values such as `llms-txt`.
 
-- `rel="llms-txt"` for `/llms.txt`
-- `rel="ai-txt"` for `/ai.txt`
-- `rel="humans-txt"` for `/humans.txt`
-
-Using kebab-case for the rel value matches existing IANA link relation conventions (e.g. `rel="dns-prefetch"`, `rel="alternate-stylesheet"`).
+For other agent-directory formats, a host SHOULD follow the format's own discovery convention where it has one, and MAY use `describedby` where it does not.
 
 ### 6.3 Optional inline description
 
@@ -183,15 +174,15 @@ For hosts whose agent-directory file is short enough to embed in every page, a h
 <meta name="<directory-name>-content" content="<full file content>">
 ```
 
-This is RECOMMENDED only when the file is short (under approximately 1KB after escaping) and stable. For longer or frequently-updated directory files, prefer the link form (§6) plus sitemap inclusion (§5).
+This is RECOMMENDED only when the file is short (under approximately 1KB after escaping) and stable. For longer or frequently-updated directory files, prefer the link form (§6).
 
 ---
 
 ## 7. Why not depend on a new crawler standard
 
-A host could reasonably ask why this note specifies HTML transport, sitemap inclusion, and `<link>` discovery instead of asking crawlers to learn one new convention specific to agent-directory files. The answer is the principle on which the rest of the MX framework rests: **do not require new infrastructure when existing infrastructure already handles the problem**.
+A host could reasonably ask why this note specifies plain-text transport and `describedby` discovery instead of asking crawlers to learn one new convention specific to agent-directory files. The answer is the principle on which the rest of the MX framework rests: **do not require new infrastructure when existing infrastructure already handles the problem**.
 
-Crawlers already understand HTML responses. Sitemaps already signal what matters on a host. The `<link>` element already carries arbitrary `rel` values that machine readers can dispatch on. Specifying that agent-directory files SHOULD use those mechanisms costs the host a one-time configuration change and costs the crawler nothing at all. Specifying a new mechanism would require the host to wait for the crawler ecosystem to update before the directory file becomes useful, which (per the inference-time observation in §3.2) it largely is not anyway.
+Readers already parse plain text and Markdown. The `describedby` relation is already registered, and HTML `<link>` elements and HTTP `Link` headers already carry it. Specifying that agent-directory files SHOULD use those mechanisms costs the host a one-time configuration change and costs the reader nothing at all. Specifying a new mechanism would require the host to wait for agents and tools to update before the directory file becomes useful.
 
 This note is therefore not novel discovery infrastructure. It is a configuration discipline that makes existing discovery infrastructure work for a class of files that has, until now, fallen between the cracks.
 
@@ -201,29 +192,35 @@ This note is therefore not novel discovery infrastructure. It is a configuration
 
 This section is informative; it is not a normative part of the standard.
 
-### 8.1 Worker-based wrapping
+### 8.1 Worker-based headers
 
-A reverse-proxy worker (Cloudflare Worker, Fastly Compute, Vercel Edge Function, Akamai EdgeWorker, etc.) is well suited to serve-time wrapping. The worker intercepts the agent-directory URL, fetches the source plain-text file from the origin, applies the wrapper described in §4, and returns the result with `Content-Type: text/html`.
+A reverse-proxy worker (Cloudflare Worker, Fastly Compute, Vercel Edge Function, Akamai EdgeWorker, etc.) is well suited to the serve-time parts of this note. The worker passes the agent-directory file's body through from the origin unchanged, sets the `Content-Type` described in §4, and can add the `Link: </llms.txt>; rel="describedby"` header described in §6 to every response.
 
-The wrapper logic SHOULD be expressed as a pure function (string in, string out) so that it can be unit-tested independently of the worker runtime.
+The header logic SHOULD be expressed as a pure function (request path in, headers out) so that it can be unit-tested independently of the worker runtime.
 
 ### 8.2 Sitemap automation
 
-When the host generates `sitemap.xml` from a content tree, the agent-directory entry can be added by a single rule that detects files at the host root matching the directory naming convention.
+When the host generates `sitemap.xml` from a content tree, a single rule can exclude files at the host root that match the directory naming convention (`llms.txt`, `robots.txt`, `ai.txt`, `humans.txt`).
 
 ### 8.3 In-page link injection
 
-For static-site generators, the `<link>` element SHOULD be added to the canonical page template. For server-rendered applications, it SHOULD be added to the layout component that wraps every page. For client-rendered applications (SPAs), it SHOULD be present in the static `index.html` shell, not injected by JavaScript at runtime, since runtime injection is invisible to crawlers that do not execute scripts.
+For static-site generators, the `<link rel="describedby">` element SHOULD be added to the canonical page template. For server-rendered applications, it SHOULD be added to the layout component that wraps every page. For client-rendered applications (SPAs), it SHOULD be present in the static `index.html` shell, not injected by JavaScript at runtime, since runtime injection is invisible to readers that do not execute scripts. The HTTP `Link` header form (§6) needs no template change.
 
 ### 8.4 Verification
 
-A host can verify Level 1 conformance by issuing `curl -I` against the directory URL and checking that the `Content-Type` header begins with `text/html`. Level 2 verification is a `grep` against `sitemap.xml`. Level 3 verification is a `grep` against the rendered `<head>` of any sample page.
+A host can verify Level 1 conformance in three checks:
+
+1. Issue `curl -I` against the directory URL and check that the `Content-Type` header begins with `text/plain` or `text/markdown`.
+2. Issue `curl` against the directory URL and check that the body is the file's own text, not a document beginning `<!DOCTYPE` or `<html`.
+3. Check with `grep` that `sitemap.xml` has no entry for the directory URL.
+
+Level 2 verification is a `grep` for `rel="describedby"` against the rendered `<head>` of any sample page, or a `curl -I` against a sample page that finds a `Link` header carrying `rel="describedby"`. For `llms.txt`, the Lighthouse `llms-txt` audit (§4.1) is an independent check of the body.
 
 ---
 
 ## 9. Security and privacy considerations
 
-The wrapper described in §4 ingests the agent-directory file's text and emits it as part of an HTML document. Implementations MUST HTML-escape the text (§4.2 step 2) to prevent any `<` or `&` character in the directory text from being interpreted as markup.
+This note requires the agent-directory file to be served unaltered as `text/plain` or `text/markdown`, never as `text/html` (§4). A browser therefore does not interpret any `<` or `&` character in the directory text as markup, and no escaping step is needed. Hosts SHOULD also send `X-Content-Type-Options: nosniff` so that the declared type is respected.
 
 The agent-directory file is, by design, public. This note adds no fields that carry confidential data. Hosts that wish to restrict access to the directory file should do so via HTTP authentication or IP allowlisting; that is a host policy, not a content-type concern.
 
@@ -233,9 +230,7 @@ The optional inline content form (§6.4) places the full directory content into 
 
 ## 10. IANA considerations
 
-This note requests no new IANA registrations. The `<link rel>` values described in §6 are agent-directory-specific identifiers that do not require IANA registration; they are dispatched on by name within consuming software.
-
-If the agent-directory community wishes to register specific rel values (e.g. `llms-txt`) with the IANA Link Relation Type registry, that registration is owned by the directory's defining community, not by this note.
+This note requests no new IANA registrations. It uses the `describedby` relation already in the [IANA Link Relations registry](https://www.iana.org/assignments/link-relations/link-relations.xhtml) and the registered media types `text/plain` and `text/markdown`.
 
 ---
 
@@ -243,21 +238,23 @@ If the agent-directory community wishes to register specific rel values (e.g. `l
 
 ### 11.1 Normative
 
-- [RFC 2119](https://datatracker.ietf.org/doc/html/rfc2119) — Key words for use in RFCs.
-- [RFC 8174](https://datatracker.ietf.org/doc/html/rfc8174) — Ambiguity of uppercase vs lowercase in RFC 2119 key words.
-- [RFC 9110](https://datatracker.ietf.org/doc/html/rfc9110) — HTTP Semantics.
+- [RFC 2119](https://datatracker.ietf.org/doc/html/rfc2119): Key words for use in RFCs.
+- [RFC 8174](https://datatracker.ietf.org/doc/html/rfc8174): Ambiguity of uppercase vs lowercase in RFC 2119 key words.
+- [RFC 9110](https://datatracker.ietf.org/doc/html/rfc9110): HTTP Semantics.
+- [RFC 7763](https://www.rfc-editor.org/rfc/rfc7763.html): The text/markdown Media Type.
+- [RFC 8288](https://datatracker.ietf.org/doc/html/rfc8288): Web Linking.
+- [IANA Link Relations registry](https://www.iana.org/assignments/link-relations/link-relations.xhtml).
 - [Sitemaps XML format 0.9](https://www.sitemaps.org/protocol.html).
 - [HTML Living Standard](https://html.spec.whatwg.org/).
 
 ### 11.2 Informative
 
-- [llms.txt proposal (Jeremy Howard, 2024)](https://llmstxt.org/) — the agent-directory format that motivated this note.
-- [RFC 9309](https://datatracker.ietf.org/doc/html/rfc9309) — Robots Exclusion Protocol; the canonical example of an agent-directory file with established discovery and indexing conventions.
-- [Schema.org](https://schema.org/) — structured-data vocabulary used in §4.3.
-- [Common Crawl](https://commoncrawl.org/) — the open web crawl ingested by most major LLM training pipelines.
+- [llms.txt proposal (Jeremy Howard, 2024)](https://llmstxt.org/): the agent-directory format that motivated this note, and which recommends the `describedby` link relation.
+- [RFC 9309](https://datatracker.ietf.org/doc/html/rfc9309): Robots Exclusion Protocol; the canonical example of an agent-directory file with established discovery and indexing conventions.
+- [Lighthouse `llms-txt` audit source](https://github.com/GoogleChrome/lighthouse/blob/main/core/audits/agentic/llms-txt.js): an independent check of an `llms.txt` response body, cited in §4.1.
 
 ---
 
 ## 12. Acknowledgements
 
-The author thanks the llms.txt and Common Crawl communities, whose work and conventions this note builds upon. Earlier prose treatment of the underlying problem appears at <https://mx.allabout.network/blog/llms-txt-guide.html>.
+The author thanks the llms.txt community, whose work and conventions this note builds upon. Earlier prose treatment of the underlying problem appears at <https://mx.allabout.network/blog/llms-txt-guide.html>.
