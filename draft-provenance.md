@@ -383,7 +383,7 @@ mx:
 
 How often the document's content is reviewed for accuracy. The value is one of the named cycles `daily`, `weekly`, `monthly`, `quarterly` or `annually`, or an [ISO 8601](https://www.iso.org/iso-8601-date-and-time-format.html) duration such as `P90D`. A named cycle maps to a duration: `daily` is `P1D`, `weekly` is `P7D`, `monthly` is `P1M`, `quarterly` is `P3M` and `annually` is `P1Y`.
 
-With `lastReviewed` (§7.5), `reviewCycle` gives the date the next review is due: `lastReviewed` plus one cycle. A consumer SHOULD treat a document whose due date has passed as unreviewed.
+With `maintainedDate` (§7.1), or its synonym `lastReviewed` (§7.5), `reviewCycle` gives the date the next review is due: `maintainedDate` plus one cycle. A consumer SHOULD treat a document whose due date has passed as unreviewed.
 
 ```yaml
 mx:
@@ -542,17 +542,17 @@ mx:
 |----------|-------|
 | **Type** | string (ISO 8601 date) |
 | **Zone** | 2 (mx:) |
-| **Conformance** | SHOULD (Level 2) when `reviewCycle` is declared |
+| **Conformance** | MAY; a synonym of `maintainedDate` (§7.1) |
 
 The date on which the document's content was last reviewed for accuracy as a whole. Distinct from a top-level `modified` field, which moves on any edit, including a typo fix, and does not say the content was checked. A review that finds nothing to change still moves `lastReviewed`.
 
 ```yaml
 mx:
   reviewCycle: quarterly
-  lastReviewed: 2026-10-16
+  lastReviewed: 2026-10-16   # accepted; maintainedDate is preferred
 ```
 
-`lastReviewed` and `maintainedDate` (§7.1) record the same act: a confirmation that the content is still accurate. Where both are present they SHOULD carry the same date, and a consumer that finds them different SHOULD read the later one. New documents SHOULD declare `lastReviewed`.
+`lastReviewed` and `maintainedDate` (§7.1) record the same act: a confirmation that the content is still accurate. `maintainedDate` is the field's name, because the Content Provenance Specification (cms-provenance.org) adopts it from MX, and the two must not drift apart. New documents SHOULD declare `maintainedDate`. A consumer MUST accept `lastReviewed` as its synonym. Where both are present they SHOULD carry the same date, and a consumer that finds them different SHOULD read the later one.
 
 ---
 
@@ -716,7 +716,7 @@ mx:
 | `maintainedBy` | maintenance | — | — | MAY |
 | `expires` | maintenance | — | — | MAY |
 | `updateTriggers` | maintenance | — | — | MAY |
-| `lastReviewed` | currency | — | SHOULD (with `reviewCycle`) | — |
+| `lastReviewed` | currency | — | — | MAY (synonym of `maintainedDate`) |
 | `legalInstruments` | currency | — | SHOULD (legal or regulatory content) | MAY |
 | `claims[].checkedOn` | currency | — | — | MAY |
 | `claims[].recheckBy` | currency | — | SHOULD (time-dependent claims) | — |
