@@ -2,7 +2,7 @@
 # cog v1 spec=https://mx.allabout.network/cog.html runtime=https://mx.allabout.network/cog-runtime.html
 title: "MX Provenance note"
 docname: draft-cranstoun-mx-provenance
-date: 2026-10-16
+date: 2026-11-28
 consensus: false
 keyword:
   - mx
@@ -19,9 +19,9 @@ canonicalUri: https://raw.githubusercontent.com/ddttom/mx-shared-gathering/main/
 
 # MX Provenance note
 
-**Version:** 1.4
+**Version:** 1.5
 **Status:** Draft by Tom Cranstoun, offered to The Gathering for review
-**Date:** 16 October 2026
+**Date:** 28 November 2026
 **Author:** Tom Cranstoun
 **License:** MIT
 
@@ -383,7 +383,7 @@ mx:
 
 How often the document's content is reviewed for accuracy. The value is one of the named cycles `daily`, `weekly`, `monthly`, `quarterly` or `annually`, or an [ISO 8601](https://www.iso.org/iso-8601-date-and-time-format.html) duration such as `P90D`. A named cycle maps to a duration: `daily` is `P1D`, `weekly` is `P7D`, `monthly` is `P1M`, `quarterly` is `P3M` and `annually` is `P1Y`.
 
-With `maintainedDate` (§7.1), or its synonym `lastReviewed` (§7.5), `reviewCycle` gives the date the next review is due: `maintainedDate` plus one cycle. A consumer SHOULD treat a document whose due date has passed as unreviewed.
+With `maintainedDate` (§7.1), `reviewCycle` gives the date the next review is due: `maintainedDate` plus one cycle. A consumer SHOULD treat a document whose due date has passed as unreviewed.
 
 ```yaml
 mx:
@@ -536,23 +536,9 @@ mx:
 
 ---
 
-### 7.5 `lastReviewed`
+### 7.5 (withdrawn)
 
-| Property | Value |
-|----------|-------|
-| **Type** | string (ISO 8601 date) |
-| **Zone** | 2 (mx:) |
-| **Conformance** | MAY; a synonym of `maintainedDate` (§7.1) |
-
-The date on which the document's content was last reviewed for accuracy as a whole. Distinct from a top-level `modified` field, which moves on any edit, including a typo fix, and does not say the content was checked. A review that finds nothing to change still moves `lastReviewed`.
-
-```yaml
-mx:
-  reviewCycle: quarterly
-  lastReviewed: 2026-10-16   # accepted; maintainedDate is preferred
-```
-
-`lastReviewed` and `maintainedDate` (§7.1) record the same act: a confirmation that the content is still accurate. `maintainedDate` is the field's name, because the Content Provenance Specification (cms-provenance.org) adopts it from MX, and the two must not drift apart. New documents SHOULD declare `maintainedDate`. A consumer MUST accept `lastReviewed` as its synonym. Where both are present they SHOULD carry the same date, and a consumer that finds them different SHOULD read the later one.
+Version 1.4 defined `lastReviewed` as a synonym of `maintainedDate`. Version 1.5 withdraws it, because no document declared it and one name is clearer: the Content Provenance Specification (cms-provenance.org) adopts `maintainedDate` from MX. Declare `maintainedDate` (§7.1). The section number is kept so later references stay stable.
 
 ---
 
@@ -716,7 +702,6 @@ mx:
 | `maintainedBy` | maintenance | — | — | MAY |
 | `expires` | maintenance | — | — | MAY |
 | `updateTriggers` | maintenance | — | — | MAY |
-| `lastReviewed` | currency | — | — | MAY (synonym of `maintainedDate`) |
 | `legalInstruments` | currency | — | SHOULD (legal or regulatory content) | MAY |
 | `claims[].checkedOn` | currency | — | — | MAY |
 | `claims[].recheckBy` | currency | — | SHOULD (time-dependent claims) | — |
